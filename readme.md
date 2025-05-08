@@ -8,7 +8,7 @@
   - [ ] 光照系统
   - [ ] 地形生成
       - [ ] 柏林噪音计算
-      - [ ] ~~天空盒(待定)~~
+      - [ ] 天空盒
       - [ ] 方块png蒙版
       - [ ] 方块面渲染
   - [ ] 十字光标
@@ -48,4 +48,5 @@
 [我的世界开发者中文指南](https://github.com/mouse0w0/MinecraftDeveloperGuide?tab=readme-ov-file)</br>
 [只用7个命令方块做出柏林噪声生成地形？！](https://www.bilibili.com/video/BV1vfKJedEdA/)</br>
 ~~[How to Use Perlin Noise in Your Games](http://devmag.org.za/2009/04/25/perlin-noise/)~~ 全英文没看完</br>
-[《3D Game Development with LWJGL 3》中文翻译](https://mouse0w0.github.io/lwjglbook-CN-Translation/02-the-game-loop/)</br>
+~~[《3D Game Development with LWJGL 3》中文翻译](https://mouse0w0.github.io/lwjglbook-CN-Translation/02-the-game-loop/)~~ 过时的翻译</br>
+[3D Game Development with LWJGL 3](https://ahbejarano.gitbook.io/lwjglgamedev)的[翻译](https://yin2hao.github.io/lwjglbook-CN-Translation/)
