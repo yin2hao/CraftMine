@@ -44,6 +44,8 @@
 ~~[FastNoise Lite](https://github.com/Auburn/FastNoiseLite):便携的开源噪声生成库，具有多种噪声算法~~</br>
 [LWJGL](https://www.lwjgl.org/):图形化界面以及各种相关库
 
+如果事不可为，则考虑使用 [jmonkeyengine](https://github.com/jMonkeyEngine/jmonkeyengine)
+
 ## 参考资料
 [我的世界开发者中文指南](https://github.com/mouse0w0/MinecraftDeveloperGuide?tab=readme-ov-file)</br>
 [只用7个命令方块做出柏林噪声生成地形？！](https://www.bilibili.com/video/BV1vfKJedEdA/)</br>

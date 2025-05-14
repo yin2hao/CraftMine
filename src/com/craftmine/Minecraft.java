@@ -1,5 +1,3 @@
-package com;
-
 public class Minecraft {
 
     public static void start(){};

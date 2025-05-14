@@ -1,4 +1,4 @@
-package com;
+package com.craftmine;
 
 public class entity {
 }
