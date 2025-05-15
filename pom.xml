@@ -15,6 +15,7 @@
         <maven.compiler.target>23</maven.compiler.target>
         <lwjgl.version>3.3.6</lwjgl.version>
         <lwjgl.natives>natives-windows-x86</lwjgl.natives>
+        <tinylog.version>2.7.0</tinylog.version>
     </properties>
 
     <name>CraftMine</name>
@@ -34,8 +35,19 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog-api</artifactId>
+            <version>${tinylog.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog-impl</artifactId>
+            <version>${tinylog.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
+            <version>${lwjgl.version}</version>
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>

@@ -1,4 +1,4 @@
-import java.awt.*;
+package com.craftmine.game;
 
 public interface iAppLogic {
     void cleanup();

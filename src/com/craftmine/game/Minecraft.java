@@ -1,4 +1,4 @@
-package com.craftmine;
+package com.craftmine.game;
 
 public class Minecraft {
 
