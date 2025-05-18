@@ -3,7 +3,6 @@ package com.craftmine.engine;
 import com.craftmine.game.IAppLogic;
 import com.craftmine.game.MCWindows;
 
-import javax.swing.*;
 
 public class Engine {
     public static final int TARGET_UPS = 30;
@@ -23,7 +22,7 @@ public class Engine {
         targetFps = opts.fps;
         targetUps = opts.ups;
         this.appLogic = appLogic;
-        render = new Render();
+        render = new Render();//这里绑定了函数指针
         scene = new Scene();
         appLogic.init(windows, scene, render);
         running = true;

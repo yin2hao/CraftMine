@@ -23,7 +23,7 @@ public class MCWindows {
     public MCWindows(String title,MCWindowsOptions opts , Callable<Void> resizeFunc) {
         this.resizeFunc = resizeFunc;
         if (!glfwInit()){
-            throw new IllegalStateException("Unable to initialize GLFW");
+            throw new IllegalStateException("无法初始化GLFW");
         }
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
@@ -34,7 +34,7 @@ public class MCWindows {
 
         //这个不重要
         if (opts.compatibleProfile){
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//兼容模式及
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//兼容模式
         } else{
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//核心模式
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
@@ -52,10 +52,10 @@ public class MCWindows {
 
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
         if (windowHandle == NULL){
-            throw new RuntimeException("Failed to create the GLFW window");
+            throw new RuntimeException("无法创建GLFW窗口");
         }
 
-        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {resize(width, height);});
+        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {resize(width, height);});//帧缓冲区大小回调
         glfwSetErrorCallback((int errorCode, long msgPtr) -> {
             Logger.error("Error code[{}]", errorCode, MemoryUtil.memUTF8(msgPtr));
         });
