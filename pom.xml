@@ -14,7 +14,7 @@
         <maven.compiler.source>23</maven.compiler.source>
         <maven.compiler.target>23</maven.compiler.target>
         <lwjgl.version>3.3.6</lwjgl.version>
-        <lwjgl.natives>natives-windows-x86</lwjgl.natives>
+        <lwjgl.natives>natives-windows</lwjgl.natives>
         <tinylog.version>2.7.0</tinylog.version>
     </properties>
 
@@ -146,7 +146,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>

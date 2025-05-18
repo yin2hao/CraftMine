@@ -1,122 +1,137 @@
 package com.craftmine.game;
 
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryUtil;
 import org.tinylog.Logger;
 
 import java.util.concurrent.Callable;
+import com.craftmine.engine.Engine;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class MCWindows extends Minecraft {
-    private final long windowshandle;
-    private Callable<Void> resizeFunc;
+public class MCWindows {
+
+    private final long windowHandle;
     private int height;
     private int width;
+    private Callable<Void> resizeFunc;
 
-
-    public MCWindows(String title, MCWindowsOptions opts, Callable<Void> resizeFunc) {
+    public MCWindows(String title,MCWindowsOptions opts , Callable<Void> resizeFunc) {
         this.resizeFunc = resizeFunc;
-        if (!glfwInit()) {
-            throw new IllegalStateException("无法初始化GLFW");
+        if (!glfwInit()){
+            throw new IllegalStateException("Unable to initialize GLFW");
         }
-        glfwDefaultWindowHints();//将所有窗口创建相关的配置选项恢复为GLFW的默认值
+        glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-        //兼容模式和核心模式未更改，opts.compatibleProfile
+        //这个不重要
+        if (opts.compatibleProfile){
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//兼容模式及
+        } else{
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//核心模式
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        }
 
-        if (opts.width > 0 || opts.height > 0) {
+        if (opts.width > 0 || opts.height > 0){
             this.width = opts.width;
             this.height = opts.height;
-        } else {
+        }else {
             glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
-            GLFWVidMode VidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-            this.width = VidMode.width();
-            this.height = VidMode.height();
+            GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+            this.width = vidMode.width();
+            this.height = vidMode.height();
         }
 
-        windowshandle = glfwCreateWindow(width, height, title, NULL, NULL);
-        if (windowshandle == NULL) {
-            throw new RuntimeException("无法创建GLFW窗口");
+        windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
+        if (windowHandle == NULL){
+            throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        glfwSetFramebufferSizeCallback(windowshandle, (window, w, h) -> resize(windows, w, h));
-        glfwSetErrorCallback((int errorCode, long msgPtr) ->
-                Logger.error("GLFW错误码:{},错误信息:{}", errorCode, MemoryUtil.memUTF8(msgPtr))
-        );
-
-        glfwSetKeyCallback(windowshandle, (window, key, scancode, action, mods) -> {
-            KeyCallBack(key, action);
+        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {resize(width, height);});
+        glfwSetErrorCallback((int errorCode, long msgPtr) -> {
+            Logger.error("Error code[{}]", errorCode, MemoryUtil.memUTF8(msgPtr));
+        });
+        glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
+            keyCallBack(key,action);
         });
 
-        glfwMakeContextCurrent(windowshandle);
+        //绑定上下文
+        glfwMakeContextCurrent(windowHandle);
 
-        if (opts.fps > 0) {
-            glfwSwapInterval(0);//禁用垂直同步
-        } else {
-            glfwSwapInterval(1);//启用垂直同步
+        if (opts.fps > 0){
+            glfwSwapInterval(0);
+        }else {
+            glfwSwapInterval(1);
         }
 
-        glfwShowWindow(windowshandle);
+        glfwShowWindow(windowHandle);
 
         int[] arrWidth = new int[1];
         int[] arrHeight = new int[1];
-        glfwGetWindowSize(windowshandle, arrWidth, arrHeight);
+        glfwGetWindowSize(windowHandle, arrWidth, arrHeight);
         this.width = arrWidth[0];
         this.height = arrHeight[0];
     }
 
-    public static class MCWindowsOptions() {
-        public boolean compatibleProfile;
-        public int height;
-        public int width;
-        public int fps;
-        public int ups = Engine.TARGET_UPS;
-    }
-
-    public void KeyCallBack(int key, int action) {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-            glfwWindowShouldClose(windowshandle, true);
+    public void keyCallBack(int key, int action) {
+        if (key == GLFW_KEY_ESCAPE || action == GLFW_RELEASE){
+            glfwSetWindowShouldClose(windowHandle, true);
         }
     }
 
-    public void cleaup(){
-        glfwFreeCallbacks(windowshandle);//移除所有通过glfwSetCallback注册到该窗口的回调（如键盘、鼠标、窗口大小回调）
-        glfwDestroyWindow(windowshandle);//销毁 GLFW 窗口，释放其占用的系统资源（如 OpenGL 上下文、显存、窗口句柄）
-        //GLFW 初始化时（glfwInit()）会分配全局资源，必须对称调用 glfwTerminate()
-        glfwTerminate();// 终止 GLFW 库
-        glfwErrorCallBack callback = glfwSetErrorCallback(null);//清除错误回调
-        if (callback != null) {
+    public void cleanup(){
+        glfwFreeCallbacks(windowHandle);
+        glfwDestroyWindow(windowHandle);
+        glfwTerminate();
+        GLFWErrorCallback callback = glfwSetErrorCallback(null);
+        if (callback != null){
             callback.free();
         }
     }
 
-    public void pollEvent(){
+    public boolean isKeyPressed(int keyCode){
+        return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
+    }
+
+    public void pollEvents(){
         glfwPollEvents();
     }
 
-    public boolean isKeyPressed(int keyCode){
-        return glfwGetKey(windowshandle, keyCode) == GLFW_PRESS;
-    }
-
-    public void resize(int width, int height) {
+    protected void resize(int width, int height) {
         this.width = width;
         this.height = height;
         try{
             resizeFunc.call();
         } catch (Exception e) {
-            Logger.error("调用 resize 回调时出错", e);
+            Logger.error("Error calling resize callback", e);
         }
     }
 
-    public long getWindowshandle(){return windowshandle;}
+    public void update(){
+        glfwSwapBuffers(windowHandle);
+    }
+
+    public boolean windowsShouldClose(){
+        return glfwWindowShouldClose(windowHandle);
+    }
+
     public int getHeight() {return height;}
     public int getWidth() {return width;}
+    public long getWindowHandle() {return windowHandle;}
+
+    public static class MCWindowsOptions{
+        public boolean compatibleProfile;//是否使用旧版本函数，此处无用
+        public int fps;
+        public int ups = Engine.TARGET_UPS;
+        public int height;
+        public int width;
+    }
 }

@@ -1,17 +1,33 @@
 package com.craftmine.game;
 
-public class Minecraft {
+import com.craftmine.engine.*;
+import com.craftmine.game.IAppLogic;
+import com.craftmine.game.MCWindows;
 
-    public static void main(){};
+public class Minecraft implements IAppLogic{
     public static void main(String[] args) {
-        minecraft.start();
+        Minecraft mc = new Minecraft();
+        Engine game = new Engine("CraftMine", new MCWindows.MCWindowsOptions(),mc);
+        game.start();
     }
 
-    public static void start(){
-        while (KeepOnRunning){
-            init();
-            updata();
-            render();
-        }
+    @Override
+    public void cleanup() {
+
+    }
+
+    @Override
+    public void init(MCWindows windows, Scene scene, Render render) {
+
+    }
+
+    @Override
+    public void update(MCWindows windows, Scene scene, long diffTimeMillis) {
+
+    }
+
+    @Override
+    public void input(MCWindows windows, Scene scene, long diffTimeMillis) {
+
     }
 }
