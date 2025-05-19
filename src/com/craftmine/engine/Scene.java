@@ -1,20 +1,37 @@
 package com.craftmine.engine;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.craftmine.game.Entity;
+import java.util.*;
 
 public class Scene {
 
-    private Map<String, Mesh> meshMap;
+    private Map<String, Model> modelMap;
     private Projection projection;
 
     public Scene(int width, int height) {
-        meshMap = new HashMap<>();
+        modelMap = new HashMap<>();
         projection = new Projection(width, height);//投影矩阵
     }
 
+    public void addEntity(Entity entity) {
+        String modelID = entity.getModelID();
+        Model model = modelMap.get(modelID);
+        if (model == null) {
+            throw new RuntimeException("无法找到模型  [" + modelID + "]");
+        }
+        model.getEntitiesList().add(entity);
+    }
+
+    public void addModel(Model model) {
+        modelMap.put(model.getID(), model);
+    }
+
     public void cleanup(){
-        meshMap.values().forEach(Mesh::cleanup);
+        modelMap.values().forEach(Model::cleanup);
+    }
+
+    public Map<String, Model> getModelMap(){
+        return modelMap;
     }
 
     public Projection getProjection(){
@@ -26,11 +43,7 @@ public class Scene {
         projection.updateProjMatrix(width, height);
     }
 
-    public Map<String, Mesh> getMeshMap(){
-        return meshMap;
-    }
-
-    public void addMesh(String meshID, Mesh mesh){
-        meshMap.put(meshID, mesh);
-    }
+//    public void addMesh(String meshID, Mesh mesh){
+//        modelMap.put(meshID, mesh);
+//    }
 }

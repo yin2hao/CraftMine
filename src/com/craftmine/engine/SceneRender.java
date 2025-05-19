@@ -1,5 +1,7 @@
 package com.craftmine.engine;
 
+import com.craftmine.game.Entity;
+
 import java.util.*;
 import static org.lwjgl.opengl.GL30.*;
 
@@ -18,6 +20,7 @@ public class SceneRender {
     private void createUniforms() {
         uniformsMap = new UniformsMap(shaderProgram.getProgramID());
         uniformsMap.createUniform("projectionMatrix");
+        uniformsMap.createUniform("modelMatrix");
     }
 
     public void cleanup(){
@@ -29,12 +32,18 @@ public class SceneRender {
 
         uniformsMap.setUniform("projectionMatrix", scene.getProjection().getProjMatrix());
 
-        scene.getMeshMap().values().forEach(mesh -> {
-            glBindVertexArray(mesh.getVaoID());
-            glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
-        });
+        Collection<Model> models = scene.getModelMap().values();
+        for (Model model : models) {
+            model.getMeshList().stream().forEach(mesh -> {
+                glBindVertexArray(mesh.getVaoID());
+                List<Entity> entities = model.getEntitiesList();
+                for (Entity entity : entities) {
+                    uniformsMap.setUniform("modelMatrix", entity.getModelMatrix());
+                    glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
+                }
+            });
+        }
         glBindVertexArray(0);
-
         shaderProgram.unbind();
     }
 }

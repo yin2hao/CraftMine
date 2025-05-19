@@ -18,12 +18,12 @@ public class Engine {
         windows = new MCWindows(windowsTitle, opts, () -> {
             resize();
             return null;
-        });
+        });//窗口和openGL初始化
         targetFps = opts.fps;
         targetUps = opts.ups;
         this.appLogic = appLogic;
-        render = new Render();//这里绑定了函数指针
-        scene = new Scene(windows.getWidth(), windows.getHeight());
+        render = new Render();//这里绑定了函数指针，加载着色器并编译进程序中，加载统一变量
+        scene = new Scene(windows.getWidth(), windows.getHeight());//包括投影矩阵
         appLogic.init(windows, scene, render);
         running = true;
     }
