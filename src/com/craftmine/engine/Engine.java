@@ -23,7 +23,7 @@ public class Engine {
         targetUps = opts.ups;
         this.appLogic = appLogic;
         render = new Render();//这里绑定了函数指针
-        scene = new Scene();
+        scene = new Scene(windows.getWidth(), windows.getHeight());
         appLogic.init(windows, scene, render);
         running = true;
     }
@@ -36,6 +36,7 @@ public class Engine {
     }
 
     private void resize() {
+        scene.resize(windows.getWidth(), windows.getHeight());
     }
 
     private void run() {

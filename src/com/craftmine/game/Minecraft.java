@@ -17,10 +17,10 @@ public class Minecraft implements IAppLogic{
     @Override
     public void init(MCWindows windows, Scene scene, Render render) {
         float[] positions = new float[]{
-                -0.5f, 0.5f, 0.0f,
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.5f, 0.5f, 0.0f,
+                -0.5f, 0.5f, -1.0f,
+                -0.5f, -0.5f, -1.0f,
+                0.5f, -0.5f, -1.0f,
+                0.5f, 0.5f, -1.0f,
         };
         float[] colors = new float[]{
                 0.5f, 0.0f, 0.0f,
