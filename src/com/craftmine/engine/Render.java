@@ -10,6 +10,7 @@ public class Render {
     private SceneRender sceneRender;
     public Render() {
         GL.createCapabilities();//加载当前OpenGL上下文中可用的函数指针
+        glEnable(GL_DEPTH_TEST);
         sceneRender = new SceneRender();
     }
 

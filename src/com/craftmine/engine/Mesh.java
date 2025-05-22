@@ -15,7 +15,7 @@ public class Mesh {
     private int vaoID;//顶点数组对象
     private List<Integer> vboIDList;//顶点缓冲对象
 
-    public Mesh(float[] positions, float[] colors, int[] indices) {
+    public Mesh(float[] positions, float[] textCoords, int[] indices) {
         numVertices = indices.length;
         vboIDList = new ArrayList<>();
 
@@ -39,12 +39,12 @@ public class Mesh {
         //颜色VBO
         vboID = glGenBuffers();
         vboIDList.add(vboID);
-        FloatBuffer colorsBuffer = MemoryUtil.memCallocFloat(colors.length);
-        colorsBuffer.put(0, colors);
+        FloatBuffer textCoordsBuffer = MemoryUtil.memCallocFloat(textCoords.length);
+        textCoordsBuffer.put(0, textCoords);
         glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferData(GL_ARRAY_BUFFER, colorsBuffer, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, textCoordsBuffer, GL_STATIC_DRAW);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 
         //索引VBO
         vboID = glGenBuffers();
@@ -60,7 +60,7 @@ public class Mesh {
 
         //释放临时缓冲
         MemoryUtil.memFree(positionsBuffer);
-        MemoryUtil.memFree(colorsBuffer);
+        MemoryUtil.memFree(textCoordsBuffer);
         MemoryUtil.memFree(indicesBuffer);
     }
 

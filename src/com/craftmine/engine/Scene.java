@@ -7,10 +7,16 @@ public class Scene {
 
     private Map<String, Model> modelMap;
     private Projection projection;
+    private TextureCache textureCache;
 
     public Scene(int width, int height) {
         modelMap = new HashMap<>();
         projection = new Projection(width, height);//投影矩阵
+        textureCache = new TextureCache();
+    }
+
+    public TextureCache getTextureCache(){
+        return textureCache;
     }
 
     public void addEntity(Entity entity) {

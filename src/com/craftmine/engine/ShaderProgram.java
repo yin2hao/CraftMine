@@ -7,14 +7,14 @@ import static org.lwjgl.opengl.GL30.*;
 public class ShaderProgram {
     private final int programID;
 
-    public ShaderProgram(List<ShaderModuleData> shaderModuleDaeaList) {
+    public ShaderProgram(List<ShaderModuleData> shaderModuleDataList) {
         programID = glCreateProgram();
         if (programID == 0) {
             throw new RuntimeException("无法创建着色器");
         }
 
         List<Integer> shaderModules = new ArrayList<>();
-        shaderModuleDaeaList.forEach(s -> shaderModules.add(createShader(Utils.readFile(s.shaderFile),s.shaderType)));
+        shaderModuleDataList.forEach(s -> shaderModules.add(createShader(Utils.readFile(s.shaderFile),s.shaderType)));
 
         link(shaderModules);
     }

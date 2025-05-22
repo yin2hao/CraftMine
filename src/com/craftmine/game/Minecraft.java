@@ -17,7 +17,7 @@ public class Minecraft implements IAppLogic{
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
-        Engine game = new Engine("CraftMine", new MCWindows.MCWindowsOptions(),mc);//初始化窗户
+        Engine game = new Engine("CraftMine", new MCWindows.MCWindowsOptions(),mc);//初始化窗口
         game.start();//循环开始
     }
 
@@ -45,39 +45,98 @@ public class Minecraft implements IAppLogic{
                 -0.5f, -0.5f, -0.5f,
                 // V7
                 0.5f, -0.5f, -0.5f,
+
+                //对于顶面纹理
+                // V8: V4 repeated
+                -0.5f, 0.5f, -0.5f,
+                // V9: V5 repeated
+                0.5f, 0.5f, -0.5f,
+                // V10: V0 repeated
+                -0.5f, 0.5f, 0.5f,
+                // V11: V3 repeated
+                0.5f, 0.5f, 0.5f,
+
+                // 为右侧面纹理坐标重复的顶点
+                // V12: V3 repeated
+                0.5f, 0.5f, 0.5f,
+                // V13: V2 repeated
+                0.5f, -0.5f, 0.5f,
+
+                // 为左侧面纹理坐标重复的顶点
+                // V14: V0 repeated
+                -0.5f, 0.5f, 0.5f,
+                // V15: V1 repeated
+                -0.5f, -0.5f, 0.5f,
+
+                // 为底面纹理坐标重复的顶点
+                // V16: V6 repeated
+                -0.5f, -0.5f, -0.5f,
+                // V17: V7 repeated
+                0.5f, -0.5f, -0.5f,
+                // V18: V1 repeated
+                -0.5f, -0.5f, 0.5f,
+                // V19: V2 repeated
+                0.5f, -0.5f, 0.5f,
         };
-        float[] colors = new float[]{
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
-                0.5f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f,
-                0.0f, 0.0f, 0.5f,
-                0.0f, 0.5f, 0.5f,
+        float[] textCoords = new float[]{
+                // 正面纹理坐标
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.5f, 0.0f,
+
+                // 背面纹理坐标
+                0.0f, 0.0f,
+                0.5f, 0.0f,
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+
+                // 顶面纹理坐标
+                0.0f, 0.5f,
+                0.5f, 0.5f,
+                0.0f, 1.0f,
+                0.5f, 1.0f,
+
+                // 右侧面纹理坐标
+                0.0f, 0.0f,
+                0.0f, 0.5f,
+
+                // 左侧面纹理坐标
+                0.5f, 0.0f,
+                0.5f, 0.5f,
+
+                // 底面纹理坐标
+                0.5f, 0.0f,
+                1.0f, 0.0f,
+                0.5f, 0.5f,
+                1.0f, 0.5f,
         };
         int[] indices = new int[]{
-                //正面
+                // 正面
                 0, 1, 3, 3, 1, 2,
-                //顶面
-                4, 0, 3, 5, 4, 3,
-                //右面
-                3, 2, 7, 5, 3, 7,
-                //左面
-                6, 1, 0, 6, 0, 4,
-                //底面
-                2, 1, 6, 2, 6, 7,
-                //背面
-                7, 6, 4, 7, 4, 5,
+                // 顶面
+                8, 10, 11, 9, 8, 11,
+                // 右面
+                12, 13, 7, 5, 12, 7,
+                // 左面
+                14, 15, 6, 4, 14, 6,
+                // 底面
+                16, 18, 19, 17, 16, 19,
+                // 背面
+                4, 6, 7, 5, 4, 7,
         };
-        List<Mesh> meshList = new ArrayList<Mesh>();
-        Mesh mesh = new Mesh(positions, colors, indices);
-        meshList.add(new Mesh(positions, colors, indices));
+        Texture texture = scene.getTextureCache().createTexture("src/main/resources/models/cube/cube.png");
+        Material material = new Material();
+        material.setTexturePath(texture.getTexturePath());
+        List<Material> materialList = new ArrayList<>();
+        materialList.add(material);
 
-        Model model = new Model("cube-model", meshList);
-        scene.addModel(model);
+        Mesh mesh = new Mesh(positions, textCoords, indices);
+        material.getMeshList().add(mesh);
+        Model cubeModel = new Model("cube-model", materialList);
+        scene.addModel(cubeModel);
 
-        cubeEntity = new Entity("cube-entity", "cube-model");
+        cubeEntity = new Entity("cube-entity", cubeModel.getID());
         cubeEntity.setPosition(0, 0, -2);
         scene.addEntity(cubeEntity);
     }
@@ -121,6 +180,5 @@ public class Minecraft implements IAppLogic{
         Vector3f entityPos = cubeEntity.getPosition();
         cubeEntity.setPosition(displInc.x+entityPos.x, displInc.y+entityPos.y, displInc.z+entityPos.z);
         cubeEntity.setScale(cubeEntity.getScale() + displInc.w);
-        cubeEntity.updateModelMatrix();
     }
 }
