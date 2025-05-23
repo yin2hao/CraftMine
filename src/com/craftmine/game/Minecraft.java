@@ -1,6 +1,7 @@
 package com.craftmine.game;
 
 import com.craftmine.engine.*;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -11,6 +12,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Minecraft implements IAppLogic{
 
+    private static final float MOUSE_SENSITIVITY = 0.1f;
+    private static final float MOVEMENT_SPEED = 0.005f;
     private Entity cubeEntity;
     private Vector4f displInc = new Vector4f();
     private float rotation;
@@ -153,32 +156,29 @@ public class Minecraft implements IAppLogic{
 
     @Override
     public void input(MCWindows windows, Scene scene, long diffTimeMillis) {
-        displInc.zero();
-        if (windows.isKeyPressed(GLFW_KEY_UP)) {
-            displInc.y = 1;
-        } else if (windows.isKeyPressed(GLFW_KEY_DOWN)) {
-            displInc.y = -1;
-        }
-        if (windows.isKeyPressed(GLFW_KEY_LEFT)) {
-            displInc.x = -1;
-        } else if (windows.isKeyPressed(GLFW_KEY_RIGHT)) {
-            displInc.x = 1;
+        float move = diffTimeMillis * MOVEMENT_SPEED;
+        Camera camera = scene.getCamera();
+        if (windows.isKeyPressed(GLFW_KEY_W)) {
+            camera.moveForward(move);
+        } else if (windows.isKeyPressed(GLFW_KEY_S)) {
+            camera.moveBackwards(move);
         }
         if (windows.isKeyPressed(GLFW_KEY_A)) {
-            displInc.z = -1;
-        } else if (windows.isKeyPressed(GLFW_KEY_Q)) {
-            displInc.z = 1;
+            camera.moveLeft(move);
+        } else if (windows.isKeyPressed(GLFW_KEY_D)) {
+            camera.moveRight(move);
         }
-        if (windows.isKeyPressed(GLFW_KEY_Z)) {
-            displInc.w = -1;
-        } else if (windows.isKeyPressed(GLFW_KEY_X)) {
-            displInc.w = 1;
+        if (windows.isKeyPressed(GLFW_KEY_UP)) {
+            camera.moveUp(move);
+        } else if (windows.isKeyPressed(GLFW_KEY_DOWN)) {
+            camera.moveDown(move);
         }
 
-        displInc.mul(diffTimeMillis / 1000.0f);
-
-        Vector3f entityPos = cubeEntity.getPosition();
-        cubeEntity.setPosition(displInc.x+entityPos.x, displInc.y+entityPos.y, displInc.z+entityPos.z);
-        cubeEntity.setScale(cubeEntity.getScale() + displInc.w);
+        MouseInput mouseInput = windows.getMouseInput();
+        if (mouseInput.isRightButtonPressed()){
+            Vector2f displVec = mouseInput.getDisplVec();
+            camera.addRoatation((float) Math.toRadians(-displVec.x * MOUSE_SENSITIVITY),
+                    (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
+        }
     }
 }

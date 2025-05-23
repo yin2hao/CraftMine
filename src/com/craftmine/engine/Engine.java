@@ -53,7 +53,9 @@ public class Engine {
             long now = System.currentTimeMillis();
             deltaUpdate += (now - initialTime) / timeU;
             deltaFps += (now - initialTime) / timeR;
+
             if (targetFps <= 0 || deltaFps >= 1) {
+                windows.getMouseInput().input();
                 appLogic.input(windows, scene, now - initialTime);
             }
 

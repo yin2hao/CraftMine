@@ -8,11 +8,13 @@ public class Scene {
     private Map<String, Model> modelMap;
     private Projection projection;
     private TextureCache textureCache;
+    private Camera camera;
 
     public Scene(int width, int height) {
         modelMap = new HashMap<>();
         projection = new Projection(width, height);//投影矩阵
         textureCache = new TextureCache();
+        camera = new Camera();
     }
 
     public TextureCache getTextureCache(){
@@ -49,7 +51,7 @@ public class Scene {
         projection.updateProjMatrix(width, height);
     }
 
-//    public void addMesh(String meshID, Mesh mesh){
-//        modelMap.put(meshID, mesh);
-//    }
+    public Camera getCamera(){
+        return camera;
+    }
 }

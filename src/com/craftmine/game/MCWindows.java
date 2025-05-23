@@ -1,5 +1,6 @@
 package com.craftmine.game;
 
+import com.craftmine.engine.MouseInput;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryUtil;
@@ -19,6 +20,7 @@ public class MCWindows {
     private int height;
     private int width;
     private Callable<Void> resizeFunc;
+    private MouseInput mouseInput;
 
     public MCWindows(String title,MCWindowsOptions opts , Callable<Void> resizeFunc) {
         this.resizeFunc = resizeFunc;
@@ -79,6 +81,8 @@ public class MCWindows {
         glfwGetWindowSize(windowHandle, arrWidth, arrHeight);
         this.width = arrWidth[0];
         this.height = arrHeight[0];
+
+        mouseInput = new MouseInput(windowHandle);
     }
 
     public void keyCallBack(int key, int action) {
@@ -95,6 +99,10 @@ public class MCWindows {
         if (callback != null){
             callback.free();
         }
+    }
+
+    public MouseInput getMouseInput(){
+        return mouseInput;
     }
 
     public boolean isKeyPressed(int keyCode){
