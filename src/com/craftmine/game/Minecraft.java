@@ -2,7 +2,6 @@ package com.craftmine.game;
 
 import com.craftmine.engine.*;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class Minecraft implements IAppLogic{
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
     private Entity cubeEntity;
-    private Vector4f displInc = new Vector4f();
+    private Vector4f displInc = new Vector4f();//位移向量
     private float rotation;
 
     public static void main(String[] args) {
@@ -177,7 +176,7 @@ public class Minecraft implements IAppLogic{
         MouseInput mouseInput = windows.getMouseInput();
         if (mouseInput.isRightButtonPressed()){
             Vector2f displVec = mouseInput.getDisplVec();
-            camera.addRoatation((float) Math.toRadians(-displVec.x * MOUSE_SENSITIVITY),
+            camera.addRotation((float) Math.toRadians(-displVec.x * MOUSE_SENSITIVITY),
                     (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
         }
     }

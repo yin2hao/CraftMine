@@ -6,15 +6,16 @@ import static org.lwjgl.glfw.GLFW.*;
 public class MouseInput {
 
     private Vector2f currentPos;
+    private Vector2f previousPos;
     private Vector2f displVec;
     private boolean inWindows;
     private boolean leftButtonPressed;
-    private Vector2f previousPos;
     private boolean rightButtonPressed;
 
 
     public MouseInput(long windowsHandle) {
-        previousPos = new Vector2f(-1, -1);
+        //初始化
+        previousPos = new Vector2f(-1, -1);//(-1,-1)通常用作一个标记，表示还没有有效的先前位置，以避免在第一次计算位移时产生不正确的巨大值
         currentPos = new Vector2f();
         displVec = new Vector2f();
         leftButtonPressed = false;
@@ -24,18 +25,19 @@ public class MouseInput {
         glfwSetCursorPosCallback(windowsHandle, (handle, x, y) -> {
             currentPos.x = (float) x;
             currentPos.y = (float) y;
-        });
+        });//鼠标移动回调
+        //鼠标进入窗口回调
         glfwSetCursorEnterCallback(windowsHandle, (handle, entered) -> {inWindows = entered;});
+        //鼠标点击回调
         glfwSetMouseButtonCallback(windowsHandle, (handle, button, action, mods) -> {
             leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
-            rightButtonPressed = action == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
+            rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
         });
     }
 
     public Vector2f getCurrentPos(){
         return currentPos;
     }
-
     public Vector2f getDisplVec(){
         return displVec;
     }
@@ -49,6 +51,7 @@ public class MouseInput {
             boolean rotateX = deltax != 0;
             boolean rotateY = deltay != 0;
             if(rotateX){
+                //3D视角控制中，鼠标水平移动（X轴）通常用来控制视角绕Y轴旋转（偏航Yaw）
                 displVec.y = (float) deltax;
             }
             if(rotateY){
