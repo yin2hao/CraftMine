@@ -20,6 +20,8 @@ public class Render {
 
     public void render(MCWindows windows, Scene scene) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glViewport(0, 0, windows.getWidth(), windows.getHeight());
         sceneRender.render(scene);
     }
