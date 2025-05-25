@@ -1,20 +1,17 @@
 package com.craftmine.game;
 
 import com.craftmine.engine.*;
+import imgui.*;
+import imgui.flag.ImGuiCond;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Minecraft implements IAppLogic{
+public class Minecraft implements IAppLogic, IGUIInstance{
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
     private Entity cubeEntity;
-    private Vector4f displInc = new Vector4f();//位移向量
     private float rotation;
 
     public static void main(String[] args) {
@@ -25,7 +22,27 @@ public class Minecraft implements IAppLogic{
 
     @Override
     public void cleanup() {
+    }
 
+    @Override
+    public void drawGUI(){
+        ImGui.newFrame();
+        ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
+        ImGui.showDemoWindow();
+        ImGui.endFrame();
+        ImGui.render();
+    }
+
+    @Override
+    public boolean handleGUIInput(Scene scene, MCWindows window){
+        ImGuiIO imGuiIO = ImGui.getIO();
+        MouseInput mouseInput = window.getMouseInput();
+        Vector2f mousePos = mouseInput.getCurrentPos();
+        imGuiIO.addMousePosEvent(mousePos.x, mousePos.y);
+        imGuiIO.addMouseButtonEvent(0, mouseInput.isLeftButtonPressed());
+        imGuiIO.addMouseButtonEvent(1, mouseInput.isRightButtonPressed());
+
+        return imGuiIO.getWantCaptureMouse() || imGuiIO.getWantCaptureKeyboard();
     }
 
     @Override
@@ -37,6 +54,8 @@ public class Minecraft implements IAppLogic{
         cubeEntity = new Entity("cube-entity", cubeModel.getID());
         cubeEntity.setPosition(0, 0, -2);
         scene.addEntity(cubeEntity);
+
+        scene.setGuiInstance(this);
     }
 
     @Override
@@ -50,7 +69,8 @@ public class Minecraft implements IAppLogic{
     }
 
     @Override
-    public void input(MCWindows windows, Scene scene, long diffTimeMillis) {
+    public void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumd) {
+
         float move = diffTimeMillis * MOVEMENT_SPEED;
         Camera camera = scene.getCamera();
         if (windows.isKeyPressed(GLFW_KEY_W)) {

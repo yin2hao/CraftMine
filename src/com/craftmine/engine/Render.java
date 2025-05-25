@@ -7,15 +7,18 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Render {
 
+    private GUIRender guiRender;
     private SceneRender sceneRender;
-    public Render() {
+    public Render(MCWindows windows) {
         GL.createCapabilities();//加载当前OpenGL上下文中可用的函数指针
         glEnable(GL_DEPTH_TEST);
         sceneRender = new SceneRender();
+        guiRender = new GUIRender(windows);
     }
 
     public void cleanup(){
         sceneRender.cleanup();
+        guiRender.cleanup();
     }
 
     public void render(MCWindows windows, Scene scene) {
@@ -24,5 +27,10 @@ public class Render {
         glCullFace(GL_BACK);
         glViewport(0, 0, windows.getWidth(), windows.getHeight());
         sceneRender.render(scene);
+        guiRender.render(scene);
+    }
+
+    public void resize(int width, int height) {
+        guiRender.resize(width, height);
     }
 }

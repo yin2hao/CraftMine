@@ -10,5 +10,5 @@ public interface IAppLogic {
 
     void update(MCWindows windows , Scene scene , long diffTimeMillis);
 
-    void input(MCWindows windows , Scene scene , long diffTimeMillis);
+    void input(MCWindows windows , Scene scene , long diffTimeMillis, boolean inputConsumed);
 }

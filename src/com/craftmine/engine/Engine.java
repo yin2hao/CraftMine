@@ -22,7 +22,7 @@ public class Engine {
         targetFps = opts.fps;
         targetUps = opts.ups;
         this.appLogic = appLogic;
-        render = new Render();//这里绑定了函数指针，加载着色器并编译进程序中，加载统一变量
+        render = new Render(windows);//这里绑定了函数指针，加载着色器并编译进程序中，加载统一变量
         scene = new Scene(windows.getWidth(), windows.getHeight());//包括投影矩阵
         appLogic.init(windows, scene, render);
         running = true;
@@ -36,7 +36,10 @@ public class Engine {
     }
 
     private void resize() {
-        scene.resize(windows.getWidth(), windows.getHeight());
+        int width = windows.getWidth();
+        int height = windows.getHeight();
+        scene.resize(width, height);
+        render.resize(width, height);
     }
 
     private void run() {
@@ -47,6 +50,7 @@ public class Engine {
         float deltaFps = 0;
 
         long updateTime = initialTime;
+        IGUIInstance iguiInstance = scene.getGUIInstance();
         while (running && !windows.windowsShouldClose()) {
             windows.pollEvents();
 
@@ -56,7 +60,8 @@ public class Engine {
 
             if (targetFps <= 0 || deltaFps >= 1) {
                 windows.getMouseInput().input();
-                appLogic.input(windows, scene, now - initialTime);
+                boolean inputConsumed = iguiInstance != null && iguiInstance.handleGUIInput(scene, windows);
+                appLogic.input(windows, scene, now - initialTime, inputConsumed);
             }
 
             if (deltaUpdate >= 1) {
