@@ -1,15 +1,20 @@
 package com.craftmine.engine;
 
+import com.craftmine.engine.GUI.IGUIInstance;
+import com.craftmine.engine.camera.Camera;
+import com.craftmine.engine.light.SceneLights;
 import com.craftmine.game.Entity;
 import java.util.*;
 
+//主要用于初始化各个类
 public class Scene {
 
     private Map<String, Model> modelMap;
-    private Projection projection;
-    private TextureCache textureCache;
-    private Camera camera;
-    private IGUIInstance guiInstance;
+    private Projection projection;//投影
+    private TextureCache textureCache;//纹理
+    private Camera camera;//摄像机
+    private IGUIInstance guiInstance;//GUI
+    private SceneLights sceneLights;//灯光
 
     public Scene(int width, int height) {
         modelMap = new HashMap<>();
@@ -52,4 +57,10 @@ public class Scene {
         return textureCache;
     }
     public Camera getCamera(){return camera;}
+    public SceneLights getSceneLights(){
+        return sceneLights;
+    }
+    public void setSceneLights(SceneLights sceneLights){
+        this.sceneLights = sceneLights;
+    }
 }

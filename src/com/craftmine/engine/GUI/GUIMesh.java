@@ -1,4 +1,4 @@
-package com.craftmine.engine;
+package com.craftmine.engine.GUI;
 
 import imgui.ImDrawData;
 

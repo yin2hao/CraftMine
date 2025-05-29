@@ -1,9 +1,11 @@
 package com.craftmine.engine;
 
+import com.craftmine.game.gameResources;
+
 import java.util.*;
 
 public class TextureCache {
-    public static final String DEFAULT_TEXTURE = "src/main/resources/models/default/default_texture.png";
+    public static final String DEFAULT_TEXTURE = gameResources.DEFAULT_TEXTURE;
 
     private Map<String, Texture> textureMap;
 

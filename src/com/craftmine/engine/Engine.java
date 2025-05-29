@@ -1,5 +1,6 @@
 package com.craftmine.engine;
 
+import com.craftmine.engine.GUI.IGUIInstance;
 import com.craftmine.game.IAppLogic;
 import com.craftmine.game.MCWindows;
 

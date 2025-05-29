@@ -15,7 +15,7 @@ public class Mesh {
     private int vaoID;//顶点数组对象
     private List<Integer> vboIDList;//顶点缓冲对象
 
-    public Mesh(float[] positions, float[] textCoords, int[] indices) {
+    public Mesh(float[] positions, float[] normals, float[] textCoords, int[] indices) {
         numVertices = indices.length;
         vboIDList = new ArrayList<>();
 
@@ -23,7 +23,7 @@ public class Mesh {
         vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
 
-        //生成VBO并添加到列表
+        //位置VBO
         int vboID = glGenBuffers();
         vboIDList.add(vboID);
         //创建并填充顶点位置缓冲
@@ -36,15 +36,25 @@ public class Mesh {
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
-        //颜色VBO
+        //法线VBO
+        vboID = glGenBuffers();
+        vboIDList.add(vboID);
+        FloatBuffer normalsBuffer = MemoryUtil.memCallocFloat(normals.length);
+        normalsBuffer.put(0, normals);
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        glBufferData(GL_ARRAY_BUFFER, normalsBuffer, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+
+        //纹理坐标VBO
         vboID = glGenBuffers();
         vboIDList.add(vboID);
         FloatBuffer textCoordsBuffer = MemoryUtil.memCallocFloat(textCoords.length);
         textCoordsBuffer.put(0, textCoords);
         glBindBuffer(GL_ARRAY_BUFFER, vboID);
         glBufferData(GL_ARRAY_BUFFER, textCoordsBuffer, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
 
         //索引VBO
         vboID = glGenBuffers();
@@ -62,6 +72,7 @@ public class Mesh {
         MemoryUtil.memFree(positionsBuffer);
         MemoryUtil.memFree(textCoordsBuffer);
         MemoryUtil.memFree(indicesBuffer);
+        MemoryUtil.memFree(normalsBuffer);
     }
 
     public void cleanup() {

@@ -1,5 +1,6 @@
-package com.craftmine.engine;
+package com.craftmine.engine.GUI;
 
+import com.craftmine.engine.Scene;
 import com.craftmine.game.MCWindows;
 
 public interface IGUIInstance {
