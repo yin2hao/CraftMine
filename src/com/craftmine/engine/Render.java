@@ -1,5 +1,6 @@
 package com.craftmine.engine;
 
+import com.craftmine.engine.GUI.GUIRender;
 import com.craftmine.game.MCWindows;
 import org.lwjgl.opengl.GL;
 

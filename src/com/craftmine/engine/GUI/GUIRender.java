@@ -1,6 +1,7 @@
-package com.craftmine.engine;
+package com.craftmine.engine.GUI;
 
-import com.craftmine.game.MCWindows;
+import com.craftmine.engine.*;
+import com.craftmine.game.*;
 
 import imgui.*;
 import imgui.flag.ImGuiKey;
@@ -23,11 +24,15 @@ public class GUIRender {
     private Texture texture;
     private UniformsMap uniformsMap;
 
+    private static final String GUI_SHADER_VERT = gameResources.GUI_SHADER_VERT;
+    private static final String GUI_SHADER_FRAG = gameResources.GUI_SHADER_FRAG;
+    private static final String GUI_FONT = gameResources.GUI_FONT;
+
     public GUIRender(MCWindows windows) {
         //创建GUI着色器程序
         List<ShaderProgram.ShaderModuleData> shaderModuleDataList = new ArrayList<>();
-        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData("src/main/resources/shaders/gui.vert",GL_VERTEX_SHADER));
-        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData("src/main/resources/shaders/gui.frag",GL_FRAGMENT_SHADER));
+        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(GUI_SHADER_VERT,GL_VERTEX_SHADER));
+        shaderModuleDataList.add(new ShaderProgram.ShaderModuleData(GUI_SHADER_FRAG,GL_FRAGMENT_SHADER));
         shaderProgram = new ShaderProgram(shaderModuleDataList);
         createUniforms();
         createUIResources(windows);//创建UI资源
@@ -55,7 +60,7 @@ public class GUIRender {
         ImFontAtlas fontAtlas = imGuiIO.getFonts();
 
         // 加载本地字体（替换为你的字体路径和大小）
-        String fontPath = "src/main/resources/font/MineCraft.otf";
+        String fontPath = GUI_FONT;
         float fontSize = 16.0f; // 字体大小
         ImFontConfig fontConfig = new ImFontConfig(); // 字体配置
 
