@@ -3,6 +3,7 @@ package com.craftmine.engine;
 import com.craftmine.engine.GUI.IGUIInstance;
 import com.craftmine.engine.camera.Camera;
 import com.craftmine.engine.light.SceneLights;
+import com.craftmine.engine.skybox.SkyBox;
 import com.craftmine.game.Entity;
 import java.util.*;
 
@@ -15,6 +16,7 @@ public class Scene {
     private Camera camera;//摄像机
     private IGUIInstance guiInstance;//GUI
     private SceneLights sceneLights;//灯光
+    private SkyBox skyBox;
 
     public Scene(int width, int height) {
         modelMap = new HashMap<>();
@@ -45,6 +47,8 @@ public class Scene {
         projection.updateProjMatrix(width, height);
     }
 
+    public SkyBox getSkyBox() {return skyBox;}
+    public void setSkyBox(SkyBox skyBox) {this.skyBox = skyBox;}
     public void setGuiInstance(IGUIInstance guiInstance) {this.guiInstance = guiInstance;}
     public Map<String, Model> getModelMap(){
         return modelMap;

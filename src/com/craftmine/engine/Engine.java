@@ -3,12 +3,13 @@ package com.craftmine.engine;
 import com.craftmine.engine.GUI.IGUIInstance;
 import com.craftmine.game.IAppLogic;
 import com.craftmine.game.MCWindows;
+import com.craftmine.game.gameResources;
 
 
 public class Engine {
-    public static final int TARGET_UPS = 30;
+    public static final int TARGET_UPS = gameResources.TARGET_UPS;
     private final IAppLogic appLogic;
-    private MCWindows windows;
+    private final MCWindows windows;
     private Render render;
     private Scene scene;
     private boolean running;

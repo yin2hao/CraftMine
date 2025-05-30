@@ -4,6 +4,9 @@ public class gameResources {
     //背景图纹理
     public static final String DEFAULT_TEXTURE = "src/main/resources/models/default/default_texture.png";
 
+    //草方块纹理
+    public static final String CUBE_MODEL_PATH1 = "src/main/resources/models/cube/cube.obj";
+
     //着色器目录
     public static final String SCENE_SHADER_VERT = "src/main/resources/shaders/scene.vert";
     public static final String SCENE_SHADER_FRAG = "src/main/resources/shaders/scene.frag";
@@ -14,5 +17,16 @@ public class gameResources {
 
     //GUI字体
     public static final String GUI_FONT = "src/main/resources/font/MineCraft.otf";
-    public static final String CUBE_MODEL_PATH1 = "src/main/resources/models/cube/cube.obj";
+
+    //天空盒
+    public static final String SKYBOX_TEXTURE = "src/main/resources/models/quad/quad.png";
+    public static final String SKYBOX_MODULE = "src/main/resources/models/quad/quad.obj";
+//    public static final String SKYBOX_TEXTURE = "src/main/resources/models/quad/quad.png";
+
+    //天空盒着色器
+    public static final String SKYBOX_SHADER_VERT = "src/main/resources/shaders/skybox.vert";
+    public static final String SKYBOX_SHADER_FRAG = "src/main/resources/shaders/skybox.frag";
+
+
+    public static final int TARGET_UPS = 30;
 }

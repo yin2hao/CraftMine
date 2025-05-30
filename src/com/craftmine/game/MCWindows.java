@@ -23,7 +23,7 @@ public class MCWindows {
     private MouseInput mouseInput;
 
     public MCWindows(String title,MCWindowsOptions opts , Callable<Void> resizeFunc) {
-        this.resizeFunc = resizeFunc;
+        this.resizeFunc = resizeFunc;//回调
         if (!glfwInit()){
             throw new IllegalStateException("无法初始化GLFW");
         }

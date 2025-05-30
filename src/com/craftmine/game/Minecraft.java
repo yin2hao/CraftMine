@@ -7,6 +7,7 @@ import com.craftmine.engine.light.LightControls;
 import com.craftmine.engine.light.PointLight;
 import com.craftmine.engine.light.SceneLights;
 import com.craftmine.engine.light.SpotLight;
+import com.craftmine.engine.skybox.SkyBox;
 import imgui.*;
 import imgui.flag.ImGuiCond;
 import org.joml.Vector2f;
@@ -16,11 +17,12 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Minecraft implements IAppLogic, IGUIInstance {
 
+    private static final String SKYBOX_MODULE = gameResources.SKYBOX_MODULE;
+
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
-    private Entity cubeEntity;
-    private float rotation;
-    private LightControls lightControls;
+    private static final int NUM_CHUNKS = 4;
+    private Entity[][] terrainEntities;
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
@@ -55,32 +57,38 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     @Override
     public void init(MCWindows window, Scene scene, Render render) {
-        Model cubeModel = ModelLoader.loadModel("cube-model", gameResources.CUBE_MODEL_PATH1,
+        String quadModelId = "quad-model";
+        Model quadModel = ModelLoader.loadModel("quad-model", SKYBOX_MODULE,
                 scene.getTextureCache());
-        scene.addModel(cubeModel);
+        scene.addModel(quadModel);
 
-        cubeEntity = new Entity("cube-entity", cubeModel.getID());
-        cubeEntity.setPosition(0, 0, -2);
-        cubeEntity.updateModelMatrix();
-        scene.addEntity(cubeEntity);
+        int numRows = NUM_CHUNKS * 2 + 1;
+        int numCols = numRows;
+        terrainEntities = new Entity[numRows][numCols];
+        for (int j = 0; j < numRows; j++) {
+            for (int i = 0; i < numCols; i++) {
+                Entity entity = new Entity("TERRAIN_" + j + "_" + i, quadModelId);
+                terrainEntities[j][i] = entity;
+                scene.addEntity(entity);
+            }
+        }
 
         SceneLights sceneLights = new SceneLights();
-        sceneLights.getAmbientLight().setIntensity(0.3f);
+        sceneLights.getAmbientLight().setIntensity(0.2f);
         scene.setSceneLights(sceneLights);
-        sceneLights.getPointLights().add(new PointLight(new Vector3f(1, 1, 1),
-                new Vector3f(0, 0, -1.4f), 1.0f));
 
-        Vector3f coneDir = new Vector3f(0, 0, -1);
-        sceneLights.getSpotLights().add(new SpotLight(new PointLight(new Vector3f(1, 1, 1),
-                new Vector3f(0, 0, -1.4f), 0.0f), coneDir, 140.0f));
+        SkyBox skyBox = new SkyBox(SKYBOX_MODULE, scene.getTextureCache());
+        skyBox.getSkyBoxEntity().setScale(50);
+        scene.setSkyBox(skyBox);
 
-        lightControls = new LightControls(scene);
-        scene.setGuiInstance(lightControls);
+        scene.getCamera().moveUp(0.1f);
+
+        updateTerrain(scene);
     }
 
     @Override
     public void update(MCWindows windows, Scene scene, long diffTimeMillis) {
-        //原本这里是旋转，但现在不一样了，删了
+        updateTerrain(scene);
     }
 
     @Override
@@ -98,17 +106,35 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         } else if (windows.isKeyPressed(GLFW_KEY_D)) {
             camera.moveRight(move);
         }
-        if (windows.isKeyPressed(GLFW_KEY_UP)) {
-            camera.moveUp(move);
-        } else if (windows.isKeyPressed(GLFW_KEY_DOWN)) {
-            camera.moveDown(move);
-        }
 
         MouseInput mouseInput = windows.getMouseInput();
-        if (mouseInput.isRightButtonPressed()){
+        if (mouseInput.isRightButtonPressed()) {
             Vector2f displVec = mouseInput.getDisplVec();
-            camera.addRotation((float) Math.toRadians(-displVec.x * MOUSE_SENSITIVITY),
-                    (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
+            camera.addRotation((float) Math.toRadians(-displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(-displVec.y * MOUSE_SENSITIVITY));
+        }
+    }
+
+    public void updateTerrain(Scene scene) {
+        int cellSize = 10;
+        Camera camera = scene.getCamera();
+        Vector3f cameraPos = camera.getPosition();
+        int cellCol = (int) (cameraPos.x / cellSize);
+        int cellRow = (int) (cameraPos.z / cellSize);
+
+        int numRows = NUM_CHUNKS * 2 + 1;
+        int numCols = numRows;
+        int zOffset = -NUM_CHUNKS;
+        float scale = cellSize / 2.0f;
+        for (int j = 0; j < numRows; j++) {
+            int xOffset = -NUM_CHUNKS;
+            for (int i = 0; i < numCols; i++) {
+                Entity entity = terrainEntities[j][i];
+                entity.setScale(scale);
+                entity.setPosition((cellCol + xOffset) * 2.0f, 0, (cellRow + zOffset) * 2.0f);
+                entity.getModelMatrix().identity().scale(scale).translate(entity.getPosition());
+                xOffset++;
+            }
+            zOffset++;
         }
     }
 }
