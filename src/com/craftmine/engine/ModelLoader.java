@@ -34,36 +34,39 @@ public class ModelLoader {
         if(!file.exists()){
             throw new RuntimeException("模型文件[" + modelPath + "]不存在");
         }
-        String modelDir = file.getParent();
+        String modelDir = file.getParent();//获得文件父路径
 
-        //加载场景
+        //加载模型
         AIScene aiScene = aiImportFile(modelPath, flags);
         if(aiScene == null){
             throw new RuntimeException("加载模型[" + modelPath + "]时出错");
         }
+
         //处理材质
-        int numMaterials = aiScene.mNumMaterials();
+        int numMaterials = aiScene.mNumMaterials();//获取场景中的材质数量
         List<Material> materialList = new ArrayList<>();
         for(int i = 0; i < numMaterials; i++){
             AIMaterial aiMaterial = AIMaterial.create(aiScene.mMaterials().get(i));
             materialList.add(processMaterial(aiMaterial, modelDir, textureCache));
-        }
+        }//处理所有原始材质并添加到列表
+
         //处理网格
-        int numMeshes = aiScene.mNumMeshes();
-        PointerBuffer aiMeshes = aiScene.mMeshes();
+        int numMeshes = aiScene.mNumMeshes();//获取场景中的网格数量
+        PointerBuffer aiMeshes = aiScene.mMeshes();//网格数据缓冲区
         Material defaultMaterial = new Material();
         for (int i = 0; i < numMeshes; i++) {
-            AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
+            AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));//获取原始网格对象
             Mesh mesh = processMesh(aiMesh);
-            int materialIdx = aiMesh.mMaterialIndex();
+            int materialIdx = aiMesh.mMaterialIndex();//获取网格关联的材质索引
             Material material;
             if (materialIdx >= 0 && materialIdx < materialList.size()) {
-                material = materialList.get(materialIdx);
+                material = materialList.get(materialIdx);//获取顶点关联的材质
             } else {
-                material = defaultMaterial;
+                material = defaultMaterial;//没有有效材质时使用默认材质
             }
             material.getMeshList().add(mesh);
         }
+
         //如果有使用默认材质的网格，添加到材质列表
         if (!defaultMaterial.getMeshList().isEmpty()) {
             materialList.add(defaultMaterial);
@@ -128,10 +131,10 @@ public class ModelLoader {
 
     //处理网格
     private static Mesh processMesh(AIMesh aiMesh) {
-        float[] vertices = processVertices(aiMesh);
-        float[] normals = processNormals(aiMesh);
+        float[] vertices = processVertices(aiMesh);//顶点
+        float[] normals = processNormals(aiMesh);//法线
         float[] textCoords = processTextCoords(aiMesh);
-        int[] indices = processIndices(aiMesh);
+        int[] indices = processIndices(aiMesh);//索引
 
         // 如果没有纹理坐标，创建空的纹理坐标数组
         if (textCoords.length == 0) {

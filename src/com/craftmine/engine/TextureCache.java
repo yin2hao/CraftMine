@@ -6,7 +6,6 @@ import java.util.*;
 
 public class TextureCache {
     public static final String DEFAULT_TEXTURE = gameResources.DEFAULT_TEXTURE;
-
     private Map<String, Texture> textureMap;
 
     public TextureCache() {

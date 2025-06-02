@@ -1,6 +1,6 @@
 package com.craftmine.game;
 
-import com.craftmine.engine.MouseInput;
+import com.craftmine.engine.mouseinput.MouseInput;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryUtil;
@@ -11,7 +11,6 @@ import com.craftmine.engine.Engine;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class MCWindows {
@@ -23,7 +22,7 @@ public class MCWindows {
     private MouseInput mouseInput;
 
     public MCWindows(String title,MCWindowsOptions opts , Callable<Void> resizeFunc) {
-        this.resizeFunc = resizeFunc;
+        this.resizeFunc = resizeFunc;//回调
         if (!glfwInit()){
             throw new IllegalStateException("无法初始化GLFW");
         }
@@ -33,7 +32,6 @@ public class MCWindows {
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
         //这个不重要
         if (opts.compatibleProfile){
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//兼容模式
@@ -42,7 +40,7 @@ public class MCWindows {
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
         }
 
-        if (opts.width > 0 || opts.height > 0){
+        if (opts.width > 0 && opts.height > 0){
             this.width = opts.width;
             this.height = opts.height;
         }else {
@@ -57,10 +55,13 @@ public class MCWindows {
             throw new RuntimeException("无法创建GLFW窗口");
         }
 
-        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {resize(width, height);});//帧缓冲区大小回调
+        //帧缓冲区大小回调
+        glfwSetFramebufferSizeCallback(windowHandle, (window, width, height) -> {resize(width, height);});
+        //全局报错监听
         glfwSetErrorCallback((int errorCode, long msgPtr) -> {
-            Logger.error("Error code[{}]", errorCode, MemoryUtil.memUTF8(msgPtr));
+            Logger.error("全局监听:错误代码:[{}]", errorCode, MemoryUtil.memUTF8(msgPtr));
         });
+        //esc退出
         glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
             keyCallBack(key,action);
         });
@@ -68,9 +69,11 @@ public class MCWindows {
         //绑定上下文
         glfwMakeContextCurrent(windowHandle);
 
-        if (opts.fps > 0){
+        GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        int refreshRate = vidMode.refreshRate();
+        if (opts.fps > 0 && opts.fps > refreshRate) {
             glfwSwapInterval(0);
-        }else {
+        } else {
             glfwSwapInterval(1);
         }
 
@@ -79,12 +82,14 @@ public class MCWindows {
         int[] arrWidth = new int[1];
         int[] arrHeight = new int[1];
         glfwGetWindowSize(windowHandle, arrWidth, arrHeight);
+        //模拟C语言指针
         this.width = arrWidth[0];
         this.height = arrHeight[0];
 
         mouseInput = new MouseInput(windowHandle);
     }
 
+    //仅检测esc
     public void keyCallBack(int key, int action) {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
             glfwSetWindowShouldClose(windowHandle, true);
@@ -119,7 +124,7 @@ public class MCWindows {
         try{
             resizeFunc.call();
         } catch (Exception e) {
-            Logger.error("Error calling resize callback", e);
+            Logger.error("调用 resize 回调时出错", e);
         }
     }
 

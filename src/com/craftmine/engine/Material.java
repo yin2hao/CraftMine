@@ -15,6 +15,7 @@ public class Material {
     private float reflectance;
     private Vector4f specularColor;
 
+    //默认材质（一片黑），用于加载材质失败时的默认显示。实际上的初始化由
     public Material() {
         diffuseColor = DEFAULT_COLOR;
         ambientColor = DEFAULT_COLOR;

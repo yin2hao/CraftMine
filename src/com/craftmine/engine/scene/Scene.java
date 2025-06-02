@@ -1,8 +1,12 @@
-package com.craftmine.engine;
+package com.craftmine.engine.scene;
 
 import com.craftmine.engine.GUI.IGUIInstance;
+import com.craftmine.engine.Model;
+import com.craftmine.engine.Projection;
+import com.craftmine.engine.TextureCache;
 import com.craftmine.engine.camera.Camera;
 import com.craftmine.engine.light.SceneLights;
+import com.craftmine.engine.skybox.SkyBox;
 import com.craftmine.game.Entity;
 import java.util.*;
 
@@ -15,11 +19,12 @@ public class Scene {
     private Camera camera;//摄像机
     private IGUIInstance guiInstance;//GUI
     private SceneLights sceneLights;//灯光
+    private SkyBox skyBox;
 
     public Scene(int width, int height) {
         modelMap = new HashMap<>();
         projection = new Projection(width, height);//投影矩阵
-        textureCache = new TextureCache();
+        textureCache = new TextureCache();//背景默认颜色
         camera = new Camera();
     }
 
@@ -45,6 +50,8 @@ public class Scene {
         projection.updateProjMatrix(width, height);
     }
 
+    public SkyBox getSkyBox() {return skyBox;}
+    public void setSkyBox(SkyBox skyBox) {this.skyBox = skyBox;}
     public void setGuiInstance(IGUIInstance guiInstance) {this.guiInstance = guiInstance;}
     public Map<String, Model> getModelMap(){
         return modelMap;

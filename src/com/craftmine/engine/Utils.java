@@ -8,6 +8,7 @@ public class Utils {
     private Utils() {
     }
 
+    //用来阅读着色器文件的内容
     public static String readFile(String filePath){
         String str;
         try{
