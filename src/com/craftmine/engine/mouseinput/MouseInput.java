@@ -1,4 +1,4 @@
-package com.craftmine.engine;
+package com.craftmine.engine.mouseinput;
 
 import org.joml.Vector2f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -7,7 +7,7 @@ public class MouseInput {
 
     private Vector2f currentPos;
     private Vector2f previousPos;
-    private Vector2f displVec;
+    private Vector2f displVec;//鼠标偏移量
     private boolean inWindows;
     private boolean leftButtonPressed;
     private boolean rightButtonPressed;
@@ -22,10 +22,11 @@ public class MouseInput {
         rightButtonPressed = false;
         inWindows = false;
 
+        //鼠标移动回调
         glfwSetCursorPosCallback(windowsHandle, (handle, x, y) -> {
             currentPos.x = (float) x;
             currentPos.y = (float) y;
-        });//鼠标移动回调
+        });
         //鼠标进入窗口回调
         glfwSetCursorEnterCallback(windowsHandle, (handle, entered) -> {inWindows = entered;});
         //鼠标点击回调
@@ -33,13 +34,6 @@ public class MouseInput {
             leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
             rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
         });
-    }
-
-    public Vector2f getCurrentPos(){
-        return currentPos;
-    }
-    public Vector2f getDisplVec(){
-        return displVec;
     }
 
     public void input(){
@@ -65,8 +59,13 @@ public class MouseInput {
     public boolean isLeftButtonPressed(){
         return leftButtonPressed;
     }
-
     public boolean isRightButtonPressed(){
         return rightButtonPressed;
+    }
+    public Vector2f getCurrentPos(){
+        return currentPos;
+    }
+    public Vector2f getDisplVec(){
+        return displVec;
     }
 }

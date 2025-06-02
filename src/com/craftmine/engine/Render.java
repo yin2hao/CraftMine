@@ -1,6 +1,8 @@
 package com.craftmine.engine;
 
 import com.craftmine.engine.GUI.GUIRender;
+import com.craftmine.engine.scene.Scene;
+import com.craftmine.engine.scene.SceneRender;
 import com.craftmine.engine.skybox.SkyBoxRender;
 import com.craftmine.game.MCWindows;
 import org.lwjgl.opengl.GL;
@@ -15,12 +17,12 @@ public class Render {
 
     public Render(MCWindows windows) {
         GL.createCapabilities();//加载当前OpenGL上下文中可用的函数指针
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
-        sceneRender = new SceneRender();
-        guiRender = new GUIRender(windows);
-        skyBoxRender = new SkyBoxRender();
+        glEnable(GL_DEPTH_TEST);//深度测试，用于渲染前后关系
+        glEnable(GL_CULL_FACE);//启用面剔除
+        glCullFace(GL_BACK);//指定剔除背对相机的面
+        sceneRender = new SceneRender();//着色器创建
+        guiRender = new GUIRender(windows);//GUI初始化，GUI键盘回调
+        skyBoxRender = new SkyBoxRender();//天空盒初始化
     }
 
     public void cleanup(){

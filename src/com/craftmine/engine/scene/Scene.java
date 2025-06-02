@@ -1,6 +1,9 @@
-package com.craftmine.engine;
+package com.craftmine.engine.scene;
 
 import com.craftmine.engine.GUI.IGUIInstance;
+import com.craftmine.engine.Model;
+import com.craftmine.engine.Projection;
+import com.craftmine.engine.TextureCache;
 import com.craftmine.engine.camera.Camera;
 import com.craftmine.engine.light.SceneLights;
 import com.craftmine.engine.skybox.SkyBox;
@@ -21,7 +24,7 @@ public class Scene {
     public Scene(int width, int height) {
         modelMap = new HashMap<>();
         projection = new Projection(width, height);//投影矩阵
-        textureCache = new TextureCache();
+        textureCache = new TextureCache();//背景默认颜色
         camera = new Camera();
     }
 

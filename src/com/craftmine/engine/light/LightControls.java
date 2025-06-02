@@ -1,7 +1,7 @@
 package com.craftmine.engine.light;
 
-import com.craftmine.engine.MouseInput;
-import com.craftmine.engine.Scene;
+import com.craftmine.engine.mouseinput.MouseInput;
+import com.craftmine.engine.scene.Scene;
 import com.craftmine.engine.GUI.*;
 import com.craftmine.game.MCWindows;
 import imgui.*;

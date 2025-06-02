@@ -3,10 +3,9 @@ package com.craftmine.game;
 import com.craftmine.engine.*;
 import com.craftmine.engine.GUI.IGUIInstance;
 import com.craftmine.engine.camera.Camera;
-import com.craftmine.engine.light.LightControls;
-import com.craftmine.engine.light.PointLight;
 import com.craftmine.engine.light.SceneLights;
-import com.craftmine.engine.light.SpotLight;
+import com.craftmine.engine.mouseinput.MouseInput;
+import com.craftmine.engine.scene.Scene;
 import com.craftmine.engine.skybox.SkyBox;
 import imgui.*;
 import imgui.flag.ImGuiCond;
@@ -18,6 +17,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Minecraft implements IAppLogic, IGUIInstance {
 
     private static final String SKYBOX_MODULE = gameResources.SKYBOX_MODULE;
+    private static final String SKYBOX_QUAD = gameResources.SKYBOX_QUAD;
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
@@ -58,12 +58,12 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     @Override
     public void init(MCWindows window, Scene scene, Render render) {
         String quadModelId = "quad-model";
-        Model quadModel = ModelLoader.loadModel("quad-model", SKYBOX_MODULE,
-                scene.getTextureCache());
+        Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
+                scene.getTextureCache());//返回一个model
         scene.addModel(quadModel);
 
-        int numRows = NUM_CHUNKS * 2 + 1;
-        int numCols = numRows;
+        int numRows = NUM_CHUNKS * 2 + 1;//计算行数
+        int numCols = numRows;//计算列数
         terrainEntities = new Entity[numRows][numCols];
         for (int j = 0; j < numRows; j++) {
             for (int i = 0; i < numCols; i++) {

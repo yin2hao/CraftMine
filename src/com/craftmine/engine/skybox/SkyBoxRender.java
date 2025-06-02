@@ -1,6 +1,7 @@
 package com.craftmine.engine.skybox;
 
 import com.craftmine.engine.*;
+import com.craftmine.engine.scene.Scene;
 import org.joml.Matrix4f;
 import com.craftmine.game.*;
 

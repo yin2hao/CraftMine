@@ -16,12 +16,13 @@ public class gameResources {
     public static final String GUI_SHADER_FRAG = "src/main/resources/shaders/gui.frag";
 
     //GUI字体
-    public static final String GUI_FONT = "src/main/resources/font/MineCraft.otf";
+    public static final String GUI_FONT_PATH = "src/main/resources/font/MineCraft.otf";
 
-    //天空盒
-    public static final String SKYBOX_TEXTURE = "src/main/resources/models/quad/quad.png";
-    public static final String SKYBOX_MODULE = "src/main/resources/models/quad/quad.obj";
-//    public static final String SKYBOX_TEXTURE = "src/main/resources/models/quad/quad.png";
+    //天空盒平面
+    public static final String SKYBOX_QUAD = "src/main/resources/models/quad/quad.obj";
+
+    //天空盒本体
+    public static final String SKYBOX_MODULE = "src/main/resources/models/skybox/skybox.obj";
 
     //天空盒着色器
     public static final String SKYBOX_SHADER_VERT = "src/main/resources/shaders/skybox.vert";

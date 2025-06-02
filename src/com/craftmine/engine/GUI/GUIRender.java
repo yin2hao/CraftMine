@@ -1,6 +1,7 @@
 package com.craftmine.engine.GUI;
 
 import com.craftmine.engine.*;
+import com.craftmine.engine.scene.Scene;
 import com.craftmine.game.*;
 
 import imgui.*;
@@ -26,7 +27,7 @@ public class GUIRender {
 
     private static final String GUI_SHADER_VERT = gameResources.GUI_SHADER_VERT;
     private static final String GUI_SHADER_FRAG = gameResources.GUI_SHADER_FRAG;
-    private static final String GUI_FONT = gameResources.GUI_FONT;
+    private static final String GUI_FONT_PATH = gameResources.GUI_FONT_PATH;
 
     public GUIRender(MCWindows windows) {
         //创建GUI着色器程序
@@ -51,26 +52,24 @@ public class GUIRender {
         ImGui.createContext();//创建ImGui上下文
 
         //获取IO对象并设置
-        ImGuiIO imGuiIO = ImGui.getIO();
-        imGuiIO.setIniFilename(null);
-        imGuiIO.setDisplaySize(windows.getWidth(), windows.getHeight());
+        ImGuiIO imGuiIO = ImGui.getIO();//获取 ImGui 的输入输出配置对象
+        imGuiIO.setIniFilename(null);//不自动保存窗口布局等设置到文件
+        imGuiIO.setDisplaySize(windows.getWidth(), windows.getHeight());//窗口的宽高作为 ImGui 的显示区域
 
-        //加载字体并创建纹理
-        // 加载字体
-        ImFontAtlas fontAtlas = imGuiIO.getFonts();
+        ImFontAtlas fontAtlas = imGuiIO.getFonts();//获取字体图集管理器
 
         // 加载本地字体（替换为你的字体路径和大小）
-        String fontPath = GUI_FONT;
         float fontSize = 16.0f; // 字体大小
         ImFontConfig fontConfig = new ImFontConfig(); // 字体配置
+        fontAtlas.addFontFromFileTTF(GUI_FONT_PATH, fontSize, fontConfig);
 
-        fontAtlas.addFontFromFileTTF(fontPath, fontSize, fontConfig);
+        //生成字体纹理
         ImInt width = new ImInt();
         ImInt height = new ImInt();
         ByteBuffer buf = fontAtlas.getTexDataAsRGBA32(width, height);
         texture = new Texture(width.get(), height.get(), buf);
 
-        guiMesh = new GUIMesh();//创建GUI网格
+        guiMesh = new GUIMesh();//创建GUI网格,存储 ImGui 的顶点和索引数据
     }
 
     private void createUniforms() {
@@ -79,10 +78,10 @@ public class GUIRender {
         scale = new Vector2f();
     }
 
-    private void setupKeyCallBack(MCWindows window) {
+    private void setupKeyCallBack(MCWindows windows) {
         //保存之前的回调并设置新的键盘回调
-        prevKeyCallback = glfwSetKeyCallback(window.getWindowHandle(), (handle, key, scancode, action, mods) -> {
-                    window.keyCallBack(key, action);//调用窗口的键盘回调
+        prevKeyCallback = glfwSetKeyCallback(windows.getWindowHandle(), (handle, key, scancode, action, mods) -> {
+                    windows.keyCallBack(key, action);//调用窗口的键盘回调
                     ImGuiIO io = ImGui.getIO();//如果ImGui不捕获键盘输入则返回
                     if (!io.getWantCaptureKeyboard()) {
                         return;
@@ -97,13 +96,69 @@ public class GUIRender {
         );
 
         //设置字符回调
-        glfwSetCharCallback(window.getWindowHandle(), (handle, c) -> {
+        glfwSetCharCallback(windows.getWindowHandle(), (handle, c) -> {
             ImGuiIO io = ImGui.getIO();
             if (!io.getWantCaptureKeyboard()) {
                 return;
             }
             io.addInputCharacter(c);
         });
+    }
+
+    public void render(Scene scene) {
+        //获取场景的GUI实例
+        IGUIInstance guiInstance = scene.getGUIInstance();
+        if (guiInstance == null) {
+            return;
+        }
+        guiInstance.drawGUI();//绘制GUI
+        shaderProgram.bind();
+
+        //设置混合和渲染状态
+        glEnable(GL_BLEND);
+        glBlendEquation(GL_FUNC_ADD);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
+
+        //绑定VAO和缓冲
+        glBindVertexArray(guiMesh.getVAOID());
+        glBindBuffer(GL_ARRAY_BUFFER, guiMesh.getVerticesVBO());
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, guiMesh.getIndicesVBO());
+
+        //计算并设置缩放比例
+        ImGuiIO io = ImGui.getIO();
+        scale.x = 2.0f / io.getDisplaySizeX();
+        scale.y = -2.0f / io.getDisplaySizeY();
+        uniformsMap.setUniform("scale", scale);
+
+        //计算并设置缩放比例
+        ImDrawData drawData = ImGui.getDrawData();
+        int numLists = drawData.getCmdListsCount();
+        for (int i = 0; i < numLists; i++) {
+            glBufferData(GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(i), GL_STREAM_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(i), GL_STREAM_DRAW);
+
+            int numCmds = drawData.getCmdListCmdBufferSize(i);
+            for (int j = 0; j < numCmds; j++) {
+                final int elemCount = drawData.getCmdListCmdBufferElemCount(i, j);
+                final int idxBufferOffset = drawData.getCmdListCmdBufferIdxOffset(i, j);
+                final int indices = idxBufferOffset * ImDrawData.sizeOfImDrawIdx();
+
+                texture.bind();
+                glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices);
+            }
+        }
+
+        //恢复渲染状态
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+    }
+
+    public void resize(int width, int height) {
+        ImGuiIO imGuiIO = ImGui.getIO();
+        imGuiIO.setDisplaySize(width, height);
     }
 
     //GLFW键到ImGui键的映射
@@ -216,61 +271,5 @@ public class GUIRender {
             case GLFW_KEY_F12 -> ImGuiKey.F12;
             default -> ImGuiKey.None;
         };
-    }
-
-    public void render(Scene scene) {
-        //获取场景的GUI实例
-        IGUIInstance guiInstance = scene.getGUIInstance();
-        if (guiInstance == null) {
-            return;
-        }
-        guiInstance.drawGUI();//绘制GUI
-        shaderProgram.bind();
-
-        //设置混合和渲染状态
-        glEnable(GL_BLEND);
-        glBlendEquation(GL_FUNC_ADD);
-        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-
-        //绑定VAO和缓冲
-        glBindVertexArray(guiMesh.getVAOID());
-        glBindBuffer(GL_ARRAY_BUFFER, guiMesh.getVerticesVBO());
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, guiMesh.getIndicesVBO());
-
-        //计算并设置缩放比例
-        ImGuiIO io = ImGui.getIO();
-        scale.x = 2.0f / io.getDisplaySizeX();
-        scale.y = -2.0f / io.getDisplaySizeY();
-        uniformsMap.setUniform("scale", scale);
-
-        //计算并设置缩放比例
-        ImDrawData drawData = ImGui.getDrawData();
-        int numLists = drawData.getCmdListsCount();
-        for (int i = 0; i < numLists; i++) {
-            glBufferData(GL_ARRAY_BUFFER, drawData.getCmdListVtxBufferData(i), GL_STREAM_DRAW);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, drawData.getCmdListIdxBufferData(i), GL_STREAM_DRAW);
-
-            int numCmds = drawData.getCmdListCmdBufferSize(i);
-            for (int j = 0; j < numCmds; j++) {
-                final int elemCount = drawData.getCmdListCmdBufferElemCount(i, j);
-                final int idxBufferOffset = drawData.getCmdListCmdBufferIdxOffset(i, j);
-                final int indices = idxBufferOffset * ImDrawData.sizeOfImDrawIdx();
-
-                texture.bind();
-                glDrawElements(GL_TRIANGLES, elemCount, GL_UNSIGNED_SHORT, indices);
-            }
-        }
-
-        //恢复渲染状态
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glDisable(GL_BLEND);
-    }
-
-    public void resize(int width, int height) {
-        ImGuiIO imGuiIO = ImGui.getIO();
-        imGuiIO.setDisplaySize(width, height);
     }
 }

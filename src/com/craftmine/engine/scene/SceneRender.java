@@ -1,5 +1,6 @@
-package com.craftmine.engine;
+package com.craftmine.engine.scene;
 
+import com.craftmine.engine.*;
 import com.craftmine.engine.light.*;
 import com.craftmine.game.Entity;
 import com.craftmine.game.gameResources;
@@ -70,28 +71,27 @@ public class SceneRender {
     private void createUniforms() {
         //基本变换矩阵
         uniformsMap = new UniformsMap(shaderProgram.getProgramID());
-        uniformsMap.createUniform("projectionMatrix");
-        uniformsMap.createUniform("modelMatrix");
-        uniformsMap.createUniform("viewMatrix");
-        uniformsMap.createUniform("txtSampler");
+        uniformsMap.createUniform("projectionMatrix");//投影矩阵
+        uniformsMap.createUniform("modelMatrix");//视图矩阵
+        uniformsMap.createUniform("viewMatrix");//模型矩阵:定义单个实体的位置、旋转和缩放
+        uniformsMap.createUniform("txtSampler");//纹理采样器
         //材质属性
-        uniformsMap.createUniform("material.diffuse");
-        uniformsMap.createUniform("material.ambient");
-        uniformsMap.createUniform("material.diffuse");
-        uniformsMap.createUniform("material.specular");
-        uniformsMap.createUniform("material.reflectance");
+        uniformsMap.createUniform("material.diffuse");//漫反射颜色
+        uniformsMap.createUniform("material.ambient");//环境光反射颜色
+        uniformsMap.createUniform("material.specular");//镜面反射颜色
+        uniformsMap.createUniform("material.reflectance");//反射率
         //环境光
-        uniformsMap.createUniform("ambientLight.factor");
-        uniformsMap.createUniform("ambientLight.color");
+        uniformsMap.createUniform("ambientLight.factor");//环境光强度
+        uniformsMap.createUniform("ambientLight.color");//环境光颜色
         //点光源数组
         for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
             String name = "pointLights[" + i + "]";
             uniformsMap.createUniform(name + ".position");
             uniformsMap.createUniform(name + ".color");
             uniformsMap.createUniform(name + ".intensity");
-            uniformsMap.createUniform(name + ".att.constant");
-            uniformsMap.createUniform(name + ".att.linear");
-            uniformsMap.createUniform(name + ".att.exponent");
+            uniformsMap.createUniform(name + ".att.constant");//衰减常数项
+            uniformsMap.createUniform(name + ".att.linear");//衰减线性项
+            uniformsMap.createUniform(name + ".att.exponent");//衰减指数项
         }
         //聚光灯数组
         for (int i = 0; i < MAX_SPOT_LIGHTS; i++) {
@@ -99,11 +99,11 @@ public class SceneRender {
             uniformsMap.createUniform(name + ".pl.position");
             uniformsMap.createUniform(name + ".pl.color");
             uniformsMap.createUniform(name + ".pl.intensity");
-            uniformsMap.createUniform(name + ".pl.att.constant");
-            uniformsMap.createUniform(name + ".pl.att.linear");
-            uniformsMap.createUniform(name + ".pl.att.exponent");
-            uniformsMap.createUniform(name + ".conedir");
-            uniformsMap.createUniform(name + ".cutoff");
+            uniformsMap.createUniform(name + ".pl.att.constant");//衰减常数项
+            uniformsMap.createUniform(name + ".pl.att.linear");//衰减线性项
+            uniformsMap.createUniform(name + ".pl.att.exponent");//衰减指数项
+            uniformsMap.createUniform(name + ".conedir");//聚光方向
+            uniformsMap.createUniform(name + ".cutoff");//聚光切角
         }
         //定向光
         uniformsMap.createUniform("dirLight.color");
