@@ -7,10 +7,12 @@ import com.craftmine.engine.light.SceneLights;
 import com.craftmine.engine.mouseinput.MouseInput;
 import com.craftmine.engine.scene.Scene;
 import com.craftmine.engine.skybox.SkyBox;
+import com.craftmine.engine.sound.*;
 import imgui.*;
 import imgui.flag.ImGuiCond;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.openal.AL11;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -18,11 +20,17 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     private static final String SKYBOX_MODULE = gameResources.SKYBOX_MODULE;
     private static final String SKYBOX_QUAD = gameResources.SKYBOX_QUAD;
+    private static final String MINECRAFT_SOUND1 = gameResources.MINECRAFT_SOUND1;
+    private static final String CUBE_MODEL_PATH1 = gameResources.CUBE_MODEL_PATH1;
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
     private static final int NUM_CHUNKS = 4;
     private Entity[][] terrainEntities;
+    private Entity cubeEntity;
+    private SoundSource playerSoundSource;
+    private SoundManager soundMgr;
+
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
@@ -31,32 +39,16 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     }
 
     @Override
-    public void cleanup() {
-    }
-
-    @Override
-    public void drawGUI(){
-        ImGui.newFrame();
-        ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
-        ImGui.showDemoWindow();
-        ImGui.endFrame();
-        ImGui.render();
-    }
-
-    @Override
-    public boolean handleGUIInput(Scene scene, MCWindows window){
-        ImGuiIO imGuiIO = ImGui.getIO();
-        MouseInput mouseInput = window.getMouseInput();
-        Vector2f mousePos = mouseInput.getCurrentPos();
-        imGuiIO.addMousePosEvent(mousePos.x, mousePos.y);
-        imGuiIO.addMouseButtonEvent(0, mouseInput.isLeftButtonPressed());
-        imGuiIO.addMouseButtonEvent(1, mouseInput.isRightButtonPressed());
-
-        return imGuiIO.getWantCaptureMouse() || imGuiIO.getWantCaptureKeyboard();
-    }
-
-    @Override
     public void init(MCWindows window, Scene scene, Render render) {
+        String cubeModelID = "cube-model";
+        Model cubeModel = ModelLoader.loadModel(cubeModelID, CUBE_MODEL_PATH1,
+                scene.getTextureCache());
+        scene.addModel(cubeModel);
+
+        cubeEntity = new Entity("cube-entity", cubeModel.getID());
+        cubeEntity.setPosition(0, 0, -2);
+        scene.addEntity(cubeEntity);
+
         String quadModelId = "quad-model";
         Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
                 scene.getTextureCache());//返回一个model
@@ -84,6 +76,12 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         scene.getCamera().moveUp(0.1f);
 
         updateTerrain(scene);
+
+        Camera camera = scene.getCamera();
+//        camera.setPosition(-1.5f, 3.0f, 4.5f);
+        camera.setPosition(0f, 0f, 0f);
+        camera.addRotation((float) Math.toRadians(15.0f), (float) Math.toRadians(390.f));
+        initSounds(camera);
     }
 
     @Override
@@ -112,6 +110,34 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             Vector2f displVec = mouseInput.getDisplVec();
             camera.addRotation((float) Math.toRadians(-displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(-displVec.y * MOUSE_SENSITIVITY));
         }
+
+        soundMgr.updateListenerPosition(camera);
+    }
+
+    @Override
+    public void cleanup() {
+        soundMgr.cleanup();
+    }
+
+    @Override
+    public void drawGUI(){
+        ImGui.newFrame();
+        ImGui.setNextWindowPos(0, 0, ImGuiCond.Always);
+        ImGui.showDemoWindow();
+        ImGui.endFrame();
+        ImGui.render();
+    }
+
+    @Override
+    public boolean handleGUIInput(Scene scene, MCWindows window){
+        ImGuiIO imGuiIO = ImGui.getIO();
+        MouseInput mouseInput = window.getMouseInput();
+        Vector2f mousePos = mouseInput.getCurrentPos();
+        imGuiIO.addMousePosEvent(mousePos.x, mousePos.y);
+        imGuiIO.addMouseButtonEvent(0, mouseInput.isLeftButtonPressed());
+        imGuiIO.addMouseButtonEvent(1, mouseInput.isRightButtonPressed());
+
+        return imGuiIO.getWantCaptureMouse() || imGuiIO.getWantCaptureKeyboard();
     }
 
     public void updateTerrain(Scene scene) {
@@ -136,5 +162,19 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             }
             zOffset++;
         }
+    }
+
+    private void initSounds(Camera camera) {
+        soundMgr = new SoundManager();
+        soundMgr.setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
+        soundMgr.setListener(new SoundListener(camera.getPosition()));
+
+        SoundBuffer buffer = new SoundBuffer(MINECRAFT_SOUND1);
+        soundMgr.addSoundBuffer(buffer);
+        playerSoundSource = new SoundSource(true, false);
+        playerSoundSource.setPosition(camera.getPosition());
+        playerSoundSource.setBuffer(buffer.getBufferId());
+        soundMgr.addSoundSource("CREAK", playerSoundSource);
+        playerSoundSource.play();
     }
 }
