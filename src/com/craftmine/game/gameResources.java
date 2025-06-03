@@ -28,6 +28,8 @@ public class gameResources {
     public static final String SKYBOX_SHADER_VERT = "src/main/resources/shaders/skybox.vert";
     public static final String SKYBOX_SHADER_FRAG = "src/main/resources/shaders/skybox.frag";
 
+    //音频
+    public static final String MINECRAFT_SOUND1 = "src/main/resources/sound/Minecraft.ogg";
 
     public static final int TARGET_UPS = 30;
 }

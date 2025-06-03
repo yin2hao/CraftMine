@@ -17,7 +17,7 @@ public class Render {
 
     public Render(MCWindows windows) {
         GL.createCapabilities();//加载当前OpenGL上下文中可用的函数指针
-        glEnable(GL_DEPTH_TEST);//深度测试，用于渲染前后关系
+//        glEnable(GL_DEPTH_TEST);//深度测试，用于渲染前后关系
         glEnable(GL_CULL_FACE);//启用面剔除
         glCullFace(GL_BACK);//指定剔除背对相机的面
         sceneRender = new SceneRender();//着色器创建
