@@ -1,5 +1,6 @@
 package com.craftmine.engine;
 
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -15,10 +16,17 @@ public class ModelLoader {
     }
 
     //这一坨是抄的，不知道这些常量有啥用
-    public static Model loadModel(String modelID, String modelPath, TextureCache textureCache){
-        return loadModel(modelID, modelPath, textureCache, aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
-                aiProcess_Triangulate | aiProcess_FixInfacingNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights |
-                aiProcess_PreTransformVertices);
+    public static Model loadModel(String modelID, String modelPath, TextureCache textureCache) {
+        return loadModel(modelID, modelPath, textureCache,
+                aiProcess_GenSmoothNormals |
+                        aiProcess_JoinIdenticalVertices |
+                        aiProcess_Triangulate |
+                        aiProcess_FixInfacingNormals |
+                        aiProcess_CalcTangentSpace |
+                        aiProcess_LimitBoneWeights |
+                        aiProcess_PreTransformVertices |
+                        aiProcess_GenBoundingBoxes  // 新增：生成碰撞包围盒
+        );
     }
 
 //    aiProcess_JoinIdenticalVertices : 这个标志会减少使用的顶点数量，识别那些可以在不同面之间重复使用的顶点。
@@ -27,6 +35,7 @@ public class ModelLoader {
 //    aiProcess_CalcTangentSpace: 在实现灯光时我们将使用此参数，但它基本上是利用法线信息来计算切线和副切线。
 //    aiProcess_LimitBoneWeights: 在实现动画时我们将使用此参数，但它基本上是限制影响单个顶点的权重数量。
 //    aiProcess_PreTransformVertices : 此标志对加载的数据进行一些变换，使模型位于原点，并将坐标修正为数学 OpenGL 坐标系。如果你在处理旋转的模型时遇到问题，请确保使用此标志。重要提示：如果你的模型使用动画，不要使用此标志，此标志将移除该信息
+//    aiProcess_PreTransformVertices : 使用这个标志可以简化后续渲染处理
 
     public static Model loadModel(String modelID, String modelPath, TextureCache textureCache, int flags){
         //检查模型文件是否存在
@@ -135,13 +144,18 @@ public class ModelLoader {
         float[] normals = processNormals(aiMesh);//法线
         float[] textCoords = processTextCoords(aiMesh);
         int[] indices = processIndices(aiMesh);//索引
+        AIAABB aabb = aiMesh.mAABB();//轴对齐包围盒
 
         // 如果没有纹理坐标，创建空的纹理坐标数组
         if (textCoords.length == 0) {
             int numElements = (vertices.length / 3) * 2;
             textCoords = new float[numElements];
         }
-        return new Mesh(vertices, normals, textCoords, indices);
+
+        Vector3f aabbMin = new Vector3f(aabb.mMin().x(), aabb.mMin().y(), aabb.mMin().z());
+        Vector3f aabbMax = new Vector3f(aabb.mMax().x(), aabb.mMax().y(), aabb.mMax().z());
+
+        return new Mesh(vertices, normals, textCoords, indices, aabbMin, aabbMax);
     }
 
     //处理法线数据

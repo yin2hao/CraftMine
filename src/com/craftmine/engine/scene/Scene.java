@@ -20,6 +20,7 @@ public class Scene {
     private IGUIInstance guiInstance;//GUI
     private SceneLights sceneLights;//灯光
     private SkyBox skyBox;
+    private Entity selectedEntity;
 
     public Scene(int width, int height) {
         modelMap = new HashMap<>();
@@ -34,7 +35,7 @@ public class Scene {
         if (model == null) {
             throw new RuntimeException("无法找到模型  [" + modelID + "]");
         }
-        model.getEntitiesList().add(entity);
+        model.getEntitieList().add(entity);
     }
 
     public void addModel(Model model) {
@@ -52,7 +53,7 @@ public class Scene {
 
     public SkyBox getSkyBox() {return skyBox;}
     public void setSkyBox(SkyBox skyBox) {this.skyBox = skyBox;}
-    public void setGuiInstance(IGUIInstance guiInstance) {this.guiInstance = guiInstance;}
+    public void setGUIInstance(IGUIInstance guiInstance) {this.guiInstance = guiInstance;}
     public Map<String, Model> getModelMap(){
         return modelMap;
     }
@@ -70,4 +71,6 @@ public class Scene {
     public void setSceneLights(SceneLights sceneLights){
         this.sceneLights = sceneLights;
     }
+    public void setSelectedEntity(Entity selectedEntity) {this.selectedEntity = selectedEntity;}
+    public Entity getSelectedEntity() {return selectedEntity;}
 }

@@ -10,9 +10,12 @@ import com.craftmine.engine.skybox.SkyBox;
 import com.craftmine.engine.sound.*;
 import imgui.*;
 import imgui.flag.ImGuiCond;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import org.joml.*;
 import org.lwjgl.openal.AL11;
+
+import java.lang.Math;
+import java.util.Collection;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -49,21 +52,21 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         cubeEntity.setPosition(0, 0, -2);
         scene.addEntity(cubeEntity);
 
-        String quadModelId = "quad-model";
-        Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
-                scene.getTextureCache());//返回一个model
-        scene.addModel(quadModel);
-
-        int numRows = NUM_CHUNKS * 2 + 1;//计算行数
-        int numCols = numRows;//计算列数
-        terrainEntities = new Entity[numRows][numCols];
-        for (int j = 0; j < numRows; j++) {
-            for (int i = 0; i < numCols; i++) {
-                Entity entity = new Entity("TERRAIN_" + j + "_" + i, quadModelId);
-                terrainEntities[j][i] = entity;
-                scene.addEntity(entity);
-            }
-        }
+//        String quadModelId = "quad-model";
+//        Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
+//                scene.getTextureCache());//返回一个model
+//        scene.addModel(quadModel);
+//
+//        int numRows = NUM_CHUNKS * 2 + 1;//计算行数
+//        int numCols = numRows;//计算列数
+//        terrainEntities = new Entity[numRows][numCols];
+//        for (int j = 0; j < numRows; j++) {
+//            for (int i = 0; i < numCols; i++) {
+//                Entity entity = new Entity("TERRAIN_" + j + "_" + i, quadModelId);
+//                terrainEntities[j][i] = entity;
+//                scene.addEntity(entity);
+//            }
+//        }
 
         SceneLights sceneLights = new SceneLights();
         sceneLights.getAmbientLight().setIntensity(0.2f);
@@ -78,19 +81,24 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         updateTerrain(scene);
 
         Camera camera = scene.getCamera();
-//        camera.setPosition(-1.5f, 3.0f, 4.5f);
-        camera.setPosition(0f, 0f, 0f);
+        camera.setPosition(-1.5f, 3.0f, 4.5f);
+//        camera.setPosition(0f, 0f, 0f);
         camera.addRotation((float) Math.toRadians(15.0f), (float) Math.toRadians(390.f));
         initSounds(camera);
     }
 
     @Override
     public void update(MCWindows windows, Scene scene, long diffTimeMillis) {
-        updateTerrain(scene);
+        double rotation = 1.5;
+        if (rotation > 360) {
+            rotation = 0;
+        }
+        cubeEntity.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
+        cubeEntity.updateModelMatrix();
     }
 
     @Override
-    public void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumd) {
+    public void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumed) {
 
         float move = diffTimeMillis * MOVEMENT_SPEED;
         Camera camera = scene.getCamera();
@@ -106,9 +114,12 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         }
 
         MouseInput mouseInput = windows.getMouseInput();
+        if (mouseInput.isLeftButtonPressed()) {
+            selectEntity(windows, scene, mouseInput.getCurrentPos());
+        }
         if (mouseInput.isRightButtonPressed()) {
             Vector2f displVec = mouseInput.getDisplVec();
-            camera.addRotation((float) Math.toRadians(-displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(-displVec.y * MOUSE_SENSITIVITY));
+            camera.addRotation((float) Math.toRadians(displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
         }
 
         soundMgr.updateListenerPosition(camera);
@@ -147,21 +158,21 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         int cellCol = (int) (cameraPos.x / cellSize);
         int cellRow = (int) (cameraPos.z / cellSize);
 
-        int numRows = NUM_CHUNKS * 2 + 1;
-        int numCols = numRows;
-        int zOffset = -NUM_CHUNKS;
-        float scale = cellSize / 2.0f;
-        for (int j = 0; j < numRows; j++) {
-            int xOffset = -NUM_CHUNKS;
-            for (int i = 0; i < numCols; i++) {
-                Entity entity = terrainEntities[j][i];
-                entity.setScale(scale);
-                entity.setPosition((cellCol + xOffset) * 2.0f, 0, (cellRow + zOffset) * 2.0f);
-                entity.getModelMatrix().identity().scale(scale).translate(entity.getPosition());
-                xOffset++;
-            }
-            zOffset++;
-        }
+//        int numRows = NUM_CHUNKS * 2 + 1;
+//        int numCols = numRows;
+//        int zOffset = -NUM_CHUNKS;
+//        float scale = cellSize / 2.0f;
+//        for (int j = 0; j < numRows; j++) {
+//            int xOffset = -NUM_CHUNKS;
+//            for (int i = 0; i < numCols; i++) {
+//                Entity entity = terrainEntities[j][i];
+//                entity.setScale(scale);
+//                entity.setPosition((cellCol + xOffset) * 2.0f, 0, (cellRow + zOffset) * 2.0f);
+//                entity.getModelMatrix().identity().scale(scale).translate(entity.getPosition());
+//                xOffset++;
+//            }
+//            zOffset++;
+//        }
     }
 
     private void initSounds(Camera camera) {
@@ -176,5 +187,58 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         playerSoundSource.setBuffer(buffer.getBufferId());
         soundMgr.addSoundSource("CREAK", playerSoundSource);
         playerSoundSource.play();
+    }
+
+    private void selectEntity(MCWindows windows, Scene scene, Vector2f mousePos) {
+        int wdwWidth = windows.getWidth();
+        int wdwHeight = windows.getHeight();
+
+        float x = (2 * mousePos.x) / wdwWidth - 1.0f;
+        float y = 1.0f - (2 * mousePos.y) / wdwHeight;
+        float z = -1.0f;
+
+        Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
+        Vector4f mouseDir = new Vector4f(x, y, z, 1.0f);
+        mouseDir.mul(invProjMatrix);
+        mouseDir.z = -1.0f;
+        mouseDir.w = 0.0f;
+
+        Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
+        mouseDir.mul(invViewMatrix);
+
+        Vector4f min = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        Vector4f max = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        Vector2f nearFar = new Vector2f();
+
+        Entity selectedEntity = null;
+        float closestDistance = Float.POSITIVE_INFINITY;
+        Vector3f center = scene.getCamera().getPosition();
+
+        Collection<Model> models = scene.getModelMap().values();
+        Matrix4f modelMatrix = new Matrix4f();
+        for (Model model : models) {
+            List<Entity> entities = model.getEntitieList();
+            for (Entity entity : entities) {
+                modelMatrix.translate(entity.getPosition()).scale(entity.getScale());
+                for (Material material : model.getMaterialList()) {
+                    for (Mesh mesh : material.getMeshList()) {
+                        Vector3f aabbMin = mesh.getAabbMin();
+                        min.set(aabbMin.x, aabbMin.y, aabbMin.z, 1.0f);
+                        min.mul(modelMatrix);
+                        Vector3f aabMax = mesh.getAabbMax();
+                        max.set(aabMax.x, aabMax.y, aabMax.z, 1.0f);
+                        max.mul(modelMatrix);
+                        if (Intersectionf.intersectRayAab(center.x, center.y, center.z, mouseDir.x, mouseDir.y, mouseDir.z,
+                                min.x, min.y, min.z, max.x, max.y, max.z, nearFar) && nearFar.x < closestDistance) {
+                            closestDistance = nearFar.x;
+                            selectedEntity = entity;
+                            System.out.println("[DEBUG]实体选择" +  selectedEntity);
+                        }
+                    }
+                }
+                modelMatrix.identity();
+            }
+        }
+        scene.setSelectedEntity(selectedEntity);
     }
 }

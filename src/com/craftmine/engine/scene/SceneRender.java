@@ -39,10 +39,11 @@ public class SceneRender {
         // 渲染所有模型
         Collection<Model> models = scene.getModelMap().values();
         TextureCache textureCache = scene.getTextureCache();
+        Entity selectedEntity = scene.getSelectedEntity();
         for (Model model : models) {
-            List<Entity> entities = model.getEntitiesList();
+            List<Entity> entities = model.getEntitieList();
             // 渲染模型的所有材质
-            for (Material material : model.getMaterialsList()){
+            for (Material material : model.getMaterialList()){
                 // 设置材质uniform
                 uniformsMap.setUniform("material.ambient", material.getAmbientColor());
                 uniformsMap.setUniform("material.diffuse", material.getDiffuseColor());
@@ -58,6 +59,8 @@ public class SceneRender {
                     glBindVertexArray(mesh.getVaoID());
                     // 渲染网格的所有实体实例
                     for (Entity entity : entities){
+                        uniformsMap.setUniform("selected",
+                                selectedEntity != null && selectedEntity.getID().equals(entity.getID()) ? 1 : 0);
                         uniformsMap.setUniform("modelMatrix", entity.getModelMatrix());
                         glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
                     }
@@ -109,6 +112,9 @@ public class SceneRender {
         uniformsMap.createUniform("dirLight.color");
         uniformsMap.createUniform("dirLight.direction");
         uniformsMap.createUniform("dirLight.intensity");
+
+        //选择方块
+        uniformsMap.createUniform("selected");
     }
 
     private void updateLights(Scene scene) {

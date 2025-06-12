@@ -21,7 +21,7 @@ public class Model {
         materialsList.forEach(Material::cleanup);
     }
 
-    public List<Entity> getEntitiesList(){
+    public List<Entity> getEntitieList(){
         return entitiesList;
     }
 
@@ -29,7 +29,7 @@ public class Model {
         return ID;
     }
 
-    public List<Material> getMaterialsList(){
+    public List<Material> getMaterialList(){
         return materialsList;
     }
 }

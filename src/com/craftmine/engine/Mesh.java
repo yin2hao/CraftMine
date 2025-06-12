@@ -1,5 +1,7 @@
 package com.craftmine.engine;
 
+import com.craftmine.game.gameResources;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.opengl.GL30;
 import java.nio.FloatBuffer;
@@ -14,8 +16,16 @@ public class Mesh {
     private int numVertices;//存储网格中顶点的数量
     private int vaoID;//顶点数组对象
     private List<Integer> vboIDList;//顶点缓冲对象
+    private Vector3f aabbMax;
+    private Vector3f aabbMin;
 
-    public Mesh(float[] positions, float[] normals, float[] textCoords, int[] indices) {
+    public Mesh(float[] positions, float[] normals,float[] textCoords, int[] indices) {
+        this(positions, normals, textCoords, indices, new Vector3f(), new Vector3f());
+    }
+
+    public Mesh(float[] positions, float[] normals, float[] textCoords, int[] indices, Vector3f aabbMin, Vector3f aabbMax) {
+        this.aabbMin = aabbMin;
+        this.aabbMax = aabbMax;
         numVertices = indices.length;
         vboIDList = new ArrayList<>();
 
@@ -47,6 +57,7 @@ public class Mesh {
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
         //纹理坐标VBO
+        gameResources.bugCheck();//插眼
         vboID = glGenBuffers();
         vboIDList.add(vboID);
         FloatBuffer textCoordsBuffer = MemoryUtil.memCallocFloat(textCoords.length);
@@ -81,11 +92,8 @@ public class Mesh {
         glDeleteVertexArrays(vaoID);
     }
 
-    public int getNumVertices(){
-        return numVertices;
-    }
-
-    public final int getVaoID(){
-        return vaoID;
-    }
+    public int getNumVertices(){return numVertices;}
+    public final int getVaoID(){return vaoID;}
+    public Vector3f getAabbMax() {return aabbMax;}
+    public Vector3f getAabbMin() {return aabbMin;}
 }

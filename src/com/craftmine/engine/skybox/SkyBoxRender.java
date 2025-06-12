@@ -60,7 +60,7 @@ public class SkyBoxRender {
         Model skyBoxModel = skyBox.getSkyBoxModel();
         Entity skyBoxEntity = skyBox.getSkyBoxEntity();
         TextureCache textureCache = scene.getTextureCache();
-        for (Material material : skyBoxModel.getMaterialsList()) {
+        for (Material material : skyBoxModel.getMaterialList()) {
             Texture texture = textureCache.getTexture(material.getTexturePath());
             glActiveTexture(GL_TEXTURE0);
             texture.bind();

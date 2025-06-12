@@ -32,4 +32,7 @@ public class gameResources {
     public static final String MINECRAFT_SOUND1 = "src/main/resources/sound/Minecraft.ogg";
 
     public static final int TARGET_UPS = 30;
+
+    public static void bugCheck() {
+    }
 }

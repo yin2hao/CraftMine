@@ -39,7 +39,7 @@ public class Entity {
         modelMatrix.translationRotateScale(position, rotation, scale);
     }
 
-    private String getID(){return ID;}
+    public String getID(){return ID;}
     public Matrix4f getModelMatrix(){return modelMatrix;}
     public Vector3f getPosition(){return position;}
     public float getScale() {return scale;}

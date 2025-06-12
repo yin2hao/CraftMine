@@ -6,7 +6,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 

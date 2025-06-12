@@ -53,6 +53,7 @@ uniform AmbientLight ambientLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform DirLight dirLight;
+uniform int selected;
 
 vec4 calcAmbient(AmbientLight ambientLight, vec4 ambient) {
     return vec4(ambientLight.factor * ambientLight.color, 1) * ambient;
@@ -129,4 +130,8 @@ void main() {
         }
     }
     fragColor = ambient + diffuseSpecularComp;
+
+    if (selected > 0) {
+        fragColor = vec4(fragColor.x, fragColor.y, 1, 1);
+    }
 }
