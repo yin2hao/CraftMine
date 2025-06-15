@@ -33,7 +33,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private Entity cubeEntity1, cubeEntity2;
     private SoundSource playerSoundSource;
     private SoundManager soundMgr;
-
+    private MouseInput mouseInput;
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
@@ -43,6 +43,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     @Override
     public void init(MCWindows window, Scene scene, Render render) {
+        mouseInput = window.getMouseInput();
         String cubeModelID = "cube-model";
         Model cubeModel = ModelLoader.loadModel(cubeModelID, CUBE_MODEL_PATH1,
                 scene.getTextureCache());
@@ -189,13 +190,23 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         playerSoundSource.play();
     }
 
-    private void selectEntity(MCWindows windows, Scene scene, Vector2f mousePos) {
+    private void selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
         int wdwWidth = windows.getWidth();
         int wdwHeight = windows.getHeight();
 
-        float x = (2 * mousePos.x) / wdwWidth - 1.0f;
-        float y = 1.0f - (2 * mousePos.y) / wdwHeight;
-        float z = -1.0f;
+        float centerX = wdwWidth / 2.0f;
+        float centerY = wdwHeight / 2.0f;
+        float x,y,z;
+
+        if (!mouseInput.isESCPressed()){
+            x = (2 * centerX) / wdwWidth - 1.0f;
+            y = 1.0f - (2 * centerY) / wdwHeight;
+            z = -1.0f;
+        }else {
+            x = (2 * Pos.x) / wdwWidth - 1.0f;
+            y = 1.0f - (2 * Pos.y) / wdwHeight;
+            z = -1.0f;
+        }
 
         Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
         Vector4f mouseDir = new Vector4f(x, y, z, 1.0f);

@@ -22,7 +22,7 @@ public class MouseInput {
         leftButtonPressed = false;
         rightButtonPressed = false;
         inWindows = false;
-        isESCPressed = true;
+        isESCPressed = false;
 
         //鼠标移动回调
         glfwSetCursorPosCallback(windowsHandle, (handle, x, y) -> {
