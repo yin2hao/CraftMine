@@ -5,6 +5,7 @@ import com.craftmine.engine.scene.Scene;
 import com.craftmine.engine.scene.SceneRender;
 import com.craftmine.engine.skybox.SkyBoxRender;
 import com.craftmine.game.MCWindows;
+import com.craftmine.game.GameResources;
 import org.lwjgl.opengl.GL;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -16,7 +17,9 @@ public class Render {
     private SkyBoxRender skyBoxRender;
 
     public Render(MCWindows windows) {
+        GameResources.bugCheck();
         GL.createCapabilities();//加载当前OpenGL上下文中可用的函数指针
+        //此处天空盒与深度测试疑似冲突
 //        glEnable(GL_DEPTH_TEST);//深度测试，用于渲染前后关系
         glEnable(GL_CULL_FACE);//启用面剔除
         glCullFace(GL_BACK);//指定剔除背对相机的面

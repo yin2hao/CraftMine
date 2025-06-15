@@ -1,6 +1,6 @@
 package com.craftmine.game;
 
-public class gameResources {
+public class GameResources {
     //背景图纹理
     public static final String DEFAULT_TEXTURE = "src/main/resources/models/default/default_texture.png";
 
@@ -31,8 +31,18 @@ public class gameResources {
     //音频
     public static final String MINECRAFT_SOUND1 = "src/main/resources/sound/Minecraft.ogg";
 
-    public static final int TARGET_UPS = 30;
+    //光标
+    public static final String CURSOR_VERT = "src/main/resources/shaders/cursor.vert";
+    public static final String CURSOR_FRAG = "src/main/resources/shaders/cursor.frag";
 
-    public static void bugCheck() {
+    public static class MCWindowsOptions{
+        public boolean compatibleProfile;//是否使用旧版本函数，此处无用
+        public int fps;//这个调了之后移动会出问题，没时间改了
+        public int ups = 30;
+        public int height;
+        public int width;
     }
+
+    public static void bugCheck() {}
+    public static void lightGUIControl() {}
 }

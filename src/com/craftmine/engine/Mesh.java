@@ -1,6 +1,6 @@
 package com.craftmine.engine;
 
-import com.craftmine.game.gameResources;
+import com.craftmine.game.GameResources;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.opengl.GL30;
@@ -57,7 +57,7 @@ public class Mesh {
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
         //纹理坐标VBO
-        gameResources.bugCheck();//插眼
+        GameResources.bugCheck();
         vboID = glGenBuffers();
         vboIDList.add(vboID);
         FloatBuffer textCoordsBuffer = MemoryUtil.memCallocFloat(textCoords.length);

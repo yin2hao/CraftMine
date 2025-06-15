@@ -3,7 +3,7 @@ package com.craftmine.engine.scene;
 import com.craftmine.engine.*;
 import com.craftmine.engine.light.*;
 import com.craftmine.game.Entity;
-import com.craftmine.game.gameResources;
+import com.craftmine.game.GameResources;
 import org.joml.*;
 
 import java.util.*;
@@ -15,8 +15,8 @@ public class SceneRender {
     private ShaderProgram shaderProgram;
     private UniformsMap uniformsMap;
     
-    private static final String SCENE_SHADER_VERT = gameResources.SCENE_SHADER_VERT;
-    private static final String SCENE_SHADER_FRAG = gameResources.SCENE_SHADER_FRAG;
+    private static final String SCENE_SHADER_VERT = GameResources.SCENE_SHADER_VERT;
+    private static final String SCENE_SHADER_FRAG = GameResources.SCENE_SHADER_FRAG;
 
     public SceneRender() {
         List<ShaderProgram.ShaderModuleData> shaderModuleDataList = new ArrayList<>();

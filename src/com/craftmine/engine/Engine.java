@@ -1,14 +1,14 @@
 package com.craftmine.engine;
 
 import com.craftmine.engine.GUI.IGUIInstance;
+//import com.craftmine.engine.camera.MCCursor;
 import com.craftmine.engine.scene.Scene;
+import com.craftmine.game.GameResources;
 import com.craftmine.game.IAppLogic;
 import com.craftmine.game.MCWindows;
-import com.craftmine.game.gameResources;
 
 
 public class Engine {
-    public static final int TARGET_UPS = gameResources.TARGET_UPS;
     private final IAppLogic appLogic;
     private final MCWindows windows;
     private Render render;
@@ -17,7 +17,7 @@ public class Engine {
     private int targetFps;
     private int targetUps;
 
-    public Engine(String windowsTitle, MCWindows.MCWindowsOptions opts, IAppLogic appLogic) {
+    public Engine(String windowsTitle, GameResources.MCWindowsOptions opts, IAppLogic appLogic) {
         windows = new MCWindows(windowsTitle, opts, () -> {
             resize();
             return null;
@@ -53,7 +53,11 @@ public class Engine {
         float deltaFps = 0;
 
         long updateTime = initialTime;
+
+        //原本用来控制光照的，现在相关控制代码已经删除，以后有时间再说
+        GameResources.lightGUIControl();
         IGUIInstance iguiInstance = scene.getGUIInstance();
+
         while (running && !windows.windowsShouldClose()) {
             windows.pollEvents();
 
@@ -81,12 +85,10 @@ public class Engine {
             }
             initialTime = now;
         }
-
         cleanup();
     }
 
     public void start() {
-        running = true;
         run();
     }
 

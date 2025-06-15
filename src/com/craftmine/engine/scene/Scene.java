@@ -54,20 +54,13 @@ public class Scene {
     public SkyBox getSkyBox() {return skyBox;}
     public void setSkyBox(SkyBox skyBox) {this.skyBox = skyBox;}
     public void setGUIInstance(IGUIInstance guiInstance) {this.guiInstance = guiInstance;}
-    public Map<String, Model> getModelMap(){
-        return modelMap;
-    }
+    public Map<String, Model> getModelMap(){return modelMap;}
     public IGUIInstance getGUIInstance(){return guiInstance;}
-    public Projection getProjection(){
-        return projection;
-    }
-    public TextureCache getTextureCache(){
-        return textureCache;
-    }
+    public Projection getProjection(){return projection;}
+    public TextureCache getTextureCache(){return textureCache;}
     public Camera getCamera(){return camera;}
     public SceneLights getSceneLights(){
-        return sceneLights;
-    }
+        return sceneLights;}
     public void setSceneLights(SceneLights sceneLights){
         this.sceneLights = sceneLights;
     }

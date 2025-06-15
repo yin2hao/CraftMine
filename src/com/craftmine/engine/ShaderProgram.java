@@ -21,7 +21,6 @@ public class ShaderProgram {
     public void bind(){
         glUseProgram(programID);//激活指定的着色器程序
     }
-
     public void unbind(){
         glUseProgram(0);
     }

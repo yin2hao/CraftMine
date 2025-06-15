@@ -2,7 +2,7 @@ package com.craftmine.engine;
 
 import org.joml.Matrix4f;
 
-//投影矩阵
+//投影矩阵，将3D空间坐标转换为2D屏幕坐标
 public class Projection {
 
     private static final float FOV = (float) Math.toRadians(60.0f);//以弧度表示的视野角度

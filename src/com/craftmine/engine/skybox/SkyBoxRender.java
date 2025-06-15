@@ -16,8 +16,8 @@ public class SkyBoxRender {
     private UniformsMap uniformsMap;
     private Matrix4f viewMatrix;
 
-    private static final String SKYBOX_SHADER_VERT = gameResources.SKYBOX_SHADER_VERT;
-    private static final String SKYBOX_SHADER_FRAG = gameResources.SKYBOX_SHADER_FRAG;
+    private static final String SKYBOX_SHADER_VERT = GameResources.SKYBOX_SHADER_VERT;
+    private static final String SKYBOX_SHADER_FRAG = GameResources.SKYBOX_SHADER_FRAG;
 
     public SkyBoxRender() {
         List<ShaderProgram.ShaderModuleData> shaderModuleDataList = new ArrayList<>();
