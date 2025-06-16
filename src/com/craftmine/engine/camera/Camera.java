@@ -1,6 +1,11 @@
 package com.craftmine.engine.camera;
 
-import org.joml.*;
+import org.joml.Math;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import com.craftmine.engine.MCPerson;
+import com.craftmine.engine.MapGen.MapGrid;
 
 public class Camera {
 
@@ -12,6 +17,9 @@ public class Camera {
     private Matrix4f viewMatrix;
     private Matrix4f invViewMatrix;
 
+    private MCPerson mcPerson;
+    private MapGrid mapGrid;
+
     public Camera() {
         direction = new Vector3f();
         right = new Vector3f();
@@ -22,38 +30,74 @@ public class Camera {
         rotation = new Vector2f();
     }
 
-    //摄像头方向移动
+    public void setCollision(MCPerson mcPerson, MapGrid mapGrid) {
+        this.mcPerson = mcPerson;
+        this.mapGrid = mapGrid;
+    }
+
+    //摄像头移动（根据摄像头方向）
     public void moveBackwards(float inc) {
         viewMatrix.positiveZ(direction).negate().mul(inc);
+        Vector3f oldPos = new Vector3f(position);
         position.sub(direction);
-        recalculate();
+        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+            position.set(oldPos);
+        } else {
+            recalculate();
+        }
     }
     public void moveForward(float inc) {
         viewMatrix.positiveZ(direction).negate().mul(inc);
+        Vector3f oldPos = new Vector3f(position);
         position.add(direction);
-        recalculate();
+        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+            position.set(oldPos);
+        } else {
+            recalculate();
+        }
     }
     public void moveLeft(float inc) {
         viewMatrix.positiveX(right).mul(inc);
+        Vector3f oldPos = new Vector3f(position);
         position.sub(right);
-        recalculate();
+        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+            position.set(oldPos);
+        } else {
+            recalculate();
+        }
     }
     public void moveRight(float inc) {
         viewMatrix.positiveX(right).mul(inc);
+        Vector3f oldPos = new Vector3f(position);
         position.add(right);
-        recalculate();
+        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+            position.set(oldPos);
+        } else {
+            recalculate();
+        }
     }
     public void moveUp(float inc) {
         viewMatrix.positiveY(up).mul(inc);
+        Vector3f oldPos = new Vector3f(position);
         position.add(up);
-        recalculate();
+        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+            position.set(oldPos);
+        } else {
+            recalculate();
+        }
     }
     public void moveDown(float inc) {
         viewMatrix.positiveY(up).mul(inc);
+        Vector3f oldPos = new Vector3f(position);
         position.sub(up);
-        recalculate();
+        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+            position.set(oldPos);
+        } else {
+            recalculate();
+        }
     }
 
+    // 重新计算视图矩阵和逆视图矩阵
     private void recalculate() {
         viewMatrix.identity()
                 .rotateX(rotation.x)

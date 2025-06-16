@@ -2,6 +2,7 @@ package com.craftmine.game;
 
 import com.craftmine.engine.*;
 import com.craftmine.engine.GUI.IGUIInstance;
+import com.craftmine.engine.MapGen.MapGrid;
 import com.craftmine.engine.camera.Camera;
 import com.craftmine.engine.light.SceneLights;
 import com.craftmine.engine.mouseinput.MouseInput;
@@ -17,6 +18,7 @@ import java.lang.Math;
 import java.util.Collection;
 import java.util.List;
 
+import static com.craftmine.game.GameResources.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Minecraft implements IAppLogic, IGUIInstance {
@@ -33,6 +35,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private SoundSource playerSoundSource;
     private SoundManager soundMgr;
     private MouseInput mouseInput;
+
+    private MCPerson mcPerson;
+    private MapGrid mapGrid;
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
@@ -84,9 +89,15 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
         updateTerrain(scene);//动态加载地形，暂时无用
 
+        // 初始化地图和玩家
+        mapGrid = new MapGrid(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);
+        mcPerson = new MCPerson(mapGrid);
+
         Camera camera = scene.getCamera();
         camera.setPosition(-1.5f, 3.0f, 4.5f);
         camera.addRotation((float) Math.toRadians(15.0f), (float) Math.toRadians(390.f));
+        camera.setCollision(mcPerson, mapGrid);
+
         initSounds(camera);
     }
 
@@ -106,6 +117,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     @Override
     public void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumed) {
 
+        long currentWindowHandle = glfwGetCurrentContext();
         float move = diffTimeMillis * MOVEMENT_SPEED;
         Camera camera = scene.getCamera();
         if (windows.isKeyPressed(GLFW_KEY_W)) {

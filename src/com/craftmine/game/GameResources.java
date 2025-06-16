@@ -43,6 +43,10 @@ public class GameResources {
         public int width;
     }
 
+    public static final int MAP_SIZE_X = 120;
+    public static final int MAP_SIZE_Y = 120;
+    public static final int MAP_SIZE_Z = 100;
+
     public static void bugCheck() {}
     public static void lightGUIControl() {}
 }

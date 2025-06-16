@@ -1,58 +1,57 @@
-//// 定义一个三维网格类，用于管理Minecraft风格的方块世界
-//public class MCGrid {
-//
-//    // 三维数组，存储所有方块对象 [x][y][z]
-//    protected MCBlock[][][] g;
-//
-//    // 视平面对象，用于渲染时的可见性计算
-//    protected MCPlane plane;
-//
-//    // 网格的尺寸（长、宽、高），final表示不可修改
-//    public final int lx, ly, lz;
-//
-//    // 构造函数：初始化指定尺寸的网格
-//    public MCGrid(int lx, int ly, int lz){
-//        // 创建三维数组并保存尺寸
-//        g = new MCBlock[this.lx=lx][this.ly=ly][this.lz=lz];
-//        // 初始化视平面
-//        plane = new MCPlane();
-//    }
-//
-//    // 在指定坐标设置方块，返回被替换的旧方块
-//    public MCBlock set(int x, int y, int z, MCBlock block){
-//        // 检查坐标是否越界
-//        if(!ib(x,y,z)) return null;
-//
-//        // 获取当前位置的旧方块
-//        MCBlock ret = g[x][y][z];
-//        // 设置新方块
-//        g[x][y][z] = block;
-//        return ret;
-//    }
-//
-//    // 获取指定坐标的方块
-//    public MCBlock get(int x, int y, int z){
-//        // 检查坐标是否越界
-//        if(!ib(x,y,z)) return null;
-//
-//        return g[x][y][z];
-//    }
-//
-//    // 通过世界坐标获取方块（将世界坐标转换为网格坐标）
-//    public MCBlock get(double x, double y, double z){
-//        // 将世界坐标除以方块边长得到网格坐标
-//        int xx = (int)(x / MCBlock.SIDE);
-//        int yy = (int)(y / MCBlock.SIDE);
-//        int zz = (int)(z / MCBlock.SIDE);
-//
-//        return get(xx,yy,zz);
-//    }
-//
-//    // 检查坐标是否在网格范围内（Is in bounds）
-//    public boolean ib(int x, int y, int z){
-//        return !(x<0 || y<0 || z<0 || x>=lx || y>=ly || z>=lz);
-//    }
-//
+package com.craftmine.engine.MapGen;
+
+import com.craftmine.gameBlock.MCBlock;
+
+// 定义一个三维网格类，用于管理Minecraft风格的方块世界
+public class MapGrid {
+
+    // 三维数组，存储所有方块对象 [x][y][z]
+    protected MCBlock[][][] blockMap;
+
+    // 网格的尺寸（长、宽、高），final表示不可修改
+    public final int lx, ly, lz;
+
+    // 构造函数：初始化指定尺寸的网格
+    public MapGrid(int lx, int ly, int lz){
+        // 创建三维数组并保存尺寸
+        blockMap = new MCBlock[this.lx=lx][this.ly=ly][this.lz=lz];
+    }
+
+    // 在指定坐标设置方块，返回被替换的旧方块
+    public MCBlock set(int x, int y, int z, MCBlock MCBlock){
+        // 检查坐标是否越界
+        if(!ib(x,y,z)) return null;
+
+        // 获取当前位置的旧方块
+        MCBlock ret = blockMap[x][y][z];
+        // 设置新方块
+        blockMap[x][y][z] = MCBlock;
+        return ret;
+    }
+
+    // 获取指定坐标的方块
+    public MCBlock get(int x, int y, int z){
+        // 检查坐标是否越界
+        if(!ib(x,y,z)) return null;
+
+        return blockMap[x][y][z];
+    }
+
+    // 通过世界坐标获取方块（将世界坐标转换为网格坐标）
+    public MCBlock get(double x, double y, double z){
+        // 将世界坐标除以方块边长得到网格坐标
+        int xx = (int)(x / MCBlock.SIDE);
+        int yy = (int)(y / MCBlock.SIDE);
+        int zz = (int)(z / MCBlock.SIDE);
+
+        return get(xx,yy,zz);
+    }
+
+    // 检查坐标是否在网格范围内（Is in bounds）
+    public boolean ib(int x, int y, int z){
+        return !(x<0 || y<0 || z<0 || x>=lx || y>=ly || z>=lz);
+    }
+
 //    // 网格渲染器实例
 //    protected MCGridRender r;
 //
@@ -88,7 +87,7 @@
 //
 //            // 如果可见性数组未初始化
 //            if (vis == null)
-//                vis = new boolean[g.length][g[0].length][g[0][0].length];
+//                vis = new boolean[blockMap.length][blockMap[0].length][blockMap[0][0].length];
 //
 //            // 计算玩家所在的网格坐标
 //            int x = (int)(p.x/MCBlock.SIDE);
@@ -173,7 +172,7 @@
 //            int xx = c[0]; int yy = c[1]; int zz = c[2];
 //
 //            // 如果当前位置是空的
-//            if(g[xx][yy][zz] == null)
+//            if(blockMap[xx][yy][zz] == null)
 //                // 检查六个方向
 //                for(int i = 0; i<mx.length; i++){
 //                    // 计算相邻坐标
@@ -184,9 +183,9 @@
 //                    // 检查相邻坐标是否有效
 //                    if(ib(tx,ty,tz)){
 //                        // 如果相邻位置有方块
-//                        if(g[tx][ty][tz] != null)
+//                        if(blockMap[tx][ty][tz] != null)
 //                            // 将该方块的对应面添加到渲染器
-//                            r.add(g[tx][ty][tz].getQuads()[sides[i]]);
+//                            r.add(blockMap[tx][ty][tz].getQuads()[sides[i]]);
 //
 //                        // 如果该位置已经处理过则跳过
 //                        if(vis[tx][ty][tz])
@@ -200,4 +199,4 @@
 //                }
 //        }
 //    }
-//}
+}

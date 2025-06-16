@@ -34,11 +34,11 @@
 //            for (int y = 0; y < LY; y++) {
 //                // 高地生成草方块和土/石头
 //                if (heights[x][y] > G + 2) {
-//                    G.set(x, y, heights[x][y], loadBlock('g', x, y, heights[x][y]));//设置一个方块类型
+//                    G.set(x, y, heights[x][y], loadBlock('blockMap', x, y, heights[x][y]));//设置一个方块类型
 //                    for (int z = heights[x][y] - 1; z >= 0; z--) {//从上到下 的循环
-//                        char block = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';/*从地面高度到当前层高度的相对高度，除
+//                        char MCBlock = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';/*从地面高度到当前层高度的相对高度，除
 //                        以 10.0 是为了得到一个比例因子，目的是让高度差较小的地方生成不同的方块*/
-//                        G.set(x, y, z, loadBlock(block, x, y, z));
+//                        G.set(x, y, z, loadBlock(MCBlock, x, y, z));
 //                    }
 //                }
 //                // 低地生成沙方块和土/石头
@@ -50,8 +50,8 @@
 //                        z > height[x][y] - 10 确保循环只执行 10层。*/
 //                    }
 //                    for (int z = heighs[x][y] - 10; z >= 0; z--) {
-//                        char block = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';
-//                        G.set(x, y, z, loadBlock(block, x, y, z));
+//                        char MCBlock = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';
+//                        G.set(x, y, z, loadBlock(MCBlock, x, y, z));
 //                        /*循环从 height[x][y] - 10 开始，继续向下直到 0。意味着接下来会从沙土层下面的第 11 层开始生成地下方块*/
 //                    }
 //                }
