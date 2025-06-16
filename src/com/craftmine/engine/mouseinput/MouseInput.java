@@ -62,6 +62,13 @@ public class MouseInput {
         }
     }
 
+    public void setCursorPosition(long windowsHandle, float x, float y){
+        //改变鼠标位置
+        currentPos.x = x;
+        currentPos.y = y;
+        glfwSetCursorPos(windowsHandle, x, y);
+    }
+
     public boolean isLeftButtonPressed(){
         return leftButtonPressed;
     }

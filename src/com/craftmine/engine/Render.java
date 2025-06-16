@@ -20,12 +20,12 @@ public class Render {
         GameResources.bugCheck();
         GL.createCapabilities();//加载当前OpenGL上下文中可用的函数指针
         //此处天空盒与深度测试疑似冲突
-//        glEnable(GL_DEPTH_TEST);//深度测试，用于渲染前后关系
+        glEnable(GL_DEPTH_TEST);//深度测试，用于渲染前后关系
         glEnable(GL_CULL_FACE);//启用面剔除
         glCullFace(GL_BACK);//指定剔除背对相机的面
         sceneRender = new SceneRender();//着色器创建
-        guiRender = new GUIRender(windows);//GUI初始化，GUI键盘回调
         skyBoxRender = new SkyBoxRender();//天空盒初始化
+        guiRender = new GUIRender(windows);//GUI初始化，GUI键盘回调
     }
 
     public void cleanup(){
@@ -37,7 +37,7 @@ public class Render {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, windows.getWidth(), windows.getHeight());
 
-        skyBoxRender.render(scene);
+//        skyBoxRender.render(scene);
         sceneRender.render(scene);
         guiRender.render(scene);
     }

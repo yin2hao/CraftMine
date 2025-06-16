@@ -36,6 +36,7 @@ public class Entity {
 
     //更新实体的模型矩阵，将实体的 位置、旋转和缩放组合成一个最终的4x4变换矩阵
     public void updateModelMatrix(){
+        modelMatrix.identity(); // 先重置为单位矩阵，防止累加误差
         modelMatrix.translationRotateScale(position, rotation, scale);
     }
 

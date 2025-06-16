@@ -22,7 +22,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Minecraft implements IAppLogic, IGUIInstance {
 
     private static final String SKYBOX_MODULE = GameResources.SKYBOX_MODULE;
-    private static final String SKYBOX_QUAD = GameResources.SKYBOX_QUAD;
     private static final String MINECRAFT_SOUND1 = GameResources.MINECRAFT_SOUND1;
     private static final String CUBE_MODEL_PATH1 = GameResources.CUBE_MODEL_PATH1;
 
@@ -30,7 +29,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private static final float MOVEMENT_SPEED = 0.005f;
     private static final int NUM_CHUNKS = 4;
     private Entity[][] terrainEntities;
-    private Entity cubeEntity1, cubeEntity2;
+    private Entity cubeEntity1, cubeEntity2, cubeEntity3;
     private SoundSource playerSoundSource;
     private SoundManager soundMgr;
     private MouseInput mouseInput;
@@ -51,10 +50,13 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
         cubeEntity1 = new Entity("cube-entity1", cubeModel.getID());
         cubeEntity2 = new Entity("cube-entity2", cubeModel.getID());
-        cubeEntity1.setPosition(0, 0, -2);
+        cubeEntity3 = new Entity("cube-entity3", cubeModel.getID());
+        cubeEntity1.setPosition(0, 0, 1);
         cubeEntity2.setPosition(0, 0, 0);
+        cubeEntity3.setPosition(0, 0, -1);
         scene.addEntity(cubeEntity1);
         scene.addEntity(cubeEntity2);
+        scene.addEntity(cubeEntity3);
 
 //        String quadModelId = "quad-model";
 //        Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
@@ -96,6 +98,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
         cubeEntity2.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
         cubeEntity2.updateModelMatrix();
+
+        cubeEntity3.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
+        cubeEntity3.updateModelMatrix();
     }
 
     @Override
