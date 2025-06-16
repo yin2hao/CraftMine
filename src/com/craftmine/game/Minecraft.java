@@ -22,7 +22,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Minecraft implements IAppLogic, IGUIInstance {
 
     private static final String SKYBOX_MODULE = GameResources.SKYBOX_MODULE;
-    private static final String SKYBOX_QUAD = GameResources.SKYBOX_QUAD;
     private static final String MINECRAFT_SOUND1 = GameResources.MINECRAFT_SOUND1;
     private static final String CUBE_MODEL_PATH1 = GameResources.CUBE_MODEL_PATH1;
 

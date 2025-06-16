@@ -99,6 +99,7 @@ public class MCWindows {
         if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
             glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             mouseInput.setESCPressed(true);
+            mouseInput.setCursorPosition(windowHandle, (float) this.getWidth() /2, (float) this.getHeight() /2 );
         }else if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE){
             glfwSetInputMode(windowHandle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             mouseInput.setESCPressed(false);

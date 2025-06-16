@@ -49,6 +49,9 @@ public class SkyBoxRender {
         }
         shaderProgram.bind();
 
+//        glDepthMask(false);
+//        glCullFace(GL_FRONT);
+
         uniformsMap.setUniform("projectionMatrix", scene.getProjection().getProjMatrix());
         viewMatrix.set(scene.getCamera().getViewMatrix());
         viewMatrix.m30(0);
@@ -74,6 +77,9 @@ public class SkyBoxRender {
                 uniformsMap.setUniform("modelMatrix", skyBoxEntity.getModelMatrix());
                 glDrawElements(GL_TRIANGLES, mesh.getNumVertices(), GL_UNSIGNED_INT, 0);
             }
+
+//            glCullFace(GL_BACK);
+//            glDepthMask(true);
         }
 
         glBindVertexArray(0);
