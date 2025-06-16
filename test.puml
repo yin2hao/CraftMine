@@ -1,0 +1,372 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AmbientLight {
+  - intensity: float
+  - color: Vector3f
+   color: Vector3f
+   intensity: float
+  + setColor(float, float, float): void
+  + AmbientLight():
+  + AmbientLight(float, Vector3f):
+}
+class Attenuation {
+  - linear: float
+  - exponent: float
+  - constant: float
+   constant: float
+   linear: float
+   exponent: float
+  + Attenuation(float, float, float):
+}
+class Camera {
+  - position: Vector3f
+  - invViewMatrix: Matrix4f
+  - viewMatrix: Matrix4f
+   position: Vector3f
+   invViewMatrix: Matrix4f
+   viewMatrix: Matrix4f
+  + moveLeft(float): void
+  + moveUp(float): void
+  + setRotation(float, float): void
+  + moveForward(float): void
+  + addRotation(float, float): void
+  + moveBackwards(float): void
+  + setPosition(float, float, float): void
+  + moveRight(float): void
+  - recalculate(): void
+  + moveDown(float): void
+  + Camera():
+}
+class DirLight {
+  - direction: Vector3f
+  - color: Vector3f
+  - intensity: float
+   color: Vector3f
+   intensity: float
+   direction: Vector3f
+  + setPosition(float, float, float): void
+  + setColor(float, float, float): void
+  + DirLight(Vector3f, Vector3f, float):
+}
+class Engine {
+  - cleanup(): void
+  + start(): void
+  - resize(): void
+  + stop(): void
+  - run(): void
+  + Engine(String, MCWindowsOptions, IAppLogic):
+}
+class GUIMesh {
+  - verticesVBO: int
+  - indicesVBO: int
+  - VAOID: int
+   verticesVBO: int
+   indicesVBO: int
+   VAOID: int
+  + cleanup(): void
+  + GUIMesh():
+}
+class GUIRender {
+  - setupKeyCallBack(MCWindows): void
+  + resize(int, int): void
+  + cleanup(): void
+  - getImKey(int): int
+  - createUniforms(): void
+  - createUIResources(MCWindows): void
+  + render(Scene): void
+  + GUIRender(MCWindows):
+}
+interface IGUIInstance << interface >> {
+  + drawGUI(): void
+  + handleGUIInput(Scene, MCWindows): boolean
+}
+class LightControls {
+  + drawGUI(): void
+  + handleGUIInput(Scene, MCWindows): boolean
+  + LightControls(Scene):
+}
+class MCDirtBlock {
+  + MCDirtBlock():
+}
+class MCGrassBlock {
+  + MCGrassBlock():
+}
+class MCGrid {
+  + set(int, int, int, MCBlock): MCBlock
+  + get(int, int, int): MCBlock
+  + ib(int, int, int): boolean
+  + realRender(MCPerson, MCPlane): void
+  + add(MCBlock): void
+  + render(MCPerson): void
+  + flood(int, int, int): void
+  + unrender(MCBlock): void
+  + get(double, double, double): MCBlock
+  + MCGrid(int, int, int):
+}
+class MCStoneBlock {
+  + MCStoneBlock():
+}
+class Material {
+  - reflectance: float
+  - diffuseColor: Vector4f
+  - ambientColor: Vector4f
+  - meshList: List<Mesh>
+  - texturePath: String
+  - specularColor: Vector4f
+   meshList: List<Mesh>
+   texturePath: String
+   diffuseColor: Vector4f
+   reflectance: float
+   specularColor: Vector4f
+   ambientColor: Vector4f
+  + cleanup(): void
+  + Material():
+}
+class McMap {
+  ~ interpolate(double, double, double): double
+  ~ smoothNoise(double[][], int): double[][]
+  ~ cave(int, int, int, int, int, int): boolean[][][]
+  ~ perlinNoise(double[][], int, double): double[][]
+  ~ randGrid(int, int): double[][]
+  + loadBlock(char, int, int, int): MCBlock
+  + McMap():
+}
+class McMap {
+  + generateMap(): void
+  + McGrid():
+  + McMap(int, int, int):
+}
+class Mesh {
+  - aabbMax: Vector3f
+  - aabbMin: Vector3f
+  - numVertices: int
+  - vaoID: int
+   aabbMax: Vector3f
+   vaoID: int
+   numVertices: int
+   aabbMin: Vector3f
+  + cleanup(): void
+  + Mesh(float[], float[], float[], int[]):
+  + Mesh(float[], float[], float[], int[], Vector3f, Vector3f):
+}
+class Model {
+  - ID: String
+   materialList: List<Material>
+   ID: String
+   entitieList: List<Entity>
+  + cleanup(): void
+  + Model(String, List<Material>):
+}
+class ModelLoader {
+  - processMesh(AIMesh): Mesh
+  + loadModel(String, String, TextureCache, int): Model
+  - processVertices(AIMesh): float[]
+  + loadModel(String, String, TextureCache): Model
+  - processNormals(AIMesh): float[]
+  - processMaterial(AIMaterial, String, TextureCache): Material
+  - processTextCoords(AIMesh): float[]
+  - processIndices(AIMesh): int[]
+  - ModelLoader():
+}
+class MouseInput {
+  - leftButtonPressed: boolean
+  - displVec: Vector2f
+  - rightButtonPressed: boolean
+  - currentPos: Vector2f
+   displVec: Vector2f
+   leftButtonPressed: boolean
+   currentPos: Vector2f
+   rightButtonPressed: boolean
+  + input(): void
+  + MouseInput(long):
+}
+class PointLight {
+  - color: Vector3f
+  - position: Vector3f
+  - intensity: float
+  - attenuation: Attenuation
+   color: Vector3f
+   position: Vector3f
+   intensity: float
+   attenuation: Attenuation
+  + setColor(float, float, float): void
+  + setPosition(float, float, float): void
+  + PointLight(Vector3f, Vector3f, float):
+}
+class Projection {
+  - projMatrix: Matrix4f
+  - invProjMatrix: Matrix4f
+   invProjMatrix: Matrix4f
+   projMatrix: Matrix4f
+  + updateProjMatrix(int, int): void
+  + Projection(int, int):
+}
+class Render {
+  + render(MCWindows, Scene): void
+  + resize(int, int): void
+  + cleanup(): void
+  + Render(MCWindows):
+}
+class Scene {
+  - modelMap: Map<String, Model>
+  - textureCache: TextureCache
+  - projection: Projection
+  - skyBox: SkyBox
+  - sceneLights: SceneLights
+  - selectedEntity: Entity
+  - camera: Camera
+   selectedEntity: Entity
+   sceneLights: SceneLights
+   GUIInstance: IGUIInstance
+   textureCache: TextureCache
+   skyBox: SkyBox
+   projection: Projection
+   modelMap: Map<String, Model>
+   camera: Camera
+  + cleanup(): void
+  + addModel(Model): void
+  + resize(int, int): void
+  + addEntity(Entity): void
+  + Scene(int, int):
+}
+class SceneLights {
+  - dirLight: DirLight
+  - pointLights: List<PointLight>
+  - ambientLight: AmbientLight
+  - spotLights: List<SpotLight>
+   pointLights: List<PointLight>
+   ambientLight: AmbientLight
+   dirLight: DirLight
+   spotLights: List<SpotLight>
+  + SceneLights():
+}
+class SceneRender {
+  - createUniforms(): void
+  + cleanup(): void
+  - updateLights(Scene): void
+  - updatePointLight(PointLight, String, Matrix4f): void
+  + render(Scene): void
+  - updateSpotLight(SpotLight, String, Matrix4f): void
+  + SceneRender():
+}
+entity ShaderModuleData << record >> {
+  + shaderFile(): String
+  + shaderType(): int
+  + ShaderModuleData(String, int):
+}
+class ShaderProgram {
+  - programID: int
+   programID: int
+  + unbind(): void
+  # createShader(String, int): int
+  + cleanup(): void
+  + bind(): void
+  + link(List<Integer>): void
+  + validate(): void
+  + ShaderProgram(List<ShaderModuleData>):
+}
+class SkyBox {
+  - skyBoxEntity: Entity
+  - skyBoxModel: Model
+   skyBoxModel: Model
+   skyBoxEntity: Entity
+  + SkyBox(String, TextureCache):
+}
+class SkyBoxRender {
+  + cleanup(): void
+  - createUniforms(): void
+  + render(Scene): void
+  + SkyBoxRender():
+}
+class SoundBuffer {
+  - bufferId: int
+   bufferId: int
+  - readVorbis(String, STBVorbisInfo): ShortBuffer
+  + cleanup(): void
+  + SoundBuffer(String):
+}
+class SoundListener {
+   position: Vector3f
+   speed: Vector3f
+  + setOrientation(Vector3f, Vector3f): void
+  + SoundListener(Vector3f):
+}
+class SoundManager {
+  - listener: SoundListener
+   attenuationModel: int
+   listener: SoundListener
+  + removeSoundSource(String): void
+  + cleanup(): void
+  + addSoundSource(String, SoundSource): void
+  + updateListenerPosition(Camera): void
+  + getSoundSource(String): SoundSource
+  + playSoundSource(String): void
+  + addSoundBuffer(SoundBuffer): void
+  + SoundManager():
+}
+class SoundSource {
+   playing: boolean
+   buffer: int
+   position: Vector3f
+   gain: float
+  + cleanup(): void
+  + pause(): void
+  + stop(): void
+  + play(): void
+  + SoundSource(boolean, boolean):
+}
+class SpotLight {
+  - coneDirection: Vector3f
+  - cutOffAngle: float
+  - pointLight: PointLight
+  - cutOff: float
+   coneDirection: Vector3f
+   cutOffAngle: float
+   cutOff: float
+   pointLight: PointLight
+  + setConeDirection(float, float, float): void
+  + SpotLight(PointLight, Vector3f, float):
+}
+class Texture {
+  - texturePath: String
+   texturePath: String
+  + bind(): void
+  + cleanup(): void
+  - generateTexture(int, int, ByteBuffer): void
+  + Texture(String):
+  + Texture(int, int, ByteBuffer):
+}
+class TextureCache {
+  + createTexture(String): Texture
+  + getTexture(String): Texture
+  + cleanup(): void
+  + TextureCache():
+}
+class UniformsMap {
+  + setUniform(String, Vector4f): void
+  + setUniform(String, float): void
+  - getUniformLocation(String): int
+  + setUniform(String, Vector2f): void
+  + setUniform(String, Vector3f): void
+  + setUniform(String, int): void
+  + createUniform(String): void
+  + setUniform(String, Matrix4f): void
+  + UniformsMap(int):
+}
+class Utils {
+  + readFile(String): String
+  - Utils():
+}
+class block {
+  + block():
+}
+
+Attenuation       +-[#820000,plain]-  PointLight
+PointLight       "1" *-[#595959,plain]-> "attenuation\n1" Attenuation
+PointLight        -[#595959,dashed]->  Attenuation      : "«create»"
+ShaderModuleData  +-[#820000,plain]-  ShaderProgram
+@enduml
