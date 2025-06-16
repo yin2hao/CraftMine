@@ -2,6 +2,8 @@ package com.craftmine.game;
 
 import org.joml.*;
 
+import java.lang.Math;
+
 public class Entity {
 
     private final String ID;
@@ -32,11 +34,21 @@ public class Entity {
 
     public void setScale(float scale){
         this.scale = scale;
+//        this.scale = 1.0f; // 强制固定为 1.0f
+
     }
 
     //更新实体的模型矩阵，将实体的 位置、旋转和缩放组合成一个最终的4x4变换矩阵
     public void updateModelMatrix(){
         modelMatrix.translationRotateScale(position, rotation, scale);
+        float snappedX = Math.round(position.x);
+        float snappedY = Math.round(position.y);
+        float snappedZ = Math.round(position.z);
+        modelMatrix.translationRotateScale(
+                new Vector3f(snappedX, snappedY, snappedZ),
+                rotation,
+                scale
+        );
     }
 
     public String getID(){return ID;}
@@ -45,4 +57,6 @@ public class Entity {
     public float getScale() {return scale;}
     public Quaternionf getRotation() {return rotation;}
     public String getModelID(){return modelID;}
+
+
 }
