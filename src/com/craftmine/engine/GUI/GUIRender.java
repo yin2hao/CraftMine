@@ -25,9 +25,9 @@ public class GUIRender {
     private Texture texture;
     private UniformsMap uniformsMap;
 
-    private static final String GUI_SHADER_VERT = gameResources.GUI_SHADER_VERT;
-    private static final String GUI_SHADER_FRAG = gameResources.GUI_SHADER_FRAG;
-    private static final String GUI_FONT_PATH = gameResources.GUI_FONT_PATH;
+    private static final String GUI_SHADER_VERT = GameResources.GUI_SHADER_VERT;
+    private static final String GUI_SHADER_FRAG = GameResources.GUI_SHADER_FRAG;
+    private static final String GUI_FONT_PATH = GameResources.GUI_FONT_PATH;
 
     public GUIRender(MCWindows windows) {
         //创建GUI着色器程序

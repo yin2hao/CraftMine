@@ -21,36 +21,40 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Minecraft implements IAppLogic, IGUIInstance {
 
-    private static final String SKYBOX_MODULE = gameResources.SKYBOX_MODULE;
-    private static final String SKYBOX_QUAD = gameResources.SKYBOX_QUAD;
-    private static final String MINECRAFT_SOUND1 = gameResources.MINECRAFT_SOUND1;
-    private static final String CUBE_MODEL_PATH1 = gameResources.CUBE_MODEL_PATH1;
+    private static final String SKYBOX_MODULE = GameResources.SKYBOX_MODULE;
+    private static final String SKYBOX_QUAD = GameResources.SKYBOX_QUAD;
+    private static final String MINECRAFT_SOUND1 = GameResources.MINECRAFT_SOUND1;
+    private static final String CUBE_MODEL_PATH1 = GameResources.CUBE_MODEL_PATH1;
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
     private static final int NUM_CHUNKS = 4;
     private Entity[][] terrainEntities;
-    private Entity cubeEntity;
+    private Entity cubeEntity1, cubeEntity2;
     private SoundSource playerSoundSource;
     private SoundManager soundMgr;
-
+    private MouseInput mouseInput;
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
-        Engine game = new Engine("CraftMine", new MCWindows.MCWindowsOptions(),mc);//初始化窗口
+        Engine game = new Engine("CraftMine", new GameResources.MCWindowsOptions(), mc);//初始化窗口
         game.start();//循环开始
     }
 
     @Override
     public void init(MCWindows window, Scene scene, Render render) {
+        mouseInput = window.getMouseInput();
         String cubeModelID = "cube-model";
         Model cubeModel = ModelLoader.loadModel(cubeModelID, CUBE_MODEL_PATH1,
                 scene.getTextureCache());
         scene.addModel(cubeModel);
 
-        cubeEntity = new Entity("cube-entity", cubeModel.getID());
-        cubeEntity.setPosition(0, 0, -2);
-        scene.addEntity(cubeEntity);
+        cubeEntity1 = new Entity("cube-entity1", cubeModel.getID());
+        cubeEntity2 = new Entity("cube-entity2", cubeModel.getID());
+        cubeEntity1.setPosition(0, 0, -2);
+        cubeEntity2.setPosition(0, 0, 0);
+        scene.addEntity(cubeEntity1);
+        scene.addEntity(cubeEntity2);
 
 //        String quadModelId = "quad-model";
 //        Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
@@ -76,13 +80,10 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         skyBox.getSkyBoxEntity().setScale(50);
         scene.setSkyBox(skyBox);
 
-        scene.getCamera().moveUp(0.1f);
-
-        updateTerrain(scene);
+        updateTerrain(scene);//动态加载地形，暂时无用
 
         Camera camera = scene.getCamera();
         camera.setPosition(-1.5f, 3.0f, 4.5f);
-//        camera.setPosition(0f, 0f, 0f);
         camera.addRotation((float) Math.toRadians(15.0f), (float) Math.toRadians(390.f));
         initSounds(camera);
     }
@@ -90,11 +91,11 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     @Override
     public void update(MCWindows windows, Scene scene, long diffTimeMillis) {
         double rotation = 1.5;
-        if (rotation > 360) {
-            rotation = 0;
-        }
-        cubeEntity.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
-        cubeEntity.updateModelMatrix();
+        cubeEntity1.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
+        cubeEntity1.updateModelMatrix();
+
+        cubeEntity2.setRotation(1, 1, 1, (float) Math.toRadians(rotation));
+        cubeEntity2.updateModelMatrix();
     }
 
     @Override
@@ -117,7 +118,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         if (mouseInput.isLeftButtonPressed()) {
             selectEntity(windows, scene, mouseInput.getCurrentPos());
         }
-        if (mouseInput.isRightButtonPressed()) {
+        if (mouseInput.isInWindows()) {
             Vector2f displVec = mouseInput.getDisplVec();
             camera.addRotation((float) Math.toRadians(displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
         }
@@ -152,12 +153,12 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     }
 
     public void updateTerrain(Scene scene) {
-        int cellSize = 10;
-        Camera camera = scene.getCamera();
-        Vector3f cameraPos = camera.getPosition();
-        int cellCol = (int) (cameraPos.x / cellSize);
-        int cellRow = (int) (cameraPos.z / cellSize);
-
+//        int cellSize = 10;
+//        Camera camera = scene.getCamera();
+//        Vector3f cameraPos = camera.getPosition();
+//        int cellCol = (int) (cameraPos.x / cellSize);
+//        int cellRow = (int) (cameraPos.z / cellSize);
+//
 //        int numRows = NUM_CHUNKS * 2 + 1;
 //        int numCols = numRows;
 //        int zOffset = -NUM_CHUNKS;
@@ -177,7 +178,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     private void initSounds(Camera camera) {
         soundMgr = new SoundManager();
-        soundMgr.setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
+        soundMgr.setAttenuationModel(AL11.AL_NONE);//设置衰减模型：不衰减
         soundMgr.setListener(new SoundListener(camera.getPosition()));
 
         SoundBuffer buffer = new SoundBuffer(MINECRAFT_SOUND1);
@@ -185,17 +186,27 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         playerSoundSource = new SoundSource(true, false);
         playerSoundSource.setPosition(camera.getPosition());
         playerSoundSource.setBuffer(buffer.getBufferId());
-        soundMgr.addSoundSource("CREAK", playerSoundSource);
+        soundMgr.addSoundSource("MineCraft", playerSoundSource);
         playerSoundSource.play();
     }
 
-    private void selectEntity(MCWindows windows, Scene scene, Vector2f mousePos) {
+    private void selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
         int wdwWidth = windows.getWidth();
         int wdwHeight = windows.getHeight();
 
-        float x = (2 * mousePos.x) / wdwWidth - 1.0f;
-        float y = 1.0f - (2 * mousePos.y) / wdwHeight;
-        float z = -1.0f;
+        float centerX = wdwWidth / 2.0f;
+        float centerY = wdwHeight / 2.0f;
+        float x,y,z;
+
+        if (!mouseInput.isESCPressed()){
+            x = (2 * centerX) / wdwWidth - 1.0f;
+            y = 1.0f - (2 * centerY) / wdwHeight;
+            z = -1.0f;
+        }else {
+            x = (2 * Pos.x) / wdwWidth - 1.0f;
+            y = 1.0f - (2 * Pos.y) / wdwHeight;
+            z = -1.0f;
+        }
 
         Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
         Vector4f mouseDir = new Vector4f(x, y, z, 1.0f);

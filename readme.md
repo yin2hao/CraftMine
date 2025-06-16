@@ -5,25 +5,25 @@
 - [x] 时间刻
   - [x] 帧率计算
 - [x] 游戏窗口
-  - [ ] 光照系统
-  - [ ] 地形生成
-      - [ ] 柏林噪音计算
-      - [ ] 天空盒
+  - [x] 光照系统
+  - [x] 地形生成
+      - [x] 柏林噪音计算
+      - [x] 天空盒
       - [x] 方块png蒙版
       - [x] 方块面渲染
-  - [ ] 十字光标
+  - [x] 十字光标
   - [x] 鼠标指针动态
   - [x] 键盘映射
 - [ ] 方块
-  - [ ] 草方块
+  - [x] 草方块
   - [ ] 石头
   - [ ] 泥土
   - [ ] 树(待定)
     - [ ] ~~工作台及合成表功能(待定)~~
   - [ ] 方块被破坏
   - [x] 方块渲染
-- [ ] 实体
-	- [ ] 玩家
+- [ ] ~~实体~~
+	- [ ] ~~玩家~~
       - [ ] 活动
           - [x] 移动
           - [ ] 跳跃
@@ -31,7 +31,7 @@
           - [ ] 水下跳跃
           - [ ] 飞行模式(待定)
           - [ ] 破坏方块
-            - [ ] 计算指针指向方块
+            - [x] 计算指针指向方块
             - [ ] 播放破坏动画
           - [ ] 放置方块
             - [ ] 计算指针指向方块
@@ -41,14 +41,19 @@
 
 
 ## 预计使用第三方库
-~~[FastNoise Lite](https://github.com/Auburn/FastNoiseLite):便携的开源噪声生成库，具有多种噪声算法~~</br>
-[LWJGL](https://www.lwjgl.org/):图形化界面以及各种相关库
+[LWJGL](https://www.lwjgl.org/)：图形化界面以及各种相关库</br>
+   - [openAL](https://www.openal.org/)：一个适用于游戏应用程序和许多其他类型音频应用程序的跨平台 3D 音频 API。
+   - [openGL](https://www.khronos.org/opengl/)：业内最广泛采用的 2D 和 3D 图形 API，为各种计算机平台带来了数千个应用程序。
+   - [GLFW](https://www.glfw.org/)：创建多个窗口，处理用户输入（键盘、鼠标、游戏外设）并管理上下文。还支持多显示器、剪贴板访问、文件拖放，以及更多功能 。
+   - [Assimp](https://www.assimp.org/)：一个可移植的开源库，用于以统一的方式导入各种常见的 3D 模型格式。
+   - [STB](https://github.com/nothings/stb)
 
-如果事不可为，则考虑使用 [jmonkeyengine](https://github.com/jMonkeyEngine/jmonkeyengine)
+[JOML](https://joml-ci.github.io/JOML/)：一个用于 OpenGL 渲染计算的 Java 数学库
 
 ## 参考资料
 [我的世界开发者中文指南](https://github.com/mouse0w0/MinecraftDeveloperGuide?tab=readme-ov-file)</br>
 [只用7个命令方块做出柏林噪声生成地形？！](https://www.bilibili.com/video/BV1vfKJedEdA/)</br>
 ~~[How to Use Perlin Noise in Your Games](http://devmag.org.za/2009/04/25/perlin-noise/)~~ 全英文没看完</br>
-~~[《3D Game Development with LWJGL 3》中文翻译](https://mouse0w0.github.io/lwjglbook-CN-Translation/02-the-game-loop/)~~ 过时的翻译</br>
-[3D Game Development with LWJGL 3](https://ahbejarano.gitbook.io/lwjglgamedev)的[翻译](https://yin2hao.github.io/lwjglbook-CN-Translation/)
+~~[《3D Game Development with LWJGL 3》中文翻译](https://mouse0w0.github.io/lwjglbook-CN-Translation/02-the-game-loop/)~~ ~~过时的翻译~~先前版本的翻译</br>
+[3D Game Development with LWJGL 3](https://ahbejarano.gitbook.io/lwjglgamedev)的[翻译](https://yin2hao.github.io/lwjglbook-CN-Translation/)</br>
+[GLFW官方文档](https://www.glfw.org/docs/latest/)
