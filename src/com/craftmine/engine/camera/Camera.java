@@ -1,6 +1,5 @@
 package com.craftmine.engine.camera;
 
-import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -40,8 +39,10 @@ public class Camera {
         viewMatrix.positiveZ(direction).negate().mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.sub(direction);
-        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+        boolean collision = checkCollision(oldPos);
+        if (collision) {
             position.set(oldPos);
+            System.out.println("碰撞检测: 后退被阻止");
         } else {
             recalculate();
         }
@@ -50,8 +51,10 @@ public class Camera {
         viewMatrix.positiveZ(direction).negate().mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.add(direction);
-        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+        boolean collision = checkCollision(oldPos);
+        if (collision) {
             position.set(oldPos);
+            System.out.println("碰撞检测: 前进被阻止");
         } else {
             recalculate();
         }
@@ -60,8 +63,10 @@ public class Camera {
         viewMatrix.positiveX(right).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.sub(right);
-        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+        boolean collision = checkCollision(oldPos);
+        if (collision) {
             position.set(oldPos);
+            System.out.println("碰撞检测: 左移被阻止");
         } else {
             recalculate();
         }
@@ -70,8 +75,10 @@ public class Camera {
         viewMatrix.positiveX(right).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.add(right);
-        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+        boolean collision = checkCollision(oldPos);
+        if (collision) {
             position.set(oldPos);
+            System.out.println("碰撞检测: 右移被阻止");
         } else {
             recalculate();
         }
@@ -80,8 +87,10 @@ public class Camera {
         viewMatrix.positiveY(up).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.add(up);
-        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+        boolean collision = checkCollision(oldPos);
+        if (collision) {
             position.set(oldPos);
+            System.out.println("碰撞检测: 上升被阻止");
         } else {
             recalculate();
         }
@@ -90,11 +99,34 @@ public class Camera {
         viewMatrix.positiveY(up).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.sub(up);
-        if (mcPerson != null && mapGrid != null && mcPerson.collide(position.x, position.y, position.z)) {
+        boolean collision = checkCollision(oldPos);
+        if (collision) {
             position.set(oldPos);
+            System.out.println("碰撞检测: 下降被阻止");
         } else {
             recalculate();
         }
+    }
+
+    // 检查碰撞并输出调试信息
+    private boolean checkCollision(Vector3f oldPos) {
+        if (mcPerson == null || mapGrid == null) {
+            System.out.println("警告: mcPerson或mapGrid为null，跳过碰撞检测");
+            return false;
+        }
+
+        // 更新人物位置
+        mcPerson.setPosition(position);
+
+        // 检查碰撞
+        boolean collision = mcPerson.collide(position.x, position.y, position.z);
+
+        // 每100次移动输出一次位置信息(避免过多输出)
+        if (Math.random() < 0.01) {
+            System.out.println("位置: " + position + ", 碰撞: " + collision);
+        }
+
+        return collision;
     }
 
     // 重新计算视图矩阵和逆视图矩阵

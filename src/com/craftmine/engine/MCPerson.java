@@ -38,11 +38,12 @@ public class MCPerson {
 
         // 计算需要检查的方块范围（转换为方块坐标）
         int startX = (int)Math.floor(minX / MCBlock.SIDE);
-        int endX = (int)Math.ceil(maxX / MCBlock.SIDE) - 1;
+        int endX = (int)Math.ceil(maxX / MCBlock.SIDE);
         int startY = (int)Math.floor(minY / MCBlock.SIDE);
-        int endY = (int)Math.ceil(maxY / MCBlock.SIDE) - 1;
+        int endY = (int)Math.ceil(maxY / MCBlock.SIDE);
         int startZ = (int)Math.floor(minZ / MCBlock.SIDE);
-        int endZ = (int)Math.ceil(maxZ / MCBlock.SIDE) - 1;
+        int endZ = (int)Math.ceil(maxZ / MCBlock.SIDE);
+        System.out.println("碰撞检测范围: X[" + startX + "," + endX + "] Y[" + startY + "," + endY + "] Z[" + startZ + "," + endZ + "]");
 
         // 遍历可能碰撞的方块
         for (int bx = startX; bx <= endX; bx++) {
@@ -53,45 +54,12 @@ public class MCPerson {
 
                     // 如果方块存在，发生碰撞
                     if (mapGrid.get(bx, by, bz) != null) {
+                        System.out.println("检测到碰撞 at [" + bx + "," + by + "," + bz + "]");
                         return true;
                     }
                 }
             }
         }
         return false;
-    }
-
-    // 尝试移动，如果没有碰撞则更新位置
-    public boolean tryMove(Vector3f newPosition) {
-        if (!collide(newPosition.x, newPosition.y, newPosition.z)) {
-            position.set(newPosition);
-            return true;
-        }
-        return false;
-    }
-
-    // 滑动碰撞：先尝试X轴移动，再尝试Y轴，最后尝试Z轴
-    public Vector3f slideCollision(Vector3f currentPos, Vector3f targetPos) {
-        Vector3f result = new Vector3f(currentPos);
-
-        // 尝试X轴移动
-        Vector3f temp = new Vector3f(targetPos.x, currentPos.y, currentPos.z);
-        if (!collide(temp.x, temp.y, temp.z)) {
-            result.x = temp.x;
-        }
-
-        // 尝试Y轴移动
-        temp.set(result.x, targetPos.y, currentPos.z);
-        if (!collide(temp.x, temp.y, temp.z)) {
-            result.y = temp.y;
-        }
-
-        // 尝试Z轴移动
-        temp.set(result.x, result.y, targetPos.z);
-        if (!collide(temp.x, temp.y, temp.z)) {
-            result.z = temp.z;
-        }
-
-        return result;
     }
 }
