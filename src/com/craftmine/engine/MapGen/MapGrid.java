@@ -5,50 +5,44 @@ import com.craftmine.gameBlock.MCBlock;
 // 定义一个三维网格类，用于管理Minecraft风格的方块世界
 public class MapGrid {
 
-    // 三维数组，存储所有方块对象 [x][y][z]
-    protected MCBlock[][][] blockMap;
-
-    // 网格的尺寸（长、宽、高），final表示不可修改
-    public final int lx, ly, lz;
+    protected MCBlock[][][] blockMap;// 三维数组，存储所有方块对象
+    public final int lx, ly, lz;// 网格的尺寸（长、宽、高）
 
     // 构造函数：初始化指定尺寸的网格
     public MapGrid(int lx, int ly, int lz){
-        // 创建三维数组并保存尺寸
         blockMap = new MCBlock[this.lx=lx][this.ly=ly][this.lz=lz];
     }
 
     // 在指定坐标设置方块，返回被替换的旧方块
-    public MCBlock set(int x, int y, int z, MCBlock MCBlock){
-        // 检查坐标是否越界
-        if(!ib(x,y,z)) return null;
+    public MCBlock setBlock(int x, int y, int z, MCBlock MCBlock){
 
-        // 获取当前位置的旧方块
-        MCBlock ret = blockMap[x][y][z];
-        // 设置新方块
-        blockMap[x][y][z] = MCBlock;
-        return ret;
+        if(!ifBlockInBounds(x,y,z)) return null;// 检查坐标是否越界方块
+        MCBlock currentBlock = blockMap[x][y][z];// 尝试获取当前位置的方块
+        blockMap[x][y][z] = MCBlock;// 设置新方块
+        System.out.println("设置方块: " + x + "," + y + "," + z + " 为 " + (MCBlock == null ? "null" : MCBlock.getClass().getSimpleName()));
+        return currentBlock;
     }
 
     // 获取指定坐标的方块
-    public MCBlock get(int x, int y, int z){
-        // 检查坐标是否越界
-        if(!ib(x,y,z)) return null;
+    public MCBlock getBlock(int x, int y, int z){
 
+        if(!ifBlockInBounds(x,y,z)) return null;// 检查坐标是否越界
         return blockMap[x][y][z];
     }
 
     // 通过世界坐标获取方块（将世界坐标转换为网格坐标）
-    public MCBlock get(double x, double y, double z){
+    // 此方法暂时无用
+    public MCBlock getBlock(double x, double y, double z){
         // 将世界坐标除以方块边长得到网格坐标
         int xx = (int)(x / MCBlock.SIDE);
         int yy = (int)(y / MCBlock.SIDE);
         int zz = (int)(z / MCBlock.SIDE);
 
-        return get(xx,yy,zz);
+        return getBlock(xx,yy,zz);
     }
 
-    // 检查坐标是否在网格范围内（Is in bounds）
-    public boolean ib(int x, int y, int z){
+    // 检查坐标是否在网格范围内
+    public boolean ifBlockInBounds(int x, int y, int z){
         return !(x<0 || y<0 || z<0 || x>=lx || y>=ly || z>=lz);
     }
 
@@ -126,7 +120,7 @@ public class MapGrid {
 //        int y = (int)(b.y/MCBlock.SIDE);
 //        int z = (int)(b.z/MCBlock.SIDE);
 //        // 从网格中移除该方块
-//        set(x,y,z, null);
+//        setBlock(x,y,z, null);
 //
 //        // 重新计算该位置的可见性
 //        flood(x,y,z);
@@ -147,7 +141,7 @@ public class MapGrid {
 //            int tz = z +mz[i];
 //
 //            // 获取相邻方块
-//            MCBlock bb = get(tx,ty,tz);
+//            MCBlock bb = getBlock(tx,ty,tz);
 //            if( bb == null)
 //                // 如果相邻位置为空，添加当前方块的对应面
 //                r.add( b.getQuads()[oppSides[i]] );
@@ -157,7 +151,7 @@ public class MapGrid {
 //        }
 //
 //        // 将方块放入网格
-//       set(x,y,z, b);
+//       setBlock(x,y,z, b);
 //    }
 //
 //    // 洪水填充算法，计算从(x,y,z)开始的可见方块
@@ -181,7 +175,7 @@ public class MapGrid {
 //                    int tz = zz +mz[i];
 //
 //                    // 检查相邻坐标是否有效
-//                    if(ib(tx,ty,tz)){
+//                    if(ifBlockInBounds(tx,ty,tz)){
 //                        // 如果相邻位置有方块
 //                        if(blockMap[tx][ty][tz] != null)
 //                            // 将该方块的对应面添加到渲染器

@@ -4,8 +4,6 @@ import com.craftmine.gameBlock.MCBlock;
 import com.craftmine.engine.MapGen.MapGrid;
 import org.joml.Vector3f;
 
-import static com.craftmine.game.GameResources.*;
-
 public class MCPerson {
     private MapGrid mapGrid;
     private Vector3f position;
@@ -50,10 +48,10 @@ public class MCPerson {
             for (int by = startY; by <= endY; by++) {
                 for (int bz = startZ; bz <= endZ; bz++) {
                     // 检查方块边界
-                    if (!mapGrid.ib(bx, by, bz)) continue;
+                    if (!mapGrid.ifBlockInBounds(bx, by, bz)) continue;
 
                     // 如果方块存在，发生碰撞
-                    if (mapGrid.get(bx, by, bz) != null) {
+                    if (mapGrid.getBlock(bx, by, bz) != null) {
                         System.out.println("检测到碰撞 at [" + bx + "," + by + "," + bz + "]");
                         return true;
                     }

@@ -1,24 +1,26 @@
 package com.craftmine.engine.MapGen;
 
-import com.craftmine.engine.MapGen.MapGrid;
 import java.util.*;
+
+import com.craftmine.game.Minecraft;
 import com.craftmine.gameBlock.MCBlock;
 
-public class McMapGen {
+//已验证完成，没有问题（应该？）
+public class MCMapGen {
 
     private int LX,LY,LZ;//设置三维
     private MapGrid grid;//存方块数据
-    public McMapGen(int lx, int ly, int lz) {
+    public MCMapGen(int lx, int ly, int lz) {
         LX = lx;
         LY = ly;
         LZ = lz;
     }//转换
 
-    public MapGrid MapGrid(){
+    public MapGrid getGrid(){
         return grid;
     }//返回方块设计
 
-    public void generateMap() {
+    public void genMap() {
         grid = new MapGrid(LX, LY, LZ);//初始化网络
         int[][] heights = new int[LZ][LX];//生成高度图
         double[][] n1 = perlinNoise(randGrid(LX, LY), (int) (6 + 2 * Math.random()), 0.4 + 0.15 * Math.random());
@@ -39,24 +41,24 @@ public class McMapGen {
             for (int y = 0; y < LY; y++) {
                 // 高地生成草方块和土/石头
                 if (heights[x][y] > G + 2) {
-                    grid.set(x, y, heights[x][y], loadBlock('b', x, y, heights[x][y]));//设置一个方块类型
+                    grid.setBlock(x, y, heights[x][y], loadBlock('b', x, y, heights[x][y]));//设置一个方块类型
                     for (int z = heights[x][y] - 1; z >= 0; z--) {//从上到下 的循环
                         char MCBlock = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';/*从地面高度到当前层高度的相对高度，除
                         以 10.0 是为了得到一个比例因子，目的是让高度差较小的地方生成不同的方块*/
-                        grid.set(x, y, z, loadBlock(MCBlock, x, y, z));
+                        grid.setBlock(x, y, z, loadBlock(MCBlock, x, y, z));
                     }
                 }
                 // 低地生成沙方块和土/石头
                 else {/*如果当前高度值小于或等于 G + 2，则执行下面的代码。这可能意味着在较低的高度区域，生成地下的不同类型的方块（如沙子、土块或岩石）。*/
                     for (int z = heights[x][y]; z >= 0 && z > heights[x][y] - 10; z--) {
-                        grid.set(x, y, z, loadBlock('s', x, y, z));
+                        grid.setBlock(x, y, z, loadBlock('s', x, y, z));
                         /*height[x][y] 表示当前的地面高度。
                         z >= 0 确保循环不会超出地下的边界。
                         z > height[x][y] - 10 确保循环只执行 10层。*/
                     }
                     for (int z = heights[x][y] - 10; z >= 0; z--) {
                         char MCBlock = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';
-                        grid.set(x, y, z, loadBlock(MCBlock, x, y, z));
+                        grid.setBlock(x, y, z, loadBlock(MCBlock, x, y, z));
                         /*循环从 height[x][y] - 10 开始，继续向下直到 0。意味着接下来会从沙土层下面的第 11 层开始生成地下方块*/
                     }
                 }
@@ -275,7 +277,7 @@ public class McMapGen {
      * @param z Z坐标
      * @return 方块对象
      */
-//    public static MCBlock loadBlock(char c, int x, int y, int z) {
-//        return MineCraft.loadBlock(c, x, y, z);
-//    }
+    public static MCBlock loadBlock(char c, int x, int y, int z) {
+        return Minecraft.loadBlock(c, x, y, z);
+    }
 }

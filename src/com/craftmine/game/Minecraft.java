@@ -3,6 +3,7 @@ package com.craftmine.game;
 import com.craftmine.engine.*;
 import com.craftmine.engine.GUI.IGUIInstance;
 import com.craftmine.engine.MapGen.MapGrid;
+import com.craftmine.engine.MapGen.MCMapGen;
 import com.craftmine.engine.camera.Camera;
 import com.craftmine.engine.light.SceneLights;
 import com.craftmine.engine.mouseinput.MouseInput;
@@ -32,13 +33,14 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private static final float MOVEMENT_SPEED = 0.005f;
     private static final int NUM_CHUNKS = 4;
     private Entity[][] terrainEntities;
-    private Entity cubeEntity1, cubeEntity2, cubeEntity3;
+    private Entity cubeEntity1;
     private SoundSource playerSoundSource;
     private SoundManager soundMgr;
     private MouseInput mouseInput;
-
-    private MCPerson mcPerson;
+    private Scene scene;
+    private MCMapGen mcMapGen;
     private MapGrid mapGrid;
+    private MCPerson mcPerson;
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
@@ -55,15 +57,13 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                 scene.getTextureCache());
         scene.addModel(cubeModel);
 
-        cubeEntity1 = new Entity("cube-entity1", cubeModel.getID());
-        cubeEntity2 = new Entity("cube-entity2", cubeModel.getID());
-        cubeEntity3 = new Entity("cube-entity3", cubeModel.getID());
-        cubeEntity1.setPosition(0, 0, 1);
-        cubeEntity2.setPosition(0, 0, 0);
-        cubeEntity3.setPosition(0, 0, -1);
-        scene.addEntity(cubeEntity1);
-        scene.addEntity(cubeEntity2);
-        scene.addEntity(cubeEntity3);
+        mcMapGen = new MCMapGen(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);//初始化地图数据
+        mcMapGen.genMap();
+        mapGrid = mcMapGen.getGrid();
+
+//        cubeEntity1 = new Entity("cube-entity1", cubeModel.getID());
+//        cubeEntity1.setPosition(0, 0, 1);
+//        scene.addEntity(cubeEntity1);
 
 //        String quadModelId = "quad-model";
 //        Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
@@ -108,12 +108,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         double rotation = 1.5;
         cubeEntity1.setRotation(1, 1, 1, (int) Math.toRadians(rotation));
         cubeEntity1.updateModelMatrix();
-
-        cubeEntity2.setRotation(1, 1, 1, (int) Math.toRadians(rotation));
-        cubeEntity2.updateModelMatrix();
-
-        cubeEntity3.setRotation(1, 1, 1, (int) Math.toRadians(rotation));
-        cubeEntity3.updateModelMatrix();
     }
 
     @Override
