@@ -1,29 +1,17 @@
 package com.craftmine.gameBlock;
 
+import com.craftmine.engine.Model;
+import com.craftmine.engine.ModelLoader;
+import com.craftmine.game.Entity;
+
+import static com.craftmine.game.GameResources.CUBE_MODEL_PATH1;
+
 public class MCBlock {
     // 方块的边长
     public static final double SIDE = 1.0;
+    int x,y,z;
 
-    // 方块类型
-    private int blockType;
-
-    // 默认构造函数
-    public MCBlock() {
-        this.blockType = 1; // 默认为普通方块
-    }
-
-    // 带类型的构造函数
-    public MCBlock(int blockType) {
-        this.blockType = blockType;
-    }
-
-    // 获取方块类型
-    public int getBlockType() {
-        return blockType;
-    }
-
-    // 判断方块是否为实心（可碰撞）
-    public boolean isSolid() {
-        return true; // 默认所有方块都是实心的
+    public MCBlock(int x, int y, int z){
+        this.x = x; this.y = y; this.z = z;
     }
 }

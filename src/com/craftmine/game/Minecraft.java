@@ -9,6 +9,7 @@ import com.craftmine.engine.mouseinput.MouseInput;
 import com.craftmine.engine.scene.Scene;
 import com.craftmine.engine.skybox.SkyBox;
 import com.craftmine.engine.sound.*;
+import com.craftmine.gameBlock.*;
 import imgui.*;
 import imgui.flag.ImGuiCond;
 import org.joml.*;
@@ -48,6 +49,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     @Override
     public void init(MCWindows window, Scene scene, Render render) {
         mouseInput = window.getMouseInput();
+
         String cubeModelID = "cube-model";
         Model cubeModel = ModelLoader.loadModel(cubeModelID, CUBE_MODEL_PATH1,
                 scene.getTextureCache());
@@ -268,5 +270,18 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             }
         }
         scene.setSelectedEntity(selectedEntity);
+    }
+
+    public static MCBlock loadBlock(char c, int x, int y, int z){
+        switch(c){
+            case 'g' : return new MCGrassBlock(x, y, z);
+//            case 'd' : return new MCDirtBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+//            case 'w' : return new MCWaterBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+//            case 'o' : return new MCWoodBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+//            case 'l' : return new MCLeavesBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+//            case 's' : return new MCSandBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+//            case 't' : return new MCStoneBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+        }
+        return null;
     }
 }

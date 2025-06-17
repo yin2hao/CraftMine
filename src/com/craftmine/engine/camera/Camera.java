@@ -39,7 +39,7 @@ public class Camera {
         viewMatrix.positiveZ(direction).negate().mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.sub(direction);
-        boolean collision = checkCollision(oldPos);
+        boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);
             System.out.println("碰撞检测: 后退被阻止");
@@ -51,7 +51,7 @@ public class Camera {
         viewMatrix.positiveZ(direction).negate().mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.add(direction);
-        boolean collision = checkCollision(oldPos);
+        boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);
             System.out.println("碰撞检测: 前进被阻止");
@@ -63,7 +63,7 @@ public class Camera {
         viewMatrix.positiveX(right).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.sub(right);
-        boolean collision = checkCollision(oldPos);
+        boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);
             System.out.println("碰撞检测: 左移被阻止");
@@ -75,7 +75,7 @@ public class Camera {
         viewMatrix.positiveX(right).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.add(right);
-        boolean collision = checkCollision(oldPos);
+        boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);
             System.out.println("碰撞检测: 右移被阻止");
@@ -87,7 +87,7 @@ public class Camera {
         viewMatrix.positiveY(up).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.add(up);
-        boolean collision = checkCollision(oldPos);
+        boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);
             System.out.println("碰撞检测: 上升被阻止");
@@ -99,7 +99,7 @@ public class Camera {
         viewMatrix.positiveY(up).mul(inc);
         Vector3f oldPos = new Vector3f(position);
         position.sub(up);
-        boolean collision = checkCollision(oldPos);
+        boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);
             System.out.println("碰撞检测: 下降被阻止");
@@ -109,7 +109,7 @@ public class Camera {
     }
 
     // 检查碰撞并输出调试信息
-    private boolean checkCollision(Vector3f oldPos) {
+    private boolean checkCollision(Vector3f position) {
         if (mcPerson == null || mapGrid == null) {
             System.out.println("警告: mcPerson或mapGrid为null，跳过碰撞检测");
             return false;
@@ -120,11 +120,6 @@ public class Camera {
 
         // 检查碰撞
         boolean collision = mcPerson.collide(position.x, position.y, position.z);
-
-        // 每100次移动输出一次位置信息(避免过多输出)
-        if (Math.random() < 0.01) {
-            System.out.println("位置: " + position + ", 碰撞: " + collision);
-        }
 
         return collision;
     }
