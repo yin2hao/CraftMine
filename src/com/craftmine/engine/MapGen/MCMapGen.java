@@ -21,50 +21,47 @@ public class MCMapGen {
     }//返回方块设计
 
     public void genMap() {
-        grid = new MapGrid(LX, LY, LZ);//初始化网络
-        int[][] heights = new int[LZ][LX];//生成高度图
+        grid = new MapGrid(LX, LY, LZ); // 初始化网格
+        int[][] heights = new int[LX][LZ]; // 生成高度图
         double[][] n1 = perlinNoise(randGrid(LX, LY), (int) (6 + 2 * Math.random()), 0.4 + 0.15 * Math.random());
-        //噪音1
-        double[][] n2 = perlinNoise(randGrid(LX, LY), (int) (16 + 3 * Math.random()), 0.3 + 0.15 * Math.random());
-        //噪音2
+        double[][] n2 = perlinNoise(randGrid(LX, LY), (int) (14 + 3 * Math.random()), 0.3 + 0.15 * Math.random());
+
         int minh = Integer.MAX_VALUE, maxh = Integer.MIN_VALUE, Gaoduzhi = 0;
-        for (int i = 0; i < LX; i++) {//遍历高度并计算二层噪音
+        for (int i = 0; i < LX; i++) { // 遍历高度并计算二层噪音
             for (int j = 0; j < LZ; j++) {
-                heights[i][j] = (int) ((n1[i][j] + n2[i][j] / 2 * LZ));//
-                minh = Math.min(minh, heights[i][j]);//高度最小值
-                maxh = Math.max(maxh, heights[i][j]);//高度最大值
+                heights[i][j] = (int) ((n1[i][j] + n2[i][j] *0.5 * (LZ-1)));
+                heights[i][j] = Math.max(0, Math.min(LZ - 1, heights[i][j]));
+                minh = Math.min(minh, heights[i][j]); // 高度最小值
+                maxh = Math.max(maxh, heights[i][j]); // 高度最大值
                 Gaoduzhi += heights[i][j];
             }
         }
-        int G = ((Gaoduzhi / (LX * LY) - minh) * 2 / 3 + minh);
+
+        int G = ((Gaoduzhi / (LX * LZ) - minh) * 2 / 3 + minh);
         for (int x = 0; x < LX; x++) {
             for (int y = 0; y < LY; y++) {
-                // 高地生成草方块和土/石头
-                if (heights[x][y] > G + 2) {
-                    grid.setBlock(x, y, heights[x][y], loadBlock('b', x, y, heights[x][y]));//设置一个方块类型
-                    for (int z = heights[x][y] - 1; z >= 0; z--) {//从上到下 的循环
-                        char MCBlock = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';/*从地面高度到当前层高度的相对高度，除
-                        以 10.0 是为了得到一个比例因子，目的是让高度差较小的地方生成不同的方块*/
-                        grid.setBlock(x, y, z, loadBlock(MCBlock, x, y, z));
+                // 确保高度值有效
+                int height = Math.min(LZ - 1, Math.max(0, heights[x][Math.min(LZ - 1, y)]));
+
+                if (height > G + 2) {
+                    grid.setBlock(x, y, height, loadBlock('b', x, y, height));
+                    for (int z = height - 1; z >= 0; z--) {
+                        char blockType = (height - z) / 10.0 < Math.random() ? 'd' : 't';
+                        grid.setBlock(x, y, z, loadBlock(blockType, x, y, z));
                     }
-                }
-                // 低地生成沙方块和土/石头
-                else {/*如果当前高度值小于或等于 G + 2，则执行下面的代码。这可能意味着在较低的高度区域，生成地下的不同类型的方块（如沙子、土块或岩石）。*/
-                    for (int z = heights[x][y]; z >= 0 && z > heights[x][y] - 10; z--) {
+                } else {
+                    for (int z = height; z >= 0 && z > height - 10; z--) {
                         grid.setBlock(x, y, z, loadBlock('s', x, y, z));
-                        /*height[x][y] 表示当前的地面高度。
-                        z >= 0 确保循环不会超出地下的边界。
-                        z > height[x][y] - 10 确保循环只执行 10层。*/
                     }
-                    for (int z = heights[x][y] - 10; z >= 0; z--) {
-                        char MCBlock = (heights[x][y] - z) / 10.0 < Math.random() ? 'd' : 't';
-                        grid.setBlock(x, y, z, loadBlock(MCBlock, x, y, z));
-                        /*循环从 height[x][y] - 10 开始，继续向下直到 0。意味着接下来会从沙土层下面的第 11 层开始生成地下方块*/
+                    for (int z = height - 10; z >= 0; z--) {
+                        char blockType = (height - z) / 10.0 < Math.random() ? 'd' : 't';
+                        grid.setBlock(x, y, z, loadBlock(blockType, x, y, z));
                     }
                 }
             }
         }
     }
+
 
     /**
      * 洞穴生成算法
