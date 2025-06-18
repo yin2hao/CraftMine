@@ -46,7 +46,10 @@ public class MapGrid {
         return !(x<0 || y<0 || z<0 || x>=lx || y>=ly || z>=lz);
     }
 
-//    // 网格渲染器实例
+    public MCBlock[][][] getBlockMap() {
+        return blockMap;
+    }
+    //    // 网格渲染器实例
 //    protected MCGridRender r;
 //
 //    // 六个方向的x偏移量（左、右、前、后、上、下）

@@ -33,7 +33,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private static final float MOVEMENT_SPEED = 0.005f;
     private static final int NUM_CHUNKS = 4;
     private Entity[][] terrainEntities;
-    private Entity cubeEntity1;
     private SoundSource playerSoundSource;
     private SoundManager soundMgr;
     private MouseInput mouseInput;
@@ -52,15 +51,17 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     public void init(MCWindows window, Scene scene, Render render) {
         mouseInput = window.getMouseInput();
 
-        String cubeModelID = "cube-model";
-        Model cubeModel = ModelLoader.loadModel(cubeModelID, CUBE_MODEL_PATH1,
+        //这是草方块的模型和纹理
+        Model cubeModel = ModelLoader.loadModel("Grass_model", CUBE_MODEL_PATH1,
                 scene.getTextureCache());
         scene.addModel(cubeModel);
 
-        mcMapGen = new MCMapGen(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);//初始化地图数据
-        mcMapGen.genMap();
+
+        mcMapGen = new MCMapGen(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);//初始化地图数据（长宽高）
+        mcMapGen.genMap();//生成方块
         mapGrid = mcMapGen.getGrid();
 
+        scene.addBlockMap(mapGrid.getBlockMap());
 //        cubeEntity1 = new Entity("cube-entity1", cubeModel.getID());
 //        cubeEntity1.setPosition(0, 0, 1);
 //        scene.addEntity(cubeEntity1);
@@ -92,7 +93,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         updateTerrain(scene);//动态加载地形，暂时无用
 
         // 初始化地图和玩家
-        mapGrid = new MapGrid(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);
         mcPerson = new MCPerson(mapGrid);
 
         Camera camera = scene.getCamera();
@@ -106,8 +106,8 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     @Override
     public void update(MCWindows windows, Scene scene, long diffTimeMillis) {
         double rotation = 1.5;
-        cubeEntity1.setRotation(1, 1, 1, (int) Math.toRadians(rotation));
-        cubeEntity1.updateModelMatrix();
+//        cubeEntity1.setRotation(1, 1, 1, (int) Math.toRadians(rotation));
+//        cubeEntity1.updateModelMatrix();
     }
 
     @Override
@@ -129,7 +129,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
         MouseInput mouseInput = windows.getMouseInput();
         if (mouseInput.isLeftButtonPressed()) {
-            selectEntity(windows, scene, mouseInput.getCurrentPos());
+//            selectEntity(windows, scene, mouseInput.getCurrentPos());
         }
         if (mouseInput.isInWindows()) {
             Vector2f displVec = mouseInput.getDisplVec();
@@ -203,79 +203,83 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         playerSoundSource.play();
     }
 
-    private void selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
-        int wdwWidth = windows.getWidth();
-        int wdwHeight = windows.getHeight();
 
-        float centerX = wdwWidth / 2.0f;
-        float centerY = wdwHeight / 2.0f;
-        float x,y,z;
-
-        if (!mouseInput.isESCPressed()){
-            x = (2 * centerX) / wdwWidth - 1.0f;
-            y = 1.0f - (2 * centerY) / wdwHeight;
-            z = -1.0f;
-        }else {
-            x = (2 * Pos.x) / wdwWidth - 1.0f;
-            y = 1.0f - (2 * Pos.y) / wdwHeight;
-            z = -1.0f;
-        }
-
-        Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
-        Vector4f mouseDir = new Vector4f(x, y, z, 1.0f);
-        mouseDir.mul(invProjMatrix);
-        mouseDir.z = -1.0f;
-        mouseDir.w = 0.0f;
-
-        Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
-        mouseDir.mul(invViewMatrix);
-
-        Vector4f min = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-        Vector4f max = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-        Vector2f nearFar = new Vector2f();
-
-        Entity selectedEntity = null;
-        float closestDistance = Float.POSITIVE_INFINITY;
-        Vector3f center = scene.getCamera().getPosition();
-
-        Collection<Model> models = scene.getModelMap().values();
-        Matrix4f modelMatrix = new Matrix4f();
-        for (Model model : models) {
-            List<Entity> entities = model.getEntitieList();
-            for (Entity entity : entities) {
-                modelMatrix.translate(entity.getPosition()).scale(entity.getScale());
-                for (Material material : model.getMaterialList()) {
-                    for (Mesh mesh : material.getMeshList()) {
-                        Vector3f aabbMin = mesh.getAabbMin();
-                        min.set(aabbMin.x, aabbMin.y, aabbMin.z, 1.0f);
-                        min.mul(modelMatrix);
-                        Vector3f aabMax = mesh.getAabbMax();
-                        max.set(aabMax.x, aabMax.y, aabMax.z, 1.0f);
-                        max.mul(modelMatrix);
-                        if (Intersectionf.intersectRayAab(center.x, center.y, center.z, mouseDir.x, mouseDir.y, mouseDir.z,
-                                min.x, min.y, min.z, max.x, max.y, max.z, nearFar) && nearFar.x < closestDistance) {
-                            closestDistance = nearFar.x;
-                            selectedEntity = entity;
-                            System.out.println("[DEBUG]实体选择" +  selectedEntity);
-                        }
-                    }
-                }
-                modelMatrix.identity();
-            }
-        }
-        scene.setSelectedEntity(selectedEntity);
-    }
+    //因为地形存储原因，实体列表由原本通过List<Entity>进行存储变为使用BlockMap[][][]进行存储
+    //因此，改方法需要大改
+//    private void selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
+//        int wdwWidth = windows.getWidth();
+//        int wdwHeight = windows.getHeight();
+//
+//        float centerX = wdwWidth / 2.0f;
+//        float centerY = wdwHeight / 2.0f;
+//        float x,y,z;
+//
+//        if (!mouseInput.isESCPressed()){
+//            x = (2 * centerX) / wdwWidth - 1.0f;
+//            y = 1.0f - (2 * centerY) / wdwHeight;
+//            z = -1.0f;
+//        }else {
+//            x = (2 * Pos.x) / wdwWidth - 1.0f;
+//            y = 1.0f - (2 * Pos.y) / wdwHeight;
+//            z = -1.0f;
+//        }
+//
+//        Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
+//        Vector4f mouseDir = new Vector4f(x, y, z, 1.0f);
+//        mouseDir.mul(invProjMatrix);
+//        mouseDir.z = -1.0f;
+//        mouseDir.w = 0.0f;
+//
+//        Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
+//        mouseDir.mul(invViewMatrix);
+//
+//        Vector4f min = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+//        Vector4f max = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+//        Vector2f nearFar = new Vector2f();
+//
+//        Entity selectedEntity = null;
+//        float closestDistance = Float.POSITIVE_INFINITY;
+//        Vector3f center = scene.getCamera().getPosition();
+//
+//        Collection<Model> models = scene.getModelMap().values();
+//        Matrix4f modelMatrix = new Matrix4f();
+//        for (Model model : models) {
+//            List<Entity> entities = model.getEntitieList();
+//            for (Entity entity : entities) {
+//                modelMatrix.translate(entity.getPosition()).scale(entity.getScale());
+//                for (Material material : model.getMaterialList()) {
+//                    for (Mesh mesh : material.getMeshList()) {
+//                        Vector3f aabbMin = mesh.getAabbMin();
+//                        min.set(aabbMin.x, aabbMin.y, aabbMin.z, 1.0f);
+//                        min.mul(modelMatrix);
+//                        Vector3f aabMax = mesh.getAabbMax();
+//                        max.set(aabMax.x, aabMax.y, aabMax.z, 1.0f);
+//                        max.mul(modelMatrix);
+//                        if (Intersectionf.intersectRayAab(center.x, center.y, center.z, mouseDir.x, mouseDir.y, mouseDir.z,
+//                                min.x, min.y, min.z, max.x, max.y, max.z, nearFar) && nearFar.x < closestDistance) {
+//                            closestDistance = nearFar.x;
+//                            selectedEntity = entity;
+//                            System.out.println("[DEBUG]实体选择" +  selectedEntity);
+//                        }
+//                    }
+//                }
+//                modelMatrix.identity();
+//            }
+//        }
+//        scene.setSelectedEntity(selectedEntity);
+//    }
 
     public static MCBlock loadBlock(char c, int x, int y, int z){
         switch(c){
-            case 'g' : return new MCGrassBlock(x, y, z);
-//            case 'd' : return new MCDirtBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+            case 'g' :
+            default:    return new MCGrassBlock(x, y, z);
+//            case 'd' : return new MCDirtBlock(x, y, z);
 //            case 'w' : return new MCWaterBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
 //            case 'o' : return new MCWoodBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
 //            case 'l' : return new MCLeavesBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
 //            case 's' : return new MCSandBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
-//            case 't' : return new MCStoneBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+//            case 't' : return new MCStoneBlock(x, y, z);
         }
-        return null;
+//        return null;
     }
 }

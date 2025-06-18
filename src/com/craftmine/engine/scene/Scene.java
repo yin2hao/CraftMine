@@ -8,12 +8,15 @@ import com.craftmine.engine.camera.Camera;
 import com.craftmine.engine.light.SceneLights;
 import com.craftmine.engine.skybox.SkyBox;
 import com.craftmine.game.Entity;
+import com.craftmine.gameBlock.MCBlock;
+
 import java.util.*;
 
 //主要用于初始化各个类
 public class Scene {
 
     private Map<String, Model> modelMap;
+    private MCBlock[][][] blockMap;
     private Projection projection;//投影
     private TextureCache textureCache;//纹理
     private Camera camera;//摄像机
@@ -29,13 +32,41 @@ public class Scene {
         camera = new Camera();
     }
 
-    public void addEntity(Entity entity) {
-        String modelID = entity.getModelID();
-        Model model = modelMap.get(modelID);
-        if (model == null) {
-            throw new RuntimeException("无法找到模型  [" + modelID + "]");
+    public void addBlockMap(MCBlock[][][] blockMap) {
+        this.blockMap = blockMap;
+
+        // 遍历方块数组中的所有方块
+        for (int x = 0; x < blockMap.length; x++) {
+            for (int y = 0; y < blockMap[x].length; y++) {
+                for (int z = 0; z < blockMap[x][y].length; z++) {
+                    MCBlock block = blockMap[x][y][z];
+                    if (block != null) {
+                        // 获取方块对应的模型ID
+                        String modelID = "Grass_model"; // 假设所有方块都使用草方块模型
+
+                        // 获取对应的模型
+                        Model model = modelMap.get(modelID);
+                        if (model == null) {
+                            System.err.println("无法找到模型 [" + modelID + "]");
+                            continue;
+                        }
+
+                        // 创建实体并设置位置
+                        Entity blockEntity = new Entity("block-" + x + "-" + y + "-" + z, modelID);
+                        blockEntity.setPosition(x, z, y); // 注意：游戏中y轴通常是高度，但这里根据数组索引设置
+
+                        // 将实体添加到模型中
+                        try {
+                            model.getEntitieList().add(blockEntity);
+                        } catch (Exception e) {
+                            System.err.println("添加实体到模型失败: " + e.getMessage());
+                        }
+                    }
+                }
+            }
         }
-        model.getEntitieList().add(entity);
+
+        System.out.println("地图方块加载完成，总共处理了 " + blockMap.length + "x" + blockMap[0].length + "x" + blockMap[0][0].length + " 个方块");
     }
 
     public void addModel(Model model) {

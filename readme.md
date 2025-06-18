@@ -27,8 +27,8 @@
       - [ ] 活动
           - [x] 移动
           - [ ] 跳跃
-          - [ ] 水下移动
-          - [ ] 水下跳跃
+          - [ ] ~~水下移动~~
+          - [ ] ~~水下跳跃~~
           - [ ] 飞行模式(待定)
           - [ ] 破坏方块
             - [x] 计算指针指向方块
@@ -47,6 +47,7 @@
    - [GLFW](https://www.glfw.org/)：创建多个窗口，处理用户输入（键盘、鼠标、游戏外设）并管理上下文。还支持多显示器、剪贴板访问、文件拖放，以及更多功能 。
    - [Assimp](https://www.assimp.org/)：一个可移植的开源库，用于以统一的方式导入各种常见的 3D 模型格式。
    - [STB](https://github.com/nothings/stb)
+   - [ImGUI](https://github.com/ocornut/imgui)：可视化/调试工具
 
 [JOML](https://joml-ci.github.io/JOML/)：一个用于 OpenGL 渲染计算的 Java 数学库
 

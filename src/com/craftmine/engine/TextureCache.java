@@ -18,7 +18,7 @@ public class TextureCache {
     }
 
     public  Texture createTexture(String texturePath){
-        return textureMap.computeIfAbsent(texturePath, Texture::new);
+        return textureMap.computeIfAbsent(texturePath, Texture::new);// 如果不存在则创建新的Texture对象
     }
 
     public Texture getTexture(String texturePath){
