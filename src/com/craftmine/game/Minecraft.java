@@ -137,6 +137,11 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         } else if (windows.isKeyPressed(GLFW_KEY_D)) {
             camera.moveRight(move);
         }
+        if (windows.isKeyPressed(GLFW_KEY_SPACE)) {
+            camera.moveUp(move);
+        } else if (windows.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+            camera.moveDown(move);
+        }
 
         MouseInput mouseInput = windows.getMouseInput();
         if (mouseInput.isLeftButtonPressed()) {

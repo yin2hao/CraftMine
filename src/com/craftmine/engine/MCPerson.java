@@ -48,7 +48,7 @@ public class MCPerson {
             for (int by = startY; by <= endY; by++) {
                 for (int bz = startZ; bz <= endZ; bz++) {
                     // 检查方块边界
-                    if (!mapGrid.ifBlockInBounds(bx, by, bz)) continue;
+//                    if (!mapGrid.ifBlockInBounds(bx, by, bz)) continue;
 
                     // 如果方块存在，发生碰撞
                     if (mapGrid.getBlock(bx, by, bz) != null) {
