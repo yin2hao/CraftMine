@@ -19,7 +19,7 @@ public class MapGrid {
         if(!ifBlockInBounds(x,y,z)) return null;// 检查坐标是否越界方块
         MCBlock currentBlock = blockMap[x][y][z];// 尝试获取当前位置的方块
         blockMap[x][y][z] = MCBlock;// 设置新方块
-        System.out.println("设置方块: " + x + "," + y + "," + z + " 为 " + (MCBlock == null ? "null" : MCBlock.getClass().getSimpleName()));
+//        System.out.println("设置方块: " + x + "," + y + "," + z + " 为 " + (MCBlock == null ? "null" : MCBlock.getClass().getSimpleName()));
         return currentBlock;
     }
 

@@ -41,7 +41,7 @@ public class MCPerson {
         int endY = (int)Math.ceil(maxY / MCBlock.SIDE);
         int startZ = (int)Math.floor(minZ / MCBlock.SIDE);
         int endZ = (int)Math.ceil(maxZ / MCBlock.SIDE);
-        System.out.println("碰撞检测范围: X[" + startX + "," + endX + "] Y[" + startY + "," + endY + "] Z[" + startZ + "," + endZ + "]");
+//        System.out.println("碰撞检测范围: X[" + startX + "," + endX + "] Y[" + startY + "," + endY + "] Z[" + startZ + "," + endZ + "]");
 
         // 遍历可能碰撞的方块
         for (int bx = startX; bx <= endX; bx++) {

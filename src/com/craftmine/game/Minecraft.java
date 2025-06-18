@@ -40,6 +40,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private MCMapGen mcMapGen;
     private MapGrid mapGrid;
     private MCPerson mcPerson;
+    private Entity[][][] entityMap;
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
@@ -61,7 +62,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         mcMapGen.genMap();//生成方块
         mapGrid = mcMapGen.getGrid();
 
-        scene.addBlockMap(mapGrid.getBlockMap());
+        entityMap = scene.addBlockMap(mapGrid.getBlockMap());
 //        cubeEntity1 = new Entity("cube-entity1", cubeModel.getID());
 //        cubeEntity1.setPosition(0, 0, 1);
 //        scene.addEntity(cubeEntity1);
@@ -105,9 +106,19 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     @Override
     public void update(MCWindows windows, Scene scene, long diffTimeMillis) {
-        double rotation = 1.5;
+//        double rotation = 1.5;
 //        cubeEntity1.setRotation(1, 1, 1, (int) Math.toRadians(rotation));
 //        cubeEntity1.updateModelMatrix();
+        for (int x = 0; x < entityMap.length; x++) {
+            for (int y = 0; y < entityMap[x].length; y++) {
+                for (int z = 0; z < entityMap[x][y].length; z++) {
+                    if (entityMap[x][y][z] != null) {
+                        // 更新每个实体的模型矩阵
+                        entityMap[x][y][z].updateModelMatrix();//更新所有实体的模型矩阵
+                    }
+                }
+            }
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@ public class Scene {
     private IGUIInstance guiInstance;//GUI
     private SceneLights sceneLights;//灯光
     private SkyBox skyBox;
+    private Entity[][][] entityMap;
     private Entity selectedEntity;
 
     public Scene(int width, int height) {
@@ -32,8 +33,9 @@ public class Scene {
         camera = new Camera();
     }
 
-    public void addBlockMap(MCBlock[][][] blockMap) {
+    public Entity[][][] addBlockMap(MCBlock[][][] blockMap) {
         this.blockMap = blockMap;
+        entityMap = new Entity[blockMap.length][blockMap[0].length][blockMap[0][0].length];
 
         // 遍历方块数组中的所有方块
         for (int x = 0; x < blockMap.length; x++) {
@@ -52,12 +54,12 @@ public class Scene {
                         }
 
                         // 创建实体并设置位置
-                        Entity blockEntity = new Entity("block-" + x + "-" + y + "-" + z, modelID);
-                        blockEntity.setPosition(x, z, y); // 注意：游戏中y轴通常是高度，但这里根据数组索引设置
+                        entityMap[x][y][z] = new Entity("block-" + x + "-" + y + "-" + z, modelID);
+                        entityMap[x][y][z].setPosition(x, z, y); // 注意：游戏中y轴通常是高度，但这里根据数组索引设置
 
                         // 将实体添加到模型中
                         try {
-                            model.getEntitieList().add(blockEntity);
+                            model.getEntitieList().add(entityMap[x][y][z]);
                         } catch (Exception e) {
                             System.err.println("添加实体到模型失败: " + e.getMessage());
                         }
@@ -65,8 +67,8 @@ public class Scene {
                 }
             }
         }
-
         System.out.println("地图方块加载完成，总共处理了 " + blockMap.length + "x" + blockMap[0].length + "x" + blockMap[0][0].length + " 个方块");
+        return entityMap;
     }
 
     public void addModel(Model model) {
