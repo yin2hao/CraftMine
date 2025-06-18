@@ -140,7 +140,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
         MouseInput mouseInput = windows.getMouseInput();
         if (mouseInput.isLeftButtonPressed()) {
-//            selectEntity(windows, scene, mouseInput.getCurrentPos());
+            selectEntity(windows, scene, mouseInput.getCurrentPos());
         }
         if (mouseInput.isInWindows()) {
             Vector2f displVec = mouseInput.getDisplVec();
@@ -217,68 +217,86 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     //因为地形存储原因，实体列表由原本通过List<Entity>进行存储变为使用BlockMap[][][]进行存储
     //因此，改方法需要大改
-//    private void selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
-//        int wdwWidth = windows.getWidth();
-//        int wdwHeight = windows.getHeight();
-//
-//        float centerX = wdwWidth / 2.0f;
-//        float centerY = wdwHeight / 2.0f;
-//        float x,y,z;
-//
-//        if (!mouseInput.isESCPressed()){
-//            x = (2 * centerX) / wdwWidth - 1.0f;
-//            y = 1.0f - (2 * centerY) / wdwHeight;
-//            z = -1.0f;
-//        }else {
-//            x = (2 * Pos.x) / wdwWidth - 1.0f;
-//            y = 1.0f - (2 * Pos.y) / wdwHeight;
-//            z = -1.0f;
-//        }
-//
-//        Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
-//        Vector4f mouseDir = new Vector4f(x, y, z, 1.0f);
-//        mouseDir.mul(invProjMatrix);
-//        mouseDir.z = -1.0f;
-//        mouseDir.w = 0.0f;
-//
-//        Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
-//        mouseDir.mul(invViewMatrix);
-//
-//        Vector4f min = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-//        Vector4f max = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
-//        Vector2f nearFar = new Vector2f();
-//
-//        Entity selectedEntity = null;
-//        float closestDistance = Float.POSITIVE_INFINITY;
-//        Vector3f center = scene.getCamera().getPosition();
-//
-//        Collection<Model> models = scene.getModelMap().values();
-//        Matrix4f modelMatrix = new Matrix4f();
-//        for (Model model : models) {
-//            List<Entity> entities = model.getEntitieList();
-//            for (Entity entity : entities) {
-//                modelMatrix.translate(entity.getPosition()).scale(entity.getScale());
-//                for (Material material : model.getMaterialList()) {
-//                    for (Mesh mesh : material.getMeshList()) {
-//                        Vector3f aabbMin = mesh.getAabbMin();
-//                        min.set(aabbMin.x, aabbMin.y, aabbMin.z, 1.0f);
-//                        min.mul(modelMatrix);
-//                        Vector3f aabMax = mesh.getAabbMax();
-//                        max.set(aabMax.x, aabMax.y, aabMax.z, 1.0f);
-//                        max.mul(modelMatrix);
-//                        if (Intersectionf.intersectRayAab(center.x, center.y, center.z, mouseDir.x, mouseDir.y, mouseDir.z,
-//                                min.x, min.y, min.z, max.x, max.y, max.z, nearFar) && nearFar.x < closestDistance) {
-//                            closestDistance = nearFar.x;
-//                            selectedEntity = entity;
-//                            System.out.println("[DEBUG]实体选择" +  selectedEntity);
-//                        }
-//                    }
-//                }
-//                modelMatrix.identity();
-//            }
-//        }
-//        scene.setSelectedEntity(selectedEntity);
-//    }
+    private void selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
+        int wdwWidth = windows.getWidth();
+        int wdwHeight = windows.getHeight();
+
+        float centerX = wdwWidth / 2.0f;
+        float centerY = wdwHeight / 2.0f;
+        float mousex,mousey,mousez;
+
+        if (!mouseInput.isESCPressed()){
+            mousex = (2 * centerX) / wdwWidth - 1.0f;
+            mousey = 1.0f - (2 * centerY) / wdwHeight;
+            mousez = -1.0f;
+        }else {
+            mousex = (2 * Pos.x) / wdwWidth - 1.0f;
+            mousey = 1.0f - (2 * Pos.y) / wdwHeight;
+            mousez = -1.0f;
+        }
+
+        Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
+        Vector4f mouseDir = new Vector4f(mousex, mousey, mousez, 1.0f);
+        mouseDir.mul(invProjMatrix);
+        mouseDir.z = -1.0f;
+        mouseDir.w = 0.0f;
+
+        Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
+        mouseDir.mul(invViewMatrix);
+
+        Vector4f min = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        Vector4f max = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        Vector2f nearFar = new Vector2f();
+
+        Entity selectedEntity = null;
+        float closestDistance = Float.POSITIVE_INFINITY;
+        Vector3f center = scene.getCamera().getPosition();
+
+        Matrix4f modelMatrix = new Matrix4f();
+        for (int x = 0; x < entityMap.length; x++) {
+            for (int y = 0; y < entityMap[x].length; y++) {
+                for (int z = 0; z < entityMap[x][y].length; z++) {
+                    Entity entity = entityMap[x][y][z];
+                    if (entity == null) continue;
+
+                    // 获取实体对应的模型
+                    Model model = scene.getModelMap().get(entity.getModelID());
+                    if (model == null) continue;
+
+                    // 构建模型矩阵
+                    modelMatrix.identity()
+                            .translate(entity.getPosition())
+                            .scale(entity.getScale());
+
+                    // 遍历模型的所有材质和网格
+                    for (Material material : model.getMaterialList()) {
+                        for (Mesh mesh : material.getMeshList()) {
+                            Vector3f aabbMin = mesh.getAabbMin();
+                            min.set(aabbMin.x, aabbMin.y, aabbMin.z, 1.0f);
+                            min.mul(modelMatrix);
+                            Vector3f aabMax = mesh.getAabbMax();
+                            max.set(aabMax.x, aabMax.y, aabMax.z, 1.0f);
+                            max.mul(modelMatrix);
+
+                            // 检测射线与AABB的碰撞
+                            if (Intersectionf.intersectRayAab(
+                                    center.x, center.y, center.z,
+                                    mouseDir.x, mouseDir.y, mouseDir.z,
+                                    min.x, min.y, min.z,
+                                    max.x, max.y, max.z,
+                                    nearFar) && nearFar.x < closestDistance) {
+                                closestDistance = nearFar.x;
+                                selectedEntity = entity;
+                                System.out.println("[DEBUG]选中实体: " + selectedEntity.getID() + " 在位置 [" + x + "," + y + "," + z + "]");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        scene.setSelectedEntity(selectedEntity);
+    }
 
     public static MCBlock loadBlock(char c, int x, int y, int z){
         switch(c){
