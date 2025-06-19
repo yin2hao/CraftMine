@@ -47,8 +47,11 @@ public class MCPerson {
         for (int bx = startX; bx <= endX; bx++) {
             for (int by = startY; by <= endY; by++) {
                 for (int bz = startZ; bz <= endZ; bz++) {
-                    // 检查方块边界
-//                    if (!mapGrid.ifBlockInBounds(bx, by, bz)) continue;
+                    // 检查方块边界 - 这行必须取消注释，否则会导致边界外的空间被视为碰撞体
+//                    if (!mapGrid.ifBlockInBounds(bx, by, bz)) {
+//                        System.out.println("坐标超出地图边界: [" + bx + "," + by + "," + bz + "]");
+//                        continue;
+//                    }
 
                     // 如果方块存在，发生碰撞
                     if (mapGrid.getBlock(bx, by, bz) != null) {

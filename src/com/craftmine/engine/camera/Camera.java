@@ -84,9 +84,8 @@ public class Camera {
         }
     }
     public void moveUp(float inc) {
-        viewMatrix.positiveY(up).mul(inc);
         Vector3f oldPos = new Vector3f(position);
-        position.add(up);
+        position.y += inc; // 直接在Y轴上增加，与镜头方向无关
         boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);
@@ -96,9 +95,8 @@ public class Camera {
         }
     }
     public void moveDown(float inc) {
-        viewMatrix.positiveY(up).mul(inc);
         Vector3f oldPos = new Vector3f(position);
-        position.sub(up);
+        position.y -= inc; // 直接在Y轴上减少，与镜头方向无关
         boolean collision = checkCollision(position);
         if (collision) {
             position.set(oldPos);

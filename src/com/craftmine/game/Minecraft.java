@@ -293,6 +293,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                                 closestDistance = nearFar.x;
                                 selectedEntity = entity;
                                 System.out.println("[DEBUG]选中实体: " + selectedEntity.getID() + " 在位置 [" + x + "," + y + "," + z + "]");
+                                if (mouseInput.isRightButtonPressed()){
+                                    mapGrid.destoryBlock(x, y, z);
+                                }
                             }
                         }
                     }
