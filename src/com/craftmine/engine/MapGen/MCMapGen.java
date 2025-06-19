@@ -22,18 +22,26 @@ public class MCMapGen {
 
     public void genMap() {
         grid = new MapGrid(LX, LY, LZ); // 初始化网格
-        int[][] heights = new int[LX][LZ]; // 生成高度图
-        double[][] n1 = perlinNoise(randGrid(LX, LY), (int) (6 + 2 * Math.random()), 0.4 + 0.15 * Math.random());
-        double[][] n2 = perlinNoise(randGrid(LX, LY), (int) (14 + 3 * Math.random()), 0.3 + 0.15 * Math.random());
+        int[][] heights = new int[LX][LZ];
+        double[][] n1 = perlinNoise(randGrid(LX, LZ), (int) (6 + 2 * Math.random()), 0.4 + 0.15 * Math.random());
+        double[][] n2 = perlinNoise(randGrid(LX, LZ), (int) (14 + 3 * Math.random()), 0.3 + 0.15 * Math.random());
 
         int minh = Integer.MAX_VALUE, maxh = Integer.MIN_VALUE, Gaoduzhi = 0;
-        for (int i = 0; i < LX; i++) { // 遍历高度并计算二层噪音
+
+        for (int i = 0; i < LX; i++) {
             for (int j = 0; j < LZ; j++) {
-                heights[i][j] = (int) ((n1[i][j] + n2[i][j] *0.5 * (LZ-1)));
-                heights[i][j] = Math.max(0, Math.min(LZ - 1, heights[i][j]));
-                minh = Math.min(minh, heights[i][j]); // 高度最小值
-                maxh = Math.max(maxh, heights[i][j]); // 高度最大值
-                Gaoduzhi += heights[i][j];
+                // 合并两个噪声，归一化到 [0, 1]
+                double hval = (n1[i][j] + n2[i][j]) / 2.0;
+                hval = (hval + 1.0) / 2.0; // 如果噪声值在 [-1, 1]，先归一化
+
+                // 映射到高度值
+                int height = (int)(hval * (LZ - 1));
+                height = Math.max(0, Math.min(LZ - 1, height)); // 限制在合法范围内
+
+                heights[i][j] = height;
+                minh = Math.min(minh, height);
+                maxh = Math.max(maxh, height);
+                Gaoduzhi += height;
             }
         }
 
@@ -161,6 +169,18 @@ public class MCMapGen {
                 vis[x][y][z] = true;
             }
         }
+//        boolean[][][] caveMask = cave(LX, LY, LZ, minh, maxh, LX * LY * LZ / 25); // 洞穴体积比例，可调
+//
+//// 根据掩码“挖空”地形，生成洞穴
+//        for (int x = 0; x < LX; x++) {
+//            for (int y = 0; y < LY; y++) {
+//                for (int z = 0; z < LZ; z++) {
+//                    if (caveMask[x][y][z]) {
+//                        grid.setBlock(x, y, z, null); // 设置为空气（或使用 loadBlock('0', ...) 代表空气）
+//                    }
+//                }
+//            }
+//        }
 
         System.out.println("Generated " + seeds + " cave seeds");
         return m;
@@ -181,12 +201,12 @@ public class MCMapGen {
 
         for(int i = 0; i < row; i++) {
             int i0 = i >> o << o;
-            int i1 = (i0 + p) % row;
+            int i1 = Math.min(i0 + p, row - 1);
             double hBlend = (i - i0) * f;
 
             for(int j = 0; j < col; j++) {
                 int j0 = j >> o << o;
-                int j1 = (j0 + p) % col;
+                int j1 = Math.min(j0 + p, col - 1);
                 double vBlend = (j - j0) * f;
 
                 double top = interpolate(b[i0][j0], b[i1][j0], hBlend);
