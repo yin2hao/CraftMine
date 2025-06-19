@@ -6,13 +6,17 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseInput {
 
-    private Vector2f currentPos;
-    private Vector2f previousPos;
+    private Vector2f currentPos;//鼠标当前位置
+    private Vector2f previousPos;//鼠标上一次位置
     private Vector2f displVec;//鼠标偏移量
-    private boolean inWindows;
-    private boolean leftButtonPressed;
-    private boolean rightButtonPressed;
-    private boolean isESCPressed;
+    private long leftButtonPressedTime;//鼠标左键按下时间
+    private long leftButtonReleasedTime;//鼠标左键释放时间
+    private long durationTime = 0;//鼠标左键按下持续时间
+    private int action;//鼠标操作类型（按下或释放）
+    private boolean inWindows;//鼠标是否在窗口内
+    private boolean leftButtonPressed;//鼠标左键是否按下
+    private boolean rightButtonPressed;//鼠标右键是否按下
+    private boolean isESCPressed;//是否按下ESC键
 
     public MouseInput(long windowsHandle) {
         //初始化
@@ -34,8 +38,17 @@ public class MouseInput {
         //鼠标点击回调
         //mods是Shift、Ctrl、Alt等快捷键，此处没有用到
         glfwSetMouseButtonCallback(windowsHandle, (handle, button, action, mods) -> {
-            leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
+            if (button == GLFW_MOUSE_BUTTON_1) {
+                if (action == GLFW_PRESS) {
+                    leftButtonPressed = true;
+                    leftButtonPressedTime = System.currentTimeMillis();
+                } else if (action == GLFW_RELEASE) {
+                    leftButtonPressed = false;
+                    leftButtonReleasedTime = System.currentTimeMillis();
+                }
+            }
             rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
+            this.action = action;
         });
     }
 
@@ -69,6 +82,12 @@ public class MouseInput {
         glfwSetCursorPos(windowsHandle, x, y);
     }
 
+    public void resetTime(){
+        //重置鼠标左键按下时间
+        leftButtonPressedTime = 0;
+        durationTime = 0;
+    }
+
     public boolean isLeftButtonPressed(){
         return leftButtonPressed;
     }
@@ -92,5 +111,17 @@ public class MouseInput {
     }
     public void setESCPressed(boolean ESCPressed) {
         isESCPressed = ESCPressed;
+    }
+    public long getLeftButtonPressedTime() {
+        return leftButtonPressedTime;
+    }
+    public void setLeftButtonPressedTime() {
+        this.leftButtonPressedTime = System.currentTimeMillis();
+    }
+    public long getDurationTime() {
+        return durationTime;
+    }
+    public void updateDurationTime() {
+            durationTime += (System.currentTimeMillis() - leftButtonPressedTime);
     }
 }

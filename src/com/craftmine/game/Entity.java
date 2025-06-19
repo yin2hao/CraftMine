@@ -28,10 +28,6 @@ public class Entity {
         position.z = z;
     }
 
-    public void setRotation(float x, float y, float z, float angle){
-        this.rotation.fromAxisAngleRad(x, y, z, angle);
-    }
-
     public void setScale(float scale){
         this.scale = scale;
 //        this.scale = 1.0f; // 强制固定为 1.0f
@@ -58,6 +54,4 @@ public class Entity {
     public float getScale() {return scale;}
     public Quaternionf getRotation() {return rotation;}
     public String getModelID(){return modelID;}
-
-
 }

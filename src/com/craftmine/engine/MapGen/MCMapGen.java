@@ -85,24 +85,21 @@ public class MCMapGen {
             }
         }
 
-//        // --- 4. 删除底部指定层数的方块 (新添加的步骤) ---
-//        System.out.println("Removing bottom 30 layers...");
-//        final int BOTTOM_LAYERS_TO_REMOVE = 170;
-//
-//        // 确定实际要删除的层数，防止超出地图总高度 (LZ)
-//        int layersToDelete = Math.min(BOTTOM_LAYERS_TO_REMOVE, LZ);
-//
-//        // 遍历X和Y平面
-//        for (int x = 0; x < LX; x++) {
-//            for (int y = 0; y < LY; y++) {
-//                // 删除底部Z层
-//                for (int z = 0; z < layersToDelete; z++) {
-//                    grid.setBlock(x, y, z, null); // 将方块设置为空(空气)
-//                }
-//            }
-//        }
-//
-//        System.out.println("Map generation complete.");
+        // 删除底部指定层数的方块
+        final int BOTTOM_LAYERS_TO_REMOVE = 45; // 要删除的底部层数
+        int layersToDelete = Math.min(BOTTOM_LAYERS_TO_REMOVE, LZ);// 确保不超过网格高度
+
+        // 遍历X和Y平面
+        for (int x = 0; x < LX; x++) {
+            for (int z = 0; z < LZ; z++) {
+                // 删除底部Z层
+                for (int y = 0; y < layersToDelete; y++) {
+                    grid.setBlock(x, y, z, null); // 将方块设置为空(空气)
+                }
+            }
+        }
+
+        System.out.println("地型生成完成.");
     }
 
     /**
@@ -202,7 +199,6 @@ public class MCMapGen {
                 vis[cx][cy][cz] = true;
             }
         }
-        System.out.println("Generated " + seeds + " cave seeds");
         return m;
     }
 

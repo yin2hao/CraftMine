@@ -17,8 +17,6 @@ import org.joml.*;
 import org.lwjgl.openal.AL11;
 
 import java.lang.Math;
-import java.util.Collection;
-import java.util.List;
 
 import static com.craftmine.game.GameResources.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -39,6 +37,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private MCPerson mcPerson;
     private Entity[][][] entityMap;
 
+    private Entity lastSelectedEntity = null;// 上一个选中的实体
+    private static final long DESTROY_DELAY_MS = GameResources.DESTROY_DELAY_MS;
+
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
         Engine game = new Engine("CraftMine", new GameResources.MCWindowsOptions(), mc);//初始化窗口
@@ -53,7 +54,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         Model cubeModel = ModelLoader.loadModel("Grass_model", CUBE_MODEL_PATH1,
                 scene.getTextureCache());
         scene.addModel(cubeModel);
-
 
         mcMapGen = new MCMapGen(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);//初始化地图数据（长宽高）
         mcMapGen.genMap();//生成方块
@@ -88,13 +88,13 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         skyBox.getSkyBoxEntity().setScale(50);
         scene.setSkyBox(skyBox);
 
-        updateTerrain(scene);//动态加载地形，暂时无用
+//        updateTerrain(scene);//动态加载地形，暂时无用
 
         // 初始化地图和玩家
         mcPerson = new MCPerson(mapGrid);
 
         Camera camera = scene.getCamera();
-        camera.setPosition(0f, 0f, -11.5f);//设置相机位置
+        camera.setPosition(10f, 75f, 10f);//设置相机位置
         camera.addRotation((float) Math.toRadians(15.0f), (float) Math.toRadians(390.f));
         camera.setCollision(mcPerson, mapGrid);
 
@@ -141,14 +141,50 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         }
 
         MouseInput mouseInput = windows.getMouseInput();
+        Entity selectedEntity = null;
+
         if (mouseInput.isLeftButtonPressed()) {
-            selectEntity(windows, scene, mouseInput.getCurrentPos());
+            mouseInput.updateDurationTime();
+            mouseInput.setLeftButtonPressedTime();
+
+            selectedEntity = selectEntity(windows, scene, mouseInput.getCurrentPos());
+
+            if (selectedEntity != null) {
+                scene.setSelectedEntity(selectedEntity);// 如果选中了实体，更新被选中实体的渲染（改变颜色）
+
+                // 是否是同一个实体
+                if (selectedEntity == lastSelectedEntity) {
+                    mouseInput.updateDurationTime();
+                    long pressDuration = mouseInput.getDurationTime();
+                    System.out.println("按下时间: " + pressDuration + " 毫秒");
+                    if (pressDuration > DESTROY_DELAY_MS) {// 检查按下时间是否超过2秒
+                        // 执行销毁方块操作
+                        System.out.println("销毁方块: " + selectedEntity.getID());
+                        mapGrid.destoryBlock((int)selectedEntity.getPosition().x,
+                                (int)selectedEntity.getPosition().y, (int)selectedEntity.getPosition().z);
+                        lastSelectedEntity = null; // 重置选中实体
+                    }
+                } else {
+                    //选中了新实体
+                    mouseInput.resetTime();
+                    lastSelectedEntity = selectedEntity;
+                }
+            } else {
+                scene.setSelectedEntity(null);
+                mouseInput.resetTime();
+                lastSelectedEntity = null;
+            }
+        } else {
+            // 鼠标释放时保持当前选中状态，但不执行销毁
+            if (lastSelectedEntity == null) {
+                scene.setSelectedEntity(null);
+            }
         }
+
         if (mouseInput.isInWindows()) {
             Vector2f displVec = mouseInput.getDisplVec();
             camera.addRotation((float) Math.toRadians(displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
         }
-
         soundMgr.updateListenerPosition(camera);
     }
 
@@ -178,7 +214,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         return imGuiIO.getWantCaptureMouse() || imGuiIO.getWantCaptureKeyboard();
     }
 
-    public void updateTerrain(Scene scene) {
+    //在此进行优化
+    //当前优化尚未完成
+//    public void updateTerrain(Scene scene) {
 //        int cellSize = 10;
 //        Camera camera = scene.getCamera();
 //        Vector3f cameraPos = camera.getPosition();
@@ -200,7 +238,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 //            }
 //            zOffset++;
 //        }
-    }
+//    }
 
     private void initSounds(Camera camera) {
         soundMgr = new SoundManager();
@@ -216,10 +254,8 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         playerSoundSource.play();
     }
 
-
-    //因为地形存储原因，实体列表由原本通过List<Entity>进行存储变为使用BlockMap[][][]进行存储
-    //因此，改方法需要大改
-    private void selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
+    // 选择方块
+    private Entity selectEntity(MCWindows windows, Scene scene, Vector2f Pos) {
         int wdwWidth = windows.getWidth();
         int wdwHeight = windows.getHeight();
 
@@ -289,18 +325,13 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                                     nearFar) && nearFar.x < closestDistance) {
                                 closestDistance = nearFar.x;
                                 selectedEntity = entity;
-                                System.out.println("[DEBUG]选中实体: " + selectedEntity.getID() + " 在位置 [" + x + "," + y + "," + z + "]");
-                                if (mouseInput.isRightButtonPressed()){
-                                    mapGrid.destoryBlock(x, y, z);
-                                }
                             }
                         }
                     }
                 }
             }
         }
-//        System.out.println(selectedEntity.getPosition());
-        scene.setSelectedEntity(selectedEntity);
+        return selectedEntity;
     }
 
     public static MCBlock loadBlock(char c, int x, int y, int z){

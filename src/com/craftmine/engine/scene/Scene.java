@@ -55,7 +55,7 @@ public class Scene {
 
                         // 创建实体并设置位置
                         entityMap[x][y][z] = new Entity("block-" + x + "-" + y + "-" + z, modelID);
-                        entityMap[x][y][z].setPosition(x, y, z); // 注意：游戏中y轴通常是高度，但这里根据数组索引设置
+                        entityMap[x][y][z].setPosition(x, y, z);
 
                         // 将实体添加到模型中
                         try {

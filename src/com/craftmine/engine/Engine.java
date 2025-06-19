@@ -84,7 +84,6 @@ public class Engine {
                 windows.update();
             }
             initialTime = now;
-            System.out.println(scene.getCamera().getPosition());
         }
         cleanup();
     }
