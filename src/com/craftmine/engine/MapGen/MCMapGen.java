@@ -5,7 +5,7 @@ import java.util.Random; // 使用Random实例以获得更好的随机性
 import com.craftmine.game.Minecraft;
 import com.craftmine.gameBlock.MCBlock;
 
-// 已修正：恢复Z轴为高度，并修复了所有相关逻辑
+// 已更新：基于用户提供的最终版本，添加了删除底部30层的功能
 public class MCMapGen {
 
     // 坐标系定义: LX: 宽度 (X轴), LY: 深度 (Y轴), LZ: 高度 (Z轴)
@@ -28,20 +28,17 @@ public class MCMapGen {
 
         // --- 1. 生成基础地形高度图 (基于X/Y平面) ---
         int[][] heights = new int[LX][LY];
-        // 修正: 柏林噪声应该基于X/Y平面生成
         double[][] n1 = perlinNoise(randGrid(LX, LY), (int) (6 + 2 * rand.nextDouble()), 0.4 + 0.15 * rand.nextDouble());
         double[][] n2 = perlinNoise(randGrid(LX, LY), (int) (14 + 3 * rand.nextDouble()), 0.3 + 0.15 * rand.nextDouble());
 
         int minh = Integer.MAX_VALUE, maxh = Integer.MIN_VALUE;
         long Gaoduzhi = 0;
 
-        // 修正: 遍历X和Y轴来计算每个水平坐标点的高度(Z值)
         for (int x = 0; x < LX; x++) {
             for (int y = 0; y < LY; y++) {
                 double hval = (n1[x][y] + n2[x][y]) / 2.0;
                 hval = (hval + 1.0) / 2.0; // 归一化到 [0, 1]
 
-                // 修正: 高度应该映射到Z轴 (LZ)，因为Z是垂直轴
                 int height = (int) (hval * (LZ - 1));
                 height = Math.max(0, Math.min(LZ - 1, height));
 
@@ -55,7 +52,6 @@ public class MCMapGen {
         // --- 2. 根据高度图填充方块 ---
         int G = (int) (((Gaoduzhi / (long)(LX * LY)) - minh) * 2 / 3 + minh);
 
-        // 修正: 遍历X和Y平面，并沿Z轴垂直填充
         for (int x = 0; x < LX; x++) {
             for (int y = 0; y < LY; y++) {
                 int height = heights[x][y];
@@ -80,11 +76,9 @@ public class MCMapGen {
 
         // --- 3. 生成洞穴并挖空方块 ---
         System.out.println("Generating cave mask...");
-        // 修正: cave方法参数适配 X-width, Y-depth, Z-height
         boolean[][][] caveMask = cave(LX, LY, LZ, minh, maxh, LX * LY * LZ / 30);
         System.out.println("Carving caves...");
 
-        // 修正: 遍历所有维度挖空方块
         for (int x = 0; x < LX; x++) {
             for (int y = 0; y < LY; y++) {
                 for (int z = 0; z < LZ; z++) {
@@ -94,6 +88,24 @@ public class MCMapGen {
                 }
             }
         }
+
+        // --- 4. 删除底部指定层数的方块 (新添加的步骤) ---
+        System.out.println("Removing bottom 30 layers...");
+        final int BOTTOM_LAYERS_TO_REMOVE = 170;
+
+        // 确定实际要删除的层数，防止超出地图总高度 (LZ)
+        int layersToDelete = Math.min(BOTTOM_LAYERS_TO_REMOVE, LZ);
+
+        // 遍历X和Y平面
+        for (int x = 0; x < LX; x++) {
+            for (int y = 0; y < LY; y++) {
+                // 删除底部Z层
+                for (int z = 0; z < layersToDelete; z++) {
+                    grid.setBlock(x, y, z, null); // 将方块设置为空(空气)
+                }
+            }
+        }
+
         System.out.println("Map generation complete.");
     }
 

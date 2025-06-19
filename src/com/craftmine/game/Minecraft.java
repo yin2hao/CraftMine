@@ -97,7 +97,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         mcPerson = new MCPerson(mapGrid);
 
         Camera camera = scene.getCamera();
-        camera.setPosition(-1.5f, 30.0f, 4.5f);
+        camera.setPosition(2f, 189.0f, 12f);
         camera.addRotation((float) Math.toRadians(15.0f), (float) Math.toRadians(390.f));
         camera.setCollision(mcPerson, mapGrid);
 
