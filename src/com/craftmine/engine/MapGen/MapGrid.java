@@ -6,14 +6,14 @@ import com.craftmine.gameBlock.MCBlock;
 public class MapGrid {
 
     protected MCBlock[][][] blockMap;// 三维数组，存储所有方块对象
-    public final int lx, ly, lz;// 网格的尺寸（长、宽、高）
+    public final int lx, ly, lz;// 网格的尺寸（长、高、宽）
 
     // 构造函数：初始化指定尺寸的网格
     public MapGrid(int lx, int ly, int lz){
         blockMap = new MCBlock[this.lx=lx][this.ly=ly][this.lz=lz];
     }
 
-    // 设置一个方块
+    // 放置一个方块
     public MCBlock setBlock(int x, int y, int z, MCBlock block) {
         if (!ifBlockInBounds(x, y, z)) return null;
         MCBlock old = blockMap[x][y][z];

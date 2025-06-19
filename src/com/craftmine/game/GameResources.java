@@ -44,8 +44,8 @@ public class GameResources {
     }
 
     public static final int MAP_SIZE_X = 50;
-    public static final int MAP_SIZE_Y = 50;
-    public static final int MAP_SIZE_Z = 255;
+    public static final int MAP_SIZE_Y = 100;
+    public static final int MAP_SIZE_Z = 50;
 
     public static void bugCheck() {}
     public static void lightGUIControl() {}

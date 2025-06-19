@@ -31,12 +31,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
-    private static final int NUM_CHUNKS = 4;
-    private Entity[][] terrainEntities;
     private SoundSource playerSoundSource;
     private SoundManager soundMgr;
     private MouseInput mouseInput;
-    private Scene scene;
     private MCMapGen mcMapGen;
     private MapGrid mapGrid;
     private MCPerson mcPerson;
@@ -97,7 +94,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         mcPerson = new MCPerson(mapGrid);
 
         Camera camera = scene.getCamera();
-        camera.setPosition(2f, 189.0f, 12f);
+        camera.setPosition(0f, 0f, -11.5f);//设置相机位置
         camera.addRotation((float) Math.toRadians(15.0f), (float) Math.toRadians(390.f));
         camera.setCollision(mcPerson, mapGrid);
 
@@ -125,7 +122,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     public void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumed) {
 
         long currentWindowHandle = glfwGetCurrentContext();
-        float move = diffTimeMillis * MOVEMENT_SPEED;
+        float move = diffTimeMillis * MOVEMENT_SPEED * 10;
         Camera camera = scene.getCamera();
         if (windows.isKeyPressed(GLFW_KEY_W)) {
             camera.moveForward(move);
@@ -302,7 +299,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                 }
             }
         }
-
+//        System.out.println(selectedEntity.getPosition());
         scene.setSelectedEntity(selectedEntity);
     }
 

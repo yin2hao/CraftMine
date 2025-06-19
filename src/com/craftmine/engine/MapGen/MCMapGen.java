@@ -5,10 +5,8 @@ import java.util.Random; // 使用Random实例以获得更好的随机性
 import com.craftmine.game.Minecraft;
 import com.craftmine.gameBlock.MCBlock;
 
-// 已更新：基于用户提供的最终版本，添加了删除底部30层的功能
 public class MCMapGen {
 
-    // 坐标系定义: LX: 宽度 (X轴), LY: 深度 (Y轴), LZ: 高度 (Z轴)
     private int LX, LY, LZ;
     private MapGrid grid;
     private Random rand = new Random();
@@ -27,57 +25,55 @@ public class MCMapGen {
         grid = new MapGrid(LX, LY, LZ);
 
         // --- 1. 生成基础地形高度图 (基于X/Y平面) ---
-        int[][] heights = new int[LX][LY];
-        double[][] n1 = perlinNoise(randGrid(LX, LY), (int) (6 + 2 * rand.nextDouble()), 0.4 + 0.15 * rand.nextDouble());
-        double[][] n2 = perlinNoise(randGrid(LX, LY), (int) (14 + 3 * rand.nextDouble()), 0.3 + 0.15 * rand.nextDouble());
+        int[][] heights = new int[LX][LZ];
+        double[][] n1 = perlinNoise(randGrid(LX, LZ), (int) (6 + 2 * rand.nextDouble()), 0.4 + 0.15 * rand.nextDouble());
+        double[][] n2 = perlinNoise(randGrid(LX, LZ), (int) (14 + 3 * rand.nextDouble()), 0.3 + 0.15 * rand.nextDouble());
 
         int minh = Integer.MAX_VALUE, maxh = Integer.MIN_VALUE;
         long Gaoduzhi = 0;
 
         for (int x = 0; x < LX; x++) {
-            for (int y = 0; y < LY; y++) {
-                double hval = (n1[x][y] + n2[x][y]) / 2.0;
+            for (int z = 0; z < LZ; z++) {
+                double hval = (n1[x][z] + n2[x][z]) / 2.0;
                 hval = (hval + 1.0) / 2.0; // 归一化到 [0, 1]
 
-                int height = (int) (hval * (LZ - 1));
-                height = Math.max(0, Math.min(LZ - 1, height));
+                int height = (int) (hval * (LY - 1));
+                height = Math.max(0, Math.min(LY - 1, height));
 
-                heights[x][y] = height;
+                heights[x][z] = height;
                 minh = Math.min(minh, height);
                 maxh = Math.max(maxh, height);
                 Gaoduzhi += height;
             }
         }
 
-        // --- 2. 根据高度图填充方块 ---
-        int G = (int) (((Gaoduzhi / (long)(LX * LY)) - minh) * 2 / 3 + minh);
+        //计算平均高度并调整
+        int G = (int) (((Gaoduzhi / (long)(LX * LZ)) - minh) * 2 / 3 + minh);
 
         for (int x = 0; x < LX; x++) {
-            for (int y = 0; y < LY; y++) {
-                int height = heights[x][y];
+            for (int z = 0; z < LZ; z++) {
+                int height = heights[x][z];
 
                 if (height > G + 2) {
-                    grid.setBlock(x, y, height, loadBlock('b', x, y, height));
-                    for (int z = height - 1; z >= 0; z--) { // 沿Z轴向下填充
-                        char blockType = (height - z) / 10.0 < rand.nextDouble() ? 'd' : 't';
+                    grid.setBlock(x, height, z, loadBlock('b', x, height, z));
+                    for (int y = height - 1; y >= 0; y--) { // 沿Z轴向下填充
+                        char blockType = (height - y) / 10.0 < rand.nextDouble() ? 'd' : 't';
                         grid.setBlock(x, y, z, loadBlock(blockType, x, y, z));
                     }
                 } else {
-                    for (int z = height; z >= 0 && z > height - 10; z--) {
+                    for (int y = height; y >= 0 && y > height - 10; y--) {
                         grid.setBlock(x, y, z, loadBlock('s', x, y, z));
                     }
-                    for (int z = height - 10; z >= 0; z--) {
-                        char blockType = (height - z) / 10.0 < rand.nextDouble() ? 'd' : 't';
+                    for (int y = height - 10; y >= 0; y--) {
+                        char blockType = (height - y) / 10.0 < rand.nextDouble() ? 'd' : 't';
                         grid.setBlock(x, y, z, loadBlock(blockType, x, y, z));
                     }
                 }
             }
         }
 
-        // --- 3. 生成洞穴并挖空方块 ---
-        System.out.println("Generating cave mask...");
+        //生成洞穴并挖空方块
         boolean[][][] caveMask = cave(LX, LY, LZ, minh, maxh, LX * LY * LZ / 30);
-        System.out.println("Carving caves...");
 
         for (int x = 0; x < LX; x++) {
             for (int y = 0; y < LY; y++) {
@@ -89,24 +85,24 @@ public class MCMapGen {
             }
         }
 
-        // --- 4. 删除底部指定层数的方块 (新添加的步骤) ---
-        System.out.println("Removing bottom 30 layers...");
-        final int BOTTOM_LAYERS_TO_REMOVE = 170;
-
-        // 确定实际要删除的层数，防止超出地图总高度 (LZ)
-        int layersToDelete = Math.min(BOTTOM_LAYERS_TO_REMOVE, LZ);
-
-        // 遍历X和Y平面
-        for (int x = 0; x < LX; x++) {
-            for (int y = 0; y < LY; y++) {
-                // 删除底部Z层
-                for (int z = 0; z < layersToDelete; z++) {
-                    grid.setBlock(x, y, z, null); // 将方块设置为空(空气)
-                }
-            }
-        }
-
-        System.out.println("Map generation complete.");
+//        // --- 4. 删除底部指定层数的方块 (新添加的步骤) ---
+//        System.out.println("Removing bottom 30 layers...");
+//        final int BOTTOM_LAYERS_TO_REMOVE = 170;
+//
+//        // 确定实际要删除的层数，防止超出地图总高度 (LZ)
+//        int layersToDelete = Math.min(BOTTOM_LAYERS_TO_REMOVE, LZ);
+//
+//        // 遍历X和Y平面
+//        for (int x = 0; x < LX; x++) {
+//            for (int y = 0; y < LY; y++) {
+//                // 删除底部Z层
+//                for (int z = 0; z < layersToDelete; z++) {
+//                    grid.setBlock(x, y, z, null); // 将方块设置为空(空气)
+//                }
+//            }
+//        }
+//
+//        System.out.println("Map generation complete.");
     }
 
     /**
@@ -212,6 +208,7 @@ public class MCMapGen {
 
     // --- Perlin噪声相关方法 (无需修改) ---
     double[][] smoothNoise(double[][] b, int o) {
+        //生成平滑噪声
         int row = b.length;
         int col = b[0].length;
         double[][] m = new double[row][col];
@@ -234,8 +231,9 @@ public class MCMapGen {
     }
 
     public double[][] perlinNoise(double[][] b, int o, double p) {
-        int row = b.length;
-        int col = b[0].length;
+        // o 是噪声的层数，p 是每层的衰减系数
+        int row = b.length;//行
+        int col = b[0].length;//列
         double[][][] sn = new double[o][][];
         for (int i = 0; i < o; i++) {
             sn[i] = smoothNoise(b, i);
