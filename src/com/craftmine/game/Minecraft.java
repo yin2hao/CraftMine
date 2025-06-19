@@ -60,25 +60,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         mapGrid = mcMapGen.getGrid();
 
         entityMap = scene.addBlockMap(mapGrid.getBlockMap());
-//        cubeEntity1 = new Entity("cube-entity1", cubeModel.getID());
-//        cubeEntity1.setPosition(0, 0, 1);
-//        scene.addEntity(cubeEntity1);
-
-//        String quadModelId = "quad-model";
-//        Model quadModel = ModelLoader.loadModel(quadModelId, SKYBOX_QUAD,
-//                scene.getTextureCache());//返回一个model
-//        scene.addModel(quadModel);
-//
-//        int numRows = NUM_CHUNKS * 2 + 1;//计算行数
-//        int numCols = numRows;//计算列数
-//        terrainEntities = new Entity[numRows][numCols];
-//        for (int j = 0; j < numRows; j++) {
-//            for (int i = 0; i < numCols; i++) {
-//                Entity entity = new Entity("TERRAIN_" + j + "_" + i, quadModelId);
-//                terrainEntities[j][i] = entity;
-//                scene.addEntity(entity);
-//            }
-//        }
 
         SceneLights sceneLights = new SceneLights();
         sceneLights.getAmbientLight().setIntensity(0.2f);
@@ -103,9 +84,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     @Override
     public void update(MCWindows windows, Scene scene, long diffTimeMillis) {
-//        double rotation = 1.5;
-//        cubeEntity1.setRotation(1, 1, 1, (int) Math.toRadians(rotation));
-//        cubeEntity1.updateModelMatrix();
         for (int x = 0; x < entityMap.length; x++) {
             for (int y = 0; y < entityMap[x].length; y++) {
                 for (int z = 0; z < entityMap[x][y].length; z++) {
@@ -140,21 +118,22 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             camera.moveDown(move);
         }
 
+
+
         MouseInput mouseInput = windows.getMouseInput();
         Entity selectedEntity = null;
 
         if (mouseInput.isLeftButtonPressed()) {
-            mouseInput.updateDurationTime();
             mouseInput.setLeftButtonPressedTime();
 
             selectedEntity = selectEntity(windows, scene, mouseInput.getCurrentPos());
 
-            if (selectedEntity != null) {
-                scene.setSelectedEntity(selectedEntity);// 如果选中了实体，更新被选中实体的渲染（改变颜色）
+            if (selectedEntity != null) {// 如果选中了实体
+                scene.setSelectedEntity(selectedEntity);//更新被选中实体的渲染（改变颜色）
 
-                // 是否是同一个实体
+                // 如果是同一个实体
                 if (selectedEntity == lastSelectedEntity) {
-                    mouseInput.updateDurationTime();
+                    mouseInput.updateDurationTime();//更新按下时间
                     long pressDuration = mouseInput.getDurationTime();
                     System.out.println("按下时间: " + pressDuration + " 毫秒");
                     if (pressDuration > DESTROY_DELAY_MS) {// 检查按下时间是否超过2秒
@@ -162,7 +141,11 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                         System.out.println("销毁方块: " + selectedEntity.getID());
                         mapGrid.destoryBlock((int)selectedEntity.getPosition().x,
                                 (int)selectedEntity.getPosition().y, (int)selectedEntity.getPosition().z);
+                        entityMap[(int)selectedEntity.getPosition().x]
+                                [(int)selectedEntity.getPosition().y]
+                                [(int)selectedEntity.getPosition().z] = null; // 从实体地图中移除
                         lastSelectedEntity = null; // 重置选中实体
+                        mouseInput.resetTime();
                     }
                 } else {
                     //选中了新实体
@@ -170,15 +153,14 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                     lastSelectedEntity = selectedEntity;
                 }
             } else {
+                // 没有选中实体，取消选中状态
                 scene.setSelectedEntity(null);
                 mouseInput.resetTime();
                 lastSelectedEntity = null;
             }
         } else {
-            // 鼠标释放时保持当前选中状态，但不执行销毁
-            if (lastSelectedEntity == null) {
+            // 鼠标释放，保持当前选中状态，但不执行销毁
                 scene.setSelectedEntity(null);
-            }
         }
 
         if (mouseInput.isInWindows()) {
