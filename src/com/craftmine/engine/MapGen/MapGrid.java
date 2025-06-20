@@ -1,6 +1,11 @@
 package com.craftmine.engine.MapGen;
 
 import com.craftmine.gameBlock.MCBlock;
+import com.craftmine.gameBlock.MCGrassBlock;
+import com.craftmine.gameBlock.MCSandBlock;
+import com.craftmine.gameBlock.MCStoneBlock;
+
+import java.util.concurrent.BlockingDeque;
 
 // 定义一个三维网格类，用于管理Minecraft风格的方块世界
 public class MapGrid {
@@ -49,5 +54,9 @@ public class MapGrid {
     public void destoryBlock(int x, int y, int z) {
         // 设置指定位置的方块为null
         setBlock(x, y, z, null);
+    }
+
+    public void addBlock(int x, int y, int z, MCBlock blockToPlace) {
+        setBlock(x, y, z, blockToPlace);
     }
 }

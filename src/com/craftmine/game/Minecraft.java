@@ -41,6 +41,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private MCPerson mcPerson;
     private Entity[][][] entityMap;
     private boolean isPressContinue = false;// 按下鼠标左键后是否继续按下
+    private int placedBlock = 1;
 
     private Entity lastSelectedEntity = null;// 上一个选中的实体
     private static final long DESTROY_DELAY_MS = GameResources.DESTROY_DELAY_MS;
@@ -110,7 +111,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     @Override
     public void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumed) {
 
-        long currentWindowHandle = glfwGetCurrentContext();
         float move = diffTimeMillis * MOVEMENT_SPEED * SPEED ;
         Camera camera = scene.getCamera();
         if (windows.isKeyPressed(GLFW_KEY_W)) {
@@ -179,6 +179,27 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             lastSelectedEntity = null;
             isPressContinue = false;
         }
+
+        if (mouseInput.isRightButtonPressed()) {
+            Vector3i placementPos = getPlacementLocation(windows, scene, mouseInput.getCurrentPos());
+            MCBlock blockToPlace = null;
+            if (placementPos != null) {
+                int x = placementPos.x;
+                int y = placementPos.y;
+                int z = placementPos.z;
+                switch (placedBlock){
+                    case 1: blockToPlace = new MCGrassBlock(x, y, z); break;
+                    case 2: blockToPlace = new MCStoneBlock(x, y, z); break;
+                    case 3: blockToPlace = new MCSandBlock (x, y, z); break;
+                }
+                System.out.println("放置位置确定位置: " + x + ", " + y + ", " + z);
+                mapGrid.addBlock(x, y, z, blockToPlace);
+                entityMap[x][y][z] = scene.addBlock(x, y, z, blockToPlace);//将方块添加到实体地图中
+                Entity entity = scene.addBlock(x, y, z, blockToPlace);
+                scene.addEntity(entity.getModelID(), entity);//将方块添加到场景中
+            }
+        }
+
         if (mouseInput.isInWindows()) {
             Vector2f displVec = mouseInput.getDisplVec();
             camera.addRotation((float) Math.toRadians(displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
@@ -250,6 +271,120 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         playerSoundSource.setBuffer(buffer.getBufferId());
         soundMgr.addSoundSource("MineCraft", playerSoundSource);
         playerSoundSource.play();
+    }
+
+    private Vector3i getPlacementLocation(MCWindows windows, Scene scene, Vector2f Pos) {
+        int wdwWidth = windows.getWidth();
+        int wdwHeight = windows.getHeight();
+
+        float centerX = wdwWidth / 2.0f;
+        float centerY = wdwHeight / 2.0f;
+        float mousex,mousey,mousez;
+
+        if (!mouseInput.isESCPressed()){
+            mousex = (2 * centerX) / wdwWidth - 1.0f;
+            mousey = 1.0f - (2 * centerY) / wdwHeight;
+            mousez = -1.0f;
+        }else {
+            mousex = (2 * Pos.x) / wdwWidth - 1.0f;
+            mousey = 1.0f - (2 * Pos.y) / wdwHeight;
+            mousez = -1.0f;
+        }
+
+        Matrix4f invProjMatrix = scene.getProjection().getInvProjMatrix();
+        Vector4f mouseDir = new Vector4f(mousex, mousey, mousez, 1.0f);
+        mouseDir.mul(invProjMatrix);
+        mouseDir.z = -1.0f;
+        mouseDir.w = 0.0f;
+
+        Matrix4f invViewMatrix = scene.getCamera().getInvViewMatrix();
+        mouseDir.mul(invViewMatrix);
+
+        Vector4f min = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        Vector4f max = new Vector4f(0.0f, 0.0f, 0.0f, 1.0f);
+        Vector2f nearFar = new Vector2f();
+
+        Entity selectedEntity = null;
+        float closestDistance = Float.POSITIVE_INFINITY;
+        Vector3f center = scene.getCamera().getPosition();
+
+        Vector4f selectedMin = new Vector4f();
+        Vector4f selectedMax = new Vector4f();
+
+        Matrix4f modelMatrix = new Matrix4f();
+        for (int x = 0; x < entityMap.length; x++) {
+            for (int y = 0; y < entityMap[x].length; y++) {
+                for (int z = 0; z < entityMap[x][y].length; z++) {
+                    Entity entity = entityMap[x][y][z];
+                    if (entity == null) continue;
+
+                    // 获取实体对应的模型
+                    Model model = scene.getModelMap().get(entity.getModelID());
+                    if (model == null) continue;
+
+                    // 构建模型矩阵
+                    modelMatrix.identity()
+                            .translate(entity.getPosition())
+                            .scale(entity.getScale());
+
+                    // 遍历模型的所有材质和网格
+                    for (Material material : model.getMaterialList()) {
+                        for (Mesh mesh : material.getMeshList()) {
+                            Vector3f aabbMin = mesh.getAabbMin();
+                            min.set(aabbMin.x, aabbMin.y, aabbMin.z, 1.0f);
+                            min.mul(modelMatrix);
+                            Vector3f aabMax = mesh.getAabbMax();
+                            max.set(aabMax.x, aabMax.y, aabMax.z, 1.0f);
+                            max.mul(modelMatrix);
+
+                            // 检测射线与AABB的碰撞
+                            if (Intersectionf.intersectRayAab(
+                                    center.x, center.y, center.z,
+                                    mouseDir.x, mouseDir.y, mouseDir.z,
+                                    min.x, min.y, min.z,
+                                    max.x, max.y, max.z,
+                                    nearFar) && nearFar.x < closestDistance) {
+                                closestDistance = nearFar.x;
+                                selectedEntity = entity;
+                                selectedMin.set(min);
+                                selectedMax.set(max);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (selectedEntity == null) {
+            return null;
+        }
+
+        // 计算交点
+        Vector3f intersectionPoint = new Vector3f();
+        center.add(new Vector3f(mouseDir.x, mouseDir.y, mouseDir.z).mul(closestDistance), intersectionPoint);
+
+        // 确定被击中的面并计算放置位置
+        Vector3f normal = new Vector3f();
+        float epsilon = 0.01f;
+
+        if (Math.abs(intersectionPoint.x - selectedMin.x) < epsilon) {
+            normal.set(-1, 0, 0);
+        } else if (Math.abs(intersectionPoint.x - selectedMax.x) < epsilon) {
+            normal.set(1, 0, 0);
+        } else if (Math.abs(intersectionPoint.y - selectedMin.y) < epsilon) {
+            normal.set(0, -1, 0);
+        } else if (Math.abs(intersectionPoint.y - selectedMax.y) < epsilon) {
+            normal.set(0, 1, 0);
+        } else if (Math.abs(intersectionPoint.z - selectedMin.z) < epsilon) {
+            normal.set(0, 0, -1);
+        } else if (Math.abs(intersectionPoint.z - selectedMax.z) < epsilon) {
+            normal.set(0, 0, 1);
+        }
+
+        Vector3f selectedPos = selectedEntity.getPosition();
+        Vector3f placementPosF = new Vector3f(selectedPos).add(normal);
+
+        return new Vector3i((int) placementPosF.x, (int) placementPosF.y, (int) placementPosF.z);
     }
 
     // 选择方块

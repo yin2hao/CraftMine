@@ -73,6 +73,19 @@ public class Scene {
         return entityMap;
     }
 
+    public Entity addBlock(int x, int y, int z, MCBlock blockToPlace) {
+        String modelID = blockToPlace.getModelID();
+        Model model = modelMap.get(modelID);
+        Entity entity = new Entity("block-" + x + "-" + y + "-" + z, modelID);
+        entity.setPosition(x, y, z);
+        try {
+            model.getEntitieList().add(entity);
+        } catch (Exception e) {
+            System.err.println("添加实体到模型失败: " + e.getMessage());
+        }
+        return entity;
+    }
+
     public void addModel(Model model) {
         modelMap.put(model.getID(), model);
     }
@@ -80,6 +93,11 @@ public class Scene {
     public void removeEntity(String modelID,Entity entity) {
         Model model = modelMap.get(modelID);
         model.getEntitieList().remove(entity);
+    }
+
+    public void addEntity(String modelID, Entity entity) {
+        Model model = modelMap.get(modelID);
+        model.getEntitieList().add(entity);
     }
 
     public void cleanup(){
