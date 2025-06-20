@@ -25,7 +25,8 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     private static final String SKYBOX_MODULE = GameResources.SKYBOX_MODULE;
     private static final String MINECRAFT_SOUND1 = GameResources.MINECRAFT_SOUND1;
-    private static final String CUBE_MODEL_PATH1 = GameResources.CUBE_MODEL_PATH1;
+    private static final String GRASS_MODEL_PATH = GameResources.GRASS_MODEL_PATH;
+    private static final String STONE_MODEL_PATH = GameResources.STONE_MODEL_PATH;
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
@@ -52,9 +53,12 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         mouseInput = window.getMouseInput();
 
         //这是草方块的模型和纹理
-        Model cubeModel = ModelLoader.loadModel("Grass_model", CUBE_MODEL_PATH1,
+        Model grassModel = ModelLoader.loadModel("grass", GRASS_MODEL_PATH,
                 scene.getTextureCache());
-        scene.addModel(cubeModel);
+        scene.addModel(grassModel);
+        Model stoneModel = ModelLoader.loadModel("stone", STONE_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(stoneModel);
 
         mcMapGen = new MCMapGen(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);//初始化地图数据（长宽高）
         mcMapGen.genMap();//生成方块
@@ -323,14 +327,14 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     public static MCBlock loadBlock(char c, int x, int y, int z){
         switch(c){
-            case 'g' :
-            default:    return new MCGrassBlock(x, y, z);
 //            case 'd' : return new MCDirtBlock(x, y, z);
 //            case 'w' : return new MCWaterBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
 //            case 'o' : return new MCWoodBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
 //            case 'l' : return new MCLeavesBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
 //            case 's' : return new MCSandBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
-//            case 't' : return new MCStoneBlock(x, y, z);
+            case 't' : return new MCStoneBlock(x, y, z);
+            case 'g' :
+            default: return new MCGrassBlock(x, y, z);
         }
 //        return null;
     }

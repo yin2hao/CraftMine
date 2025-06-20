@@ -1,5 +1,5 @@
 #引用外部材质库文件cube.mtl
-mtllib cube.mtl
+mtllib stone_block.mtl
 
 # 声明对象名称
 o cube

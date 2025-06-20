@@ -44,7 +44,7 @@ public class Scene {
                     MCBlock block = blockMap[x][y][z];
                     if (block != null) {
                         // 获取方块对应的模型ID
-                        String modelID = "Grass_model"; // 假设所有方块都使用草方块模型
+                        String modelID = blockMap[x][y][z].getModelID();
 
                         // 获取对应的模型
                         Model model = modelMap.get(modelID);

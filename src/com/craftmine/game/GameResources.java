@@ -5,7 +5,8 @@ public class GameResources {
     public static final String DEFAULT_TEXTURE = "src/main/resources/models/default/default_texture.png";
 
     //草方块纹理
-    public static final String CUBE_MODEL_PATH1 = "src/main/resources/models/cube/cube.obj";
+    public static final String GRASS_MODEL_PATH = "src/main/resources/models/cube/grass_block/grass_block.obj";
+    public static final String STONE_MODEL_PATH = "src/main/resources/models/cube/stone_block/stone_block.obj";
 
     //着色器目录
     public static final String SCENE_SHADER_VERT = "src/main/resources/shaders/scene.vert";
