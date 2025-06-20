@@ -40,7 +40,8 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private MapGrid mapGrid;
     private MCPerson mcPerson;
     private Entity[][][] entityMap;
-    private boolean isPressContinue = false;// 按下鼠标左键后是否继续按下
+    private boolean isLeftButtonPressContinue = false;// 按下鼠标左键后是否继续按下
+    private boolean isRightButtonPressContinue = false;
     private int placedBlock = 1;
 
     private Entity lastSelectedEntity = null;// 上一个选中的实体
@@ -133,14 +134,13 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         MouseInput mouseInput = windows.getMouseInput();
         Entity selectedEntity = null;
 
+        //左键破坏方块
         if (mouseInput.isLeftButtonPressed()) {
             selectedEntity = selectEntity(windows, scene, mouseInput.getCurrentPos());
-
             if (selectedEntity != null) {// 如果选中了实体
-                if (!isPressContinue) mouseInput.setLeftButtonPressedTime();// 有间隔按下，设置初始时间
+                if (!isLeftButtonPressContinue) mouseInput.setLeftButtonPressedTime();// 有间隔按下，设置初始时间
                 scene.setSelectedEntity(selectedEntity);//更新被选中实体的渲染（改变颜色）
-                isPressContinue = true; // 设置为按下状态
-
+                isLeftButtonPressContinue = true; // 设置为按下状态
                 // 如果是同一个实体
                 if (selectedEntity == lastSelectedEntity) {
                     mouseInput.updateDurationTime();//更新按下时间
@@ -163,41 +163,74 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                     //选中了新实体
                     mouseInput.setDurationTime(0);
                     lastSelectedEntity = selectedEntity;
-                    isPressContinue = false;
+                    isLeftButtonPressContinue = false;
                 }
             } else {
                 // 没有选中实体，取消选中状态
                 scene.setSelectedEntity(null);
                 mouseInput.setDurationTime(0);
                 lastSelectedEntity = null;
-                isPressContinue = false;
+                isLeftButtonPressContinue = false;
             }
         } else {
             // 鼠标释放，保持当前选中状态，但不执行销毁
             mouseInput.setDurationTime(0);
             scene.setSelectedEntity(null);
             lastSelectedEntity = null;
-            isPressContinue = false;
+            isLeftButtonPressContinue = false;
         }
 
+        // 右键放置方块（无CD版）
+//        if (mouseInput.isRightButtonPressed()) {Add commentMore actions
+//            Vector3i placementPos = getPlacementLocation(windows, scene, mouseInput.getCurrentPos());
+//            MCBlock blockToPlace = null;
+//            if (placementPos != null) {
+//                int x = placementPos.x;
+//                int y = placementPos.y;
+//                int z = placementPos.z;
+//                switch (placedBlock){
+//                    case 1: blockToPlace = new MCGrassBlock(x, y, z); break;
+//                    case 2: blockToPlace = new MCStoneBlock(x, y, z); break;
+//                    case 3: blockToPlace = new MCSandBlock (x, y, z); break;
+//                }
+//                System.out.println("放置位置确定位置: " + x + ", " + y + ", " + z);
+//                mapGrid.addBlock(x, y, z, blockToPlace);
+//                entityMap[x][y][z] = scene.addBlock(x, y, z, blockToPlace);//将方块添加到实体地图中
+//                Entity entity = scene.addBlock(x, y, z, blockToPlace);
+//                scene.addEntity(entity.getModelID(), entity);//将方块添加到场景中
+//            }
+//        }
+
+        //右键放置方块
         if (mouseInput.isRightButtonPressed()) {
-            Vector3i placementPos = getPlacementLocation(windows, scene, mouseInput.getCurrentPos());
-            MCBlock blockToPlace = null;
-            if (placementPos != null) {
-                int x = placementPos.x;
-                int y = placementPos.y;
-                int z = placementPos.z;
-                switch (placedBlock){
-                    case 1: blockToPlace = new MCGrassBlock(x, y, z); break;
-                    case 2: blockToPlace = new MCStoneBlock(x, y, z); break;
-                    case 3: blockToPlace = new MCSandBlock (x, y, z); break;
+            if (!isRightButtonPressContinue) {
+                Vector3i placementPos = getPlacementLocation(windows, scene, mouseInput.getCurrentPos());
+
+                if (placementPos != null) {
+                    int x = placementPos.x;
+                    int y = placementPos.y;
+                    int z = placementPos.z;
+
+                    if (mapGrid.getBlock(x, y, z) == null) {
+                        MCBlock blockToPlace = null;
+                        switch (placedBlock) {
+                            case 1: blockToPlace = new MCGrassBlock(x, y, z);break;
+                            case 2: blockToPlace = new MCStoneBlock(x, y, z);break;
+                            case 3: blockToPlace = new MCSandBlock(x, y, z);break;
+                        }
+                        if (blockToPlace != null) {
+                            System.out.println("放置位置确定位置: " + x + ", " + y + ", " + z);
+                            mapGrid.addBlock(x, y, z, blockToPlace);
+                            entityMap[x][y][z] = scene.addBlock(x, y, z, blockToPlace);//将方块添加到实体地图中
+                            Entity entity = scene.addBlock(x, y, z, blockToPlace);
+                            scene.addEntity(entity.getModelID(), entity);//将方块添加到场景中
+                        }
+                    }
                 }
-                System.out.println("放置位置确定位置: " + x + ", " + y + ", " + z);
-                mapGrid.addBlock(x, y, z, blockToPlace);
-                entityMap[x][y][z] = scene.addBlock(x, y, z, blockToPlace);//将方块添加到实体地图中
-                Entity entity = scene.addBlock(x, y, z, blockToPlace);
-                scene.addEntity(entity.getModelID(), entity);//将方块添加到场景中
+                isRightButtonPressContinue = true; // 设置为按下状态
             }
+        } else {
+            isRightButtonPressContinue = false;
         }
 
         if (mouseInput.isInWindows()) {
