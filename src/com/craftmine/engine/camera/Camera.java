@@ -36,74 +36,26 @@ public class Camera {
 
     //摄像头移动（根据摄像头方向）
     public void moveBackwards(float inc) {
-        viewMatrix.positiveZ(direction).negate().mul(inc);
-        Vector3f oldPos = new Vector3f(position);
-        position.sub(direction);
-        boolean collision = checkCollision(position);
-        if (collision) {
-            position.set(oldPos);
-            System.out.println("碰撞检测: 后退被阻止");
-        } else {
-            recalculate();
-        }
+        Vector3f moveVector = viewMatrix.positiveZ(new Vector3f()).mul(inc);
+        moveAndCollideByAxis(moveVector);
     }
     public void moveForward(float inc) {
-        viewMatrix.positiveZ(direction).negate().mul(inc);
-        Vector3f oldPos = new Vector3f(position);
-        position.add(direction);
-        boolean collision = checkCollision(position);
-        if (collision) {
-            position.set(oldPos);
-            System.out.println("碰撞检测: 前进被阻止");
-        } else {
-            recalculate();
-        }
+        Vector3f moveVector = viewMatrix.positiveZ(new Vector3f()).negate().mul(inc);
+        moveAndCollideByAxis(moveVector);
     }
     public void moveLeft(float inc) {
-        viewMatrix.positiveX(right).mul(inc);
-        Vector3f oldPos = new Vector3f(position);
-        position.sub(right);
-        boolean collision = checkCollision(position);
-        if (collision) {
-            position.set(oldPos);
-            System.out.println("碰撞检测: 左移被阻止");
-        } else {
-            recalculate();
-        }
+        Vector3f moveVector = viewMatrix.positiveX(new Vector3f()).negate().mul(inc);
+        moveAndCollideByAxis(moveVector);
     }
     public void moveRight(float inc) {
-        viewMatrix.positiveX(right).mul(inc);
-        Vector3f oldPos = new Vector3f(position);
-        position.add(right);
-        boolean collision = checkCollision(position);
-        if (collision) {
-            position.set(oldPos);
-            System.out.println("碰撞检测: 右移被阻止");
-        } else {
-            recalculate();
-        }
+        Vector3f moveVector = viewMatrix.positiveX(new Vector3f()).mul(inc);
+        moveAndCollideByAxis(moveVector);
     }
     public void moveUp(float inc) {
-        Vector3f oldPos = new Vector3f(position);
-        position.y += inc; // 直接在Y轴上增加，与镜头方向无关
-        boolean collision = checkCollision(position);
-        if (collision) {
-            position.set(oldPos);
-            System.out.println("碰撞检测: 上升被阻止");
-        } else {
-            recalculate();
-        }
+        moveAndCollideByAxis(new Vector3f(0, inc, 0));
     }
     public void moveDown(float inc) {
-        Vector3f oldPos = new Vector3f(position);
-        position.y -= inc; // 直接在Y轴上减少，与镜头方向无关
-        boolean collision = checkCollision(position);
-        if (collision) {
-            position.set(oldPos);
-            System.out.println("碰撞检测: 下降被阻止");
-        } else {
-            recalculate();
-        }
+        moveAndCollideByAxis(new Vector3f(0, -inc, 0));
     }
 
     // 检查碰撞并输出调试信息
@@ -112,13 +64,8 @@ public class Camera {
             System.out.println("警告: mcPerson或mapGrid为null，跳过碰撞检测");
             return false;
         }
-
-        // 更新人物位置
-        mcPerson.setPosition(position);
-
-        // 检查碰撞
-        boolean collision = mcPerson.collide(position.x, position.y, position.z);
-
+        mcPerson.setPosition(position);// 更新人物位置
+        boolean collision = mcPerson.collide(position.x, position.y, position.z);// 检查碰撞
         return collision;
     }
 
@@ -143,6 +90,37 @@ public class Camera {
         rotation.set(x, y);
         recalculate();
     }
+
+    private void moveAndCollideByAxis(Vector3f moveVector) {
+        if (mcPerson == null || mapGrid == null) {
+            position.add(moveVector);
+            recalculate();
+            return;
+        }
+
+        Vector3f originalPos = new Vector3f(position);
+
+        // 在X轴上移动
+        position.x += moveVector.x;
+        if (checkCollision(position)) {
+            position.x = originalPos.x; // 发生碰撞，撤销X轴移动
+        }
+
+        // 在Y轴上移动
+        position.y += moveVector.y;
+        if (checkCollision(position)) {
+            position.y = originalPos.y; // 发生碰撞，撤销Y轴移动
+        }
+
+        // 在Z轴上移动
+        position.z += moveVector.z;
+        if (checkCollision(position)) {
+            position.z = originalPos.z; // 发生碰撞，撤销Z轴移动
+        }
+
+        recalculate();
+    }
+
     public Matrix4f getInvViewMatrix() {return invViewMatrix;}
     public Vector3f getPosition(){return position;}
     public Matrix4f getViewMatrix() {return viewMatrix;}

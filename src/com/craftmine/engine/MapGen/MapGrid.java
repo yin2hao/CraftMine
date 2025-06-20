@@ -23,7 +23,6 @@ public class MapGrid {
 
     // 获取指定坐标的方块
     public MCBlock getBlock(int x, int y, int z){
-
         if(!ifBlockInBounds(x,y,z)) return null;// 检查坐标是否越界
         return blockMap[x][y][z];
     }

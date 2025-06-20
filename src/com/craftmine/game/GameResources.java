@@ -1,5 +1,7 @@
 package com.craftmine.game;
 
+import com.craftmine.gameBlock.MCBlock;
+
 public class GameResources {
     //背景图纹理
     public static final String DEFAULT_TEXTURE = "src/main/resources/models/default/default_texture.png";
@@ -44,12 +46,17 @@ public class GameResources {
         public int width = 1920;
     }
 
-    public static final long DESTROY_DELAY_MS = 2000;
+    public static final long DESTROY_DELAY_MS = 500;
 
     public static final int MAP_SIZE_X = 50;
     public static final int MAP_SIZE_Y = 75;
     public static final int MAP_SIZE_Z = 50;
     public static final int DELETE_SIZE = 20;
+
+    public static final int SPEED = 2; //玩家移动速度倍率
+
+    public static final double PLAYER_HEIGHT = MCBlock.SIDE * 1.4;
+    public static final double PLAYER_WIDTH = MCBlock.SIDE * 0.6;
 
     public static void bugCheck() {}
     public static void lightGUIControl() {}

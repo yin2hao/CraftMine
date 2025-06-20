@@ -64,4 +64,9 @@
 ~~[How to Use Perlin Noise in Your Games](http://devmag.org.za/2009/04/25/perlin-noise/)~~ 全英文没看完</br>
 ~~[《3D Game Development with LWJGL 3》中文翻译](https://mouse0w0.github.io/lwjglbook-CN-Translation/02-the-game-loop/)~~ ~~过时的翻译~~先前版本的翻译</br>
 [3D Game Development with LWJGL 3](https://ahbejarano.gitbook.io/lwjglgamedev)的[翻译](https://yin2hao.github.io/lwjglbook-CN-Translation/)</br>
-[GLFW官方文档](https://www.glfw.org/docs/latest/)
+[GLFW官方文档](https://www.glfw.org/docs/latest/)</br>
+[OpenGL官方文档](https://www.khronos.org/opengl/wiki/Main_Page)
+
+## 参考项目
+部分功能实现参考了[MineCraftMini](https://github.com/wyndwarrior/MineCraftMini)</br>
+整体实现参考了[3D Game Development with LWJGL 3](https://github.com/lwjglgamedev/lwjglbook)

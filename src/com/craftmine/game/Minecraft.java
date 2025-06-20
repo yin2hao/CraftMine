@@ -29,6 +29,8 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private static final String STONE_MODEL_PATH = GameResources.STONE_MODEL_PATH;
     private static final String SAND_MODEL_PATH = GameResources.SAND_MODEL_PATH;
 
+    private static final int SPEED = GameResources.SPEED; // 玩家移动速度倍率
+
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
     private SoundSource playerSoundSource;
@@ -109,7 +111,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     public void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumed) {
 
         long currentWindowHandle = glfwGetCurrentContext();
-        float move = diffTimeMillis * MOVEMENT_SPEED * 10;
+        float move = diffTimeMillis * MOVEMENT_SPEED * SPEED ;
         Camera camera = scene.getCamera();
         if (windows.isKeyPressed(GLFW_KEY_W)) {
             camera.moveForward(move);
@@ -143,11 +145,10 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                 if (selectedEntity == lastSelectedEntity) {
                     mouseInput.updateDurationTime();//更新按下时间
                     long pressDuration = mouseInput.getDurationTime();
-                    if (pressDuration > DESTROY_DELAY_MS) {// 检查按下时间是否超过2秒
+                    if (pressDuration > DESTROY_DELAY_MS) {// 检查按下时间是否超过1秒
                         // 执行销毁方块操作
-                        System.out.println("按下时间: " + pressDuration + " 毫秒");
                         System.out.println("销毁方块: " + selectedEntity.getID());
-                        //从地图中销毁方块（但是这里没啥实际作用，因为相关方法被删了，为了不出bug，特此保留）
+                        //从地图中销毁方块
                         mapGrid.destoryBlock((int)selectedEntity.getPosition().x,
                                 (int)selectedEntity.getPosition().y, (int)selectedEntity.getPosition().z);
                         entityMap[(int)selectedEntity.getPosition().x]
@@ -178,7 +179,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             lastSelectedEntity = null;
             isPressContinue = false;
         }
-        System.out.println(mouseInput.getDurationTime());
         if (mouseInput.isInWindows()) {
             Vector2f displVec = mouseInput.getDisplVec();
             camera.addRotation((float) Math.toRadians(displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));
