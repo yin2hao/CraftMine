@@ -27,6 +27,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private static final String MINECRAFT_SOUND1 = GameResources.MINECRAFT_SOUND1;
     private static final String GRASS_MODEL_PATH = GameResources.GRASS_MODEL_PATH;
     private static final String STONE_MODEL_PATH = GameResources.STONE_MODEL_PATH;
+    private static final String SAND_MODEL_PATH = GameResources.SAND_MODEL_PATH;
 
     private static final float MOUSE_SENSITIVITY = 0.1f;
     private static final float MOVEMENT_SPEED = 0.005f;
@@ -59,6 +60,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         Model stoneModel = ModelLoader.loadModel("stone", STONE_MODEL_PATH,
                 scene.getTextureCache());
         scene.addModel(stoneModel);
+        Model sandModel = ModelLoader.loadModel("sand", SAND_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(sandModel);
 
         mcMapGen = new MCMapGen(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);//初始化地图数据（长宽高）
         mcMapGen.genMap();//生成方块
@@ -328,10 +332,10 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     public static MCBlock loadBlock(char c, int x, int y, int z){
         switch(c){
 //            case 'd' : return new MCDirtBlock(x, y, z);
-//            case 'w' : return new MCWaterBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
-//            case 'o' : return new MCWoodBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
-//            case 'l' : return new MCLeavesBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
-//            case 's' : return new MCSandBlock(x *MCBlock.SIDE, y*MCBlock.SIDE, z*MCBlock.SIDE);
+//            case 'w' : return new MCWaterBlock(x, y, z);
+//            case 'o' : return new MCWoodBlock(x, y, z);
+//            case 'l' : return new MCLeavesBlock(x, y, z);
+            case 's' : return new MCSandBlock(x, y, z);
             case 't' : return new MCStoneBlock(x, y, z);
             case 'g' :
             default: return new MCGrassBlock(x, y, z);

@@ -4,9 +4,9 @@ public class GameResources {
     //背景图纹理
     public static final String DEFAULT_TEXTURE = "src/main/resources/models/default/default_texture.png";
 
-    //草方块纹理
-    public static final String GRASS_MODEL_PATH = "src/main/resources/models/cube/grass_block/grass_block.obj";
+    public static final String GRASS_MODEL_PATH = "src/main/resources/models/cube/grass_block/grass_block.obj";//草方块纹理
     public static final String STONE_MODEL_PATH = "src/main/resources/models/cube/stone_block/stone_block.obj";
+    public static final String SAND_MODEL_PATH = "src/main/resources/models/cube/sand_block/sand_block.obj";
 
     //着色器目录
     public static final String SCENE_SHADER_VERT = "src/main/resources/shaders/scene.vert";
