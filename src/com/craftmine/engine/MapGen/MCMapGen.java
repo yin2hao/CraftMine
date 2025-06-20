@@ -2,6 +2,8 @@ package com.craftmine.engine.MapGen;
 
 import java.util.ArrayList;
 import java.util.Random; // 使用Random实例以获得更好的随机性
+
+import com.craftmine.game.GameResources;
 import com.craftmine.game.Minecraft;
 import com.craftmine.gameBlock.MCBlock;
 
@@ -86,7 +88,7 @@ public class MCMapGen {
         }
 
         // 删除底部指定层数的方块
-        final int BOTTOM_LAYERS_TO_REMOVE = 45; // 要删除的底部层数
+        final int BOTTOM_LAYERS_TO_REMOVE = GameResources.DELETE_SIZE; // 要删除的底部层数
         int layersToDelete = Math.min(BOTTOM_LAYERS_TO_REMOVE, LZ);// 确保不超过网格高度
 
         // 遍历X和Y平面
@@ -94,7 +96,7 @@ public class MCMapGen {
             for (int z = 0; z < LZ; z++) {
                 // 删除底部Z层
                 for (int y = 0; y < layersToDelete; y++) {
-                    grid.setBlock(x, y, z, null); // 将方块设置为空(空气)
+                    grid.setBlock(x, y, z, null); // 将方块设置为空
                 }
             }
         }

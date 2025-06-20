@@ -46,9 +46,10 @@ public class GameResources {
 
     public static final long DESTROY_DELAY_MS = 2000;
 
-    public static final int MAP_SIZE_X = 125;
+    public static final int MAP_SIZE_X = 50;
     public static final int MAP_SIZE_Y = 75;
-    public static final int MAP_SIZE_Z = 125;
+    public static final int MAP_SIZE_Z = 50;
+    public static final int DELETE_SIZE = 20;
 
     public static void bugCheck() {}
     public static void lightGUIControl() {}

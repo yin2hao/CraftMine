@@ -37,18 +37,17 @@ public class SceneRender {
         uniformsMap.setUniform("txtSampler", 0);
 
         // 渲染所有模型
-        Collection<Model> models = scene.getModelMap().values();
+        Collection<Model> models = scene.getModelMap().values();//获取场景中的所有待渲染模型
         TextureCache textureCache = scene.getTextureCache();
         Entity selectedEntity = scene.getSelectedEntity();
         for (Model model : models) {
-            List<Entity> entities = model.getEntitieList();
-            // 渲染模型的所有材质
+            List<Entity> entities = model.getEntitieList();//使用当前model的所有实体实例
             for (Material material : model.getMaterialList()){
                 // 设置材质uniform
-                uniformsMap.setUniform("material.ambient", material.getAmbientColor());
-                uniformsMap.setUniform("material.diffuse", material.getDiffuseColor());
-                uniformsMap.setUniform("material.specular", material.getSpecularColor());
-                uniformsMap.setUniform("material.reflectance", material.getReflectance());
+                uniformsMap.setUniform("material.ambient", material.getAmbientColor());// 环境光颜色
+                uniformsMap.setUniform("material.diffuse", material.getDiffuseColor());// 漫反射颜色
+                uniformsMap.setUniform("material.specular", material.getSpecularColor());// 镜面反射颜色
+                uniformsMap.setUniform("material.reflectance", material.getReflectance());// 反射率（高光强度）
                 // 绑定纹理
                 Texture texture = textureCache.getTexture(material.getTexturePath());
                 glActiveTexture(GL_TEXTURE0);
@@ -58,6 +57,8 @@ public class SceneRender {
                 for (Mesh mesh : material.getMeshList()){
                     glBindVertexArray(mesh.getVaoID());
                     // 渲染网格的所有实体实例
+                    // 方块破坏的bug在这里
+                    GameResources.bugCheck();
                     for (Entity entity : entities){
                         uniformsMap.setUniform("selected",
                                 selectedEntity != null && selectedEntity.getID().equals(entity.getID()) ? 1 : 0);

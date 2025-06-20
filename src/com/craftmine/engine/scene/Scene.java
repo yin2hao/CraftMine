@@ -1,6 +1,7 @@
 package com.craftmine.engine.scene;
 
 import com.craftmine.engine.GUI.IGUIInstance;
+import com.craftmine.engine.MCPerson;
 import com.craftmine.engine.Model;
 import com.craftmine.engine.Projection;
 import com.craftmine.engine.TextureCache;
@@ -9,6 +10,7 @@ import com.craftmine.engine.light.SceneLights;
 import com.craftmine.engine.skybox.SkyBox;
 import com.craftmine.game.Entity;
 import com.craftmine.gameBlock.MCBlock;
+import imgui.extension.imguizmo.flag.Mode;
 
 import java.util.*;
 
@@ -73,6 +75,11 @@ public class Scene {
 
     public void addModel(Model model) {
         modelMap.put(model.getID(), model);
+    }
+
+    public void removeEntity(String modelID,Entity entity) {
+        Model model = modelMap.get(modelID);
+        model.getEntitieList().remove(entity);
     }
 
     public void cleanup(){

@@ -55,6 +55,7 @@ public class Engine {
         long updateTime = initialTime;
 
         //原本用来控制光照的，现在相关控制代码已经删除，以后有时间再说
+        //二编，没时间了......
         GameResources.lightGUIControl();
         IGUIInstance iguiInstance = scene.getGUIInstance();
 
@@ -65,12 +66,14 @@ public class Engine {
             deltaUpdate += (now - initialTime) / timeU;
             deltaFps += (now - initialTime) / timeR;
 
+            //更新鼠标事件
             if (targetFps <= 0 || deltaFps >= 1) {
                 windows.getMouseInput().input();
                 boolean inputConsumed = iguiInstance != null && iguiInstance.handleGUIInput(scene, windows);
                 appLogic.input(windows, scene, now - initialTime, inputConsumed);
             }
 
+            //更新游戏逻辑（tick）
             if (deltaUpdate >= 1) {
                 long diffTimeMillis = now - updateTime;
                 appLogic.update(windows, scene, diffTimeMillis);
@@ -78,6 +81,7 @@ public class Engine {
                 deltaUpdate--;
             }
 
+            //更新渲染
             if (targetFps <= 0 || deltaFps >= 1) {
                 render.render(windows, scene);
                 deltaFps--;

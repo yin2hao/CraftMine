@@ -147,11 +147,14 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                         // 执行销毁方块操作
                         System.out.println("按下时间: " + pressDuration + " 毫秒");
                         System.out.println("销毁方块: " + selectedEntity.getID());
+                        //从地图中销毁方块（但是这里没啥实际作用，因为相关方法被删了，为了不出bug，特此保留）
                         mapGrid.destoryBlock((int)selectedEntity.getPosition().x,
                                 (int)selectedEntity.getPosition().y, (int)selectedEntity.getPosition().z);
                         entityMap[(int)selectedEntity.getPosition().x]
                                 [(int)selectedEntity.getPosition().y]
                                 [(int)selectedEntity.getPosition().z] = null; // 从实体地图中移除
+                        scene.removeEntity(selectedEntity.getModelID(), selectedEntity);
+
                         lastSelectedEntity = null; // 重置选中实体
                         mouseInput.setDurationTime(0);
                     }
@@ -209,8 +212,8 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         return imGuiIO.getWantCaptureMouse() || imGuiIO.getWantCaptureKeyboard();
     }
 
-    //在此进行优化
-    //当前优化尚未完成
+    //在此进行地图加载优化
+    //时间不足，当前类尚未完成
 //    public void updateTerrain(Scene scene) {
 //        int cellSize = 10;
 //        Camera camera = scene.getCamera();
