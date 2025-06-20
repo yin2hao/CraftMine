@@ -28,6 +28,10 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private static final String GRASS_MODEL_PATH = GameResources.GRASS_MODEL_PATH;
     private static final String STONE_MODEL_PATH = GameResources.STONE_MODEL_PATH;
     private static final String SAND_MODEL_PATH = GameResources.SAND_MODEL_PATH;
+    private static final String LOG1_MODEL_PATH = GameResources.LOG1_MODEL_PATH;
+    private static final String LOG2_MODEL_PATH = GameResources.LOG2_MODEL_PATH;
+    private static final String PLANKS1_MODEL_PATH = GameResources.PLANKS1_MODEL_PATH;
+    private static final String PLANKS2_MODEL_PATH = GameResources.PLANKS2_MODEL_PATH;
 
     private static final int SPEED = GameResources.SPEED; // 玩家移动速度倍率
 
@@ -57,16 +61,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     public void init(MCWindows window, Scene scene, Render render) {
         mouseInput = window.getMouseInput();
 
-        //这是草方块的模型和纹理
-        Model grassModel = ModelLoader.loadModel("grass", GRASS_MODEL_PATH,
-                scene.getTextureCache());
-        scene.addModel(grassModel);
-        Model stoneModel = ModelLoader.loadModel("stone", STONE_MODEL_PATH,
-                scene.getTextureCache());
-        scene.addModel(stoneModel);
-        Model sandModel = ModelLoader.loadModel("sand", SAND_MODEL_PATH,
-                scene.getTextureCache());
-        scene.addModel(sandModel);
+        loadModels(scene);
 
         mcMapGen = new MCMapGen(MAP_SIZE_X, MAP_SIZE_Y, MAP_SIZE_Z);//初始化地图数据（长宽高）
         mcMapGen.genMap();//生成方块
@@ -130,6 +125,21 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             camera.moveDown(move);
         }
 
+        if (windows.isKeyPressed(GLFW_KEY_1)) {
+            placedBlock = 1;//草
+        } else if (windows.isKeyPressed(GLFW_KEY_2)) {
+            placedBlock = 2;//石头
+        } else if (windows.isKeyPressed(GLFW_KEY_3)) {
+            placedBlock = 3;//沙子
+        } else if (windows.isKeyPressed(GLFW_KEY_4)) {
+            placedBlock = 4;//原木1
+        } else if (windows.isKeyPressed(GLFW_KEY_5)){
+            placedBlock = 5;//原木2
+        } else if (windows.isKeyPressed(GLFW_KEY_6)) {
+            placedBlock = 6;//木板1
+        } else if (windows.isKeyPressed(GLFW_KEY_7)) {
+            placedBlock = 7;//木板2
+        }
 
         MouseInput mouseInput = windows.getMouseInput();
         Entity selectedEntity = null;
@@ -217,6 +227,12 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                             case 1: blockToPlace = new MCGrassBlock(x, y, z);break;
                             case 2: blockToPlace = new MCStoneBlock(x, y, z);break;
                             case 3: blockToPlace = new MCSandBlock(x, y, z);break;
+                            case 4: blockToPlace = new MCLogBlock1(x, y, z);break;
+                            case 5: blockToPlace = new MCLogBlock2(x, y, z);break;
+                            case 6: blockToPlace = new MCPlanksBlock1(x, y, z);break;
+                            case 7: blockToPlace = new MCPlanksBlock2(x, y, z);break;
+                            case 8: blockToPlace = new MCPlanksBlock3(x, y, z);break;
+                            default:break;
                         }
                         if (blockToPlace != null) {
                             System.out.println("放置位置确定位置: " + x + ", " + y + ", " + z);
@@ -500,17 +516,40 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         return selectedEntity;
     }
 
+    public void loadModels(Scene scene) {
+        //这是草方块的模型和纹理
+        Model grassModel = ModelLoader.loadModel("grass", GRASS_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(grassModel);
+        Model stoneModel = ModelLoader.loadModel("stone", STONE_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(stoneModel);
+        Model sandModel = ModelLoader.loadModel("sand", SAND_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(sandModel);
+        Model log1Model = ModelLoader.loadModel("log1", LOG1_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(log1Model);
+        Model log2Model = ModelLoader.loadModel("log2", LOG2_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(log2Model);
+        Model planks1Model = ModelLoader.loadModel("planks1", PLANKS1_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(planks1Model);
+        Model planks2Model = ModelLoader.loadModel("planks2", PLANKS2_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(planks2Model);
+        Model planks3Model = ModelLoader.loadModel("planks3", PLANKS3_MODEL_PATH,
+                scene.getTextureCache());
+        scene.addModel(planks3Model);
+    }
+
     public static MCBlock loadBlock(char c, int x, int y, int z){
         switch(c){
-//            case 'd' : return new MCDirtBlock(x, y, z);
-//            case 'w' : return new MCWaterBlock(x, y, z);
-//            case 'o' : return new MCWoodBlock(x, y, z);
-//            case 'l' : return new MCLeavesBlock(x, y, z);
             case 's' : return new MCSandBlock(x, y, z);
             case 't' : return new MCStoneBlock(x, y, z);
             case 'g' :
             default: return new MCGrassBlock(x, y, z);
         }
-//        return null;
     }
 }
