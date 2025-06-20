@@ -39,8 +39,8 @@ public class GameResources {
         public boolean compatibleProfile;//是否使用旧版本函数，此处无用
         public int fps;//这个调了之后移动会出问题，没时间改了
         public int ups = 30;
-        public int height;
-        public int width;
+        public int height = 1080;
+        public int width = 1920;
     }
 
     public static final long DESTROY_DELAY_MS = 2000;

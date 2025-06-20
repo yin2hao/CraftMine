@@ -135,9 +135,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                 if (selectedEntity == lastSelectedEntity) {
                     mouseInput.updateDurationTime();//更新按下时间
                     long pressDuration = mouseInput.getDurationTime();
-                    System.out.println("按下时间: " + pressDuration + " 毫秒");
                     if (pressDuration > DESTROY_DELAY_MS) {// 检查按下时间是否超过2秒
                         // 执行销毁方块操作
+                        System.out.println("按下时间: " + pressDuration + " 毫秒");
                         System.out.println("销毁方块: " + selectedEntity.getID());
                         mapGrid.destoryBlock((int)selectedEntity.getPosition().x,
                                 (int)selectedEntity.getPosition().y, (int)selectedEntity.getPosition().z);
@@ -160,7 +160,9 @@ public class Minecraft implements IAppLogic, IGUIInstance {
             }
         } else {
             // 鼠标释放，保持当前选中状态，但不执行销毁
-                scene.setSelectedEntity(null);
+            mouseInput.resetTime();
+            scene.setSelectedEntity(null);
+            lastSelectedEntity = null;
         }
 
         if (mouseInput.isInWindows()) {

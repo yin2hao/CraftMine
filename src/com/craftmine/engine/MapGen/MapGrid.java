@@ -18,7 +18,6 @@ public class MapGrid {
         if (!ifBlockInBounds(x, y, z)) return null;
         MCBlock old = blockMap[x][y][z];
         blockMap[x][y][z] = block;
-        System.out.println("Set block at (" + x + ", " + y + ", " + z + ") to " + block);
         return old;
     }
 
