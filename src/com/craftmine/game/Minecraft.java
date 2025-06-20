@@ -36,6 +36,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     private MapGrid mapGrid;
     private MCPerson mcPerson;
     private Entity[][][] entityMap;
+    private boolean isPressContinue = false;// 按下鼠标左键后是否继续按下
 
     private Entity lastSelectedEntity = null;// 上一个选中的实体
     private static final long DESTROY_DELAY_MS = GameResources.DESTROY_DELAY_MS;
@@ -119,17 +120,16 @@ public class Minecraft implements IAppLogic, IGUIInstance {
         }
 
 
-
         MouseInput mouseInput = windows.getMouseInput();
         Entity selectedEntity = null;
 
         if (mouseInput.isLeftButtonPressed()) {
-            mouseInput.setLeftButtonPressedTime();
-
             selectedEntity = selectEntity(windows, scene, mouseInput.getCurrentPos());
 
             if (selectedEntity != null) {// 如果选中了实体
+                if (!isPressContinue) mouseInput.setLeftButtonPressedTime();// 有间隔按下，设置初始时间
                 scene.setSelectedEntity(selectedEntity);//更新被选中实体的渲染（改变颜色）
+                isPressContinue = true; // 设置为按下状态
 
                 // 如果是同一个实体
                 if (selectedEntity == lastSelectedEntity) {
@@ -145,26 +145,29 @@ public class Minecraft implements IAppLogic, IGUIInstance {
                                 [(int)selectedEntity.getPosition().y]
                                 [(int)selectedEntity.getPosition().z] = null; // 从实体地图中移除
                         lastSelectedEntity = null; // 重置选中实体
-                        mouseInput.resetTime();
+                        mouseInput.setDurationTime(0);
                     }
                 } else {
                     //选中了新实体
-                    mouseInput.resetTime();
+                    mouseInput.setDurationTime(0);
                     lastSelectedEntity = selectedEntity;
+                    isPressContinue = false;
                 }
             } else {
                 // 没有选中实体，取消选中状态
                 scene.setSelectedEntity(null);
-                mouseInput.resetTime();
+                mouseInput.setDurationTime(0);
                 lastSelectedEntity = null;
+                isPressContinue = false;
             }
         } else {
             // 鼠标释放，保持当前选中状态，但不执行销毁
-            mouseInput.resetTime();
+            mouseInput.setDurationTime(0);
             scene.setSelectedEntity(null);
             lastSelectedEntity = null;
+            isPressContinue = false;
         }
-
+        System.out.println(mouseInput.getDurationTime());
         if (mouseInput.isInWindows()) {
             Vector2f displVec = mouseInput.getDisplVec();
             camera.addRotation((float) Math.toRadians(displVec.x * MOUSE_SENSITIVITY), (float) Math.toRadians(displVec.y * MOUSE_SENSITIVITY));

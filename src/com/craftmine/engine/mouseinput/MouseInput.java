@@ -82,10 +82,9 @@ public class MouseInput {
         glfwSetCursorPos(windowsHandle, x, y);
     }
 
-    public void resetTime(){
-        //重置鼠标左键按下时间
-        leftButtonPressedTime = 0;
-        durationTime = 0;
+    public void setDurationTime(long durationTime) {
+        //设置鼠标左键按下时间，此处用于重置计时
+        this.durationTime = durationTime;
     }
 
     public boolean isLeftButtonPressed(){
@@ -122,6 +121,6 @@ public class MouseInput {
         return durationTime;
     }
     public void updateDurationTime() {
-            durationTime += (System.currentTimeMillis() - leftButtonPressedTime);
+            durationTime = (System.currentTimeMillis() - leftButtonPressedTime);
     }
 }
