@@ -22,6 +22,14 @@ import static com.craftmine.game.GameResources.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Minecraft implements IAppLogic, IGUIInstance {
+    //先看readme.md!!!
+    //先看readme.md!!!
+    //先看readme.md!!!
+    //先看readme.md!!!
+    //先看readme.md!!!
+    //先看readme.md!!!
+    //先看readme.md!!!
+    //先看readme.md!!!
 
     private static final String SKYBOX_MODULE = GameResources.SKYBOX_MODULE;
     private static final String MINECRAFT_SOUND1 = GameResources.MINECRAFT_SOUND1;
@@ -53,7 +61,7 @@ public class Minecraft implements IAppLogic, IGUIInstance {
 
     public static void main(String[] args) {
         Minecraft mc = new Minecraft();
-        Engine game = new Engine("CraftMine", new GameResources.MCWindowsOptions(), mc);//初始化窗口
+        Engine game = new Engine("CraftMine    游玩前请先查看readme.md", new GameResources.MCWindowsOptions(), mc);//初始化窗口
         game.start();//循环开始
     }
 
@@ -517,7 +525,6 @@ public class Minecraft implements IAppLogic, IGUIInstance {
     }
 
     public void loadModels(Scene scene) {
-        //这是草方块的模型和纹理
         Model grassModel = ModelLoader.loadModel("grass", GRASS_MODEL_PATH,
                 scene.getTextureCache());
         scene.addModel(grassModel);

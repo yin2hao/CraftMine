@@ -1,372 +1,664 @@
+' 代码一时爽，画图火葬场
 @startuml
+skinparam nodesep 5
+skinparam ranksep 40
+skinparam classFontSize 13
+skinparam classAttributeIconSize 0
 
-!theme plain
-top to bottom direction
-skinparam linetype ortho
+package "GUI System" {
+  interface IGUIInstance {
+    + Render(): void
+    + HandleInput(): void
+  }
 
-class AmbientLight {
-  - intensity: float
-  - color: Vector3f
-   color: Vector3f
-   intensity: float
-  + setColor(float, float, float): void
-  + AmbientLight():
-  + AmbientLight(float, Vector3f):
-}
-class Attenuation {
-  - linear: float
-  - exponent: float
-  - constant: float
-   constant: float
-   linear: float
-   exponent: float
-  + Attenuation(float, float, float):
-}
-class Camera {
-  - position: Vector3f
-  - invViewMatrix: Matrix4f
-  - viewMatrix: Matrix4f
-   position: Vector3f
-   invViewMatrix: Matrix4f
-   viewMatrix: Matrix4f
-  + moveLeft(float): void
-  + moveUp(float): void
-  + setRotation(float, float): void
-  + moveForward(float): void
-  + addRotation(float, float): void
-  + moveBackwards(float): void
-  + setPosition(float, float, float): void
-  + moveRight(float): void
-  - recalculate(): void
-  + moveDown(float): void
-  + Camera():
-}
-class DirLight {
-  - direction: Vector3f
-  - color: Vector3f
-  - intensity: float
-   color: Vector3f
-   intensity: float
-   direction: Vector3f
-  + setPosition(float, float, float): void
-  + setColor(float, float, float): void
-  + DirLight(Vector3f, Vector3f, float):
-}
-class Engine {
-  - cleanup(): void
-  + start(): void
-  - resize(): void
-  + stop(): void
-  - run(): void
-  + Engine(String, MCWindowsOptions, IAppLogic):
-}
-class GUIMesh {
-  - verticesVBO: int
-  - indicesVBO: int
-  - VAOID: int
-   verticesVBO: int
-   indicesVBO: int
-   VAOID: int
-  + cleanup(): void
-  + GUIMesh():
-}
-class GUIRender {
-  - setupKeyCallBack(MCWindows): void
-  + resize(int, int): void
-  + cleanup(): void
-  - getImKey(int): int
-  - createUniforms(): void
-  - createUIResources(MCWindows): void
-  + render(Scene): void
-  + GUIRender(MCWindows):
-}
-interface IGUIInstance << interface >> {
-  + drawGUI(): void
-  + handleGUIInput(Scene, MCWindows): boolean
-}
-class LightControls {
-  + drawGUI(): void
-  + handleGUIInput(Scene, MCWindows): boolean
-  + LightControls(Scene):
-}
-class MCDirtBlock {
-  + MCDirtBlock():
-}
-class MCGrassBlock {
-  + MCGrassBlock():
-}
-class MCGrid {
-  + set(int, int, int, MCBlock): MCBlock
-  + get(int, int, int): MCBlock
-  + ib(int, int, int): boolean
-  + realRender(MCPerson, MCPlane): void
-  + add(MCBlock): void
-  + render(MCPerson): void
-  + flood(int, int, int): void
-  + unrender(MCBlock): void
-  + get(double, double, double): MCBlock
-  + MCGrid(int, int, int):
-}
-class MCStoneBlock {
-  + MCStoneBlock():
-}
-class Material {
-  - reflectance: float
-  - diffuseColor: Vector4f
-  - ambientColor: Vector4f
-  - meshList: List<Mesh>
-  - texturePath: String
-  - specularColor: Vector4f
-   meshList: List<Mesh>
-   texturePath: String
-   diffuseColor: Vector4f
-   reflectance: float
-   specularColor: Vector4f
-   ambientColor: Vector4f
-  + cleanup(): void
-  + Material():
-}
-class McMap {
-  ~ interpolate(double, double, double): double
-  ~ smoothNoise(double[][], int): double[][]
-  ~ cave(int, int, int, int, int, int): boolean[][][]
-  ~ perlinNoise(double[][], int, double): double[][]
-  ~ randGrid(int, int): double[][]
-  + loadBlock(char, int, int, int): MCBlock
-  + McMap():
-}
-class McMap {
-  + generateMap(): void
-  + McGrid():
-  + McMap(int, int, int):
-}
-class Mesh {
-  - aabbMax: Vector3f
-  - aabbMin: Vector3f
-  - numVertices: int
-  - vaoID: int
-   aabbMax: Vector3f
-   vaoID: int
-   numVertices: int
-   aabbMin: Vector3f
-  + cleanup(): void
-  + Mesh(float[], float[], float[], int[]):
-  + Mesh(float[], float[], float[], int[], Vector3f, Vector3f):
-}
-class Model {
-  - ID: String
-   materialList: List<Material>
-   ID: String
-   entitieList: List<Entity>
-  + cleanup(): void
-  + Model(String, List<Material>):
-}
-class ModelLoader {
-  - processMesh(AIMesh): Mesh
-  + loadModel(String, String, TextureCache, int): Model
-  - processVertices(AIMesh): float[]
-  + loadModel(String, String, TextureCache): Model
-  - processNormals(AIMesh): float[]
-  - processMaterial(AIMaterial, String, TextureCache): Material
-  - processTextCoords(AIMesh): float[]
-  - processIndices(AIMesh): int[]
-  - ModelLoader():
-}
-class MouseInput {
-  - leftButtonPressed: boolean
-  - displVec: Vector2f
-  - rightButtonPressed: boolean
-  - currentPos: Vector2f
-   displVec: Vector2f
-   leftButtonPressed: boolean
-   currentPos: Vector2f
-   rightButtonPressed: boolean
-  + input(): void
-  + MouseInput(long):
-}
-class PointLight {
-  - color: Vector3f
-  - position: Vector3f
-  - intensity: float
-  - attenuation: Attenuation
-   color: Vector3f
-   position: Vector3f
-   intensity: float
-   attenuation: Attenuation
-  + setColor(float, float, float): void
-  + setPosition(float, float, float): void
-  + PointLight(Vector3f, Vector3f, float):
-}
-class Projection {
-  - projMatrix: Matrix4f
-  - invProjMatrix: Matrix4f
-   invProjMatrix: Matrix4f
-   projMatrix: Matrix4f
-  + updateProjMatrix(int, int): void
-  + Projection(int, int):
-}
-class Render {
-  + render(MCWindows, Scene): void
-  + resize(int, int): void
-  + cleanup(): void
-  + Render(MCWindows):
-}
-class Scene {
-  - modelMap: Map<String, Model>
-  - textureCache: TextureCache
-  - projection: Projection
-  - skyBox: SkyBox
-  - sceneLights: SceneLights
-  - selectedEntity: Entity
-  - camera: Camera
-   selectedEntity: Entity
-   sceneLights: SceneLights
-   GUIInstance: IGUIInstance
-   textureCache: TextureCache
-   skyBox: SkyBox
-   projection: Projection
-   modelMap: Map<String, Model>
-   camera: Camera
-  + cleanup(): void
-  + addModel(Model): void
-  + resize(int, int): void
-  + addEntity(Entity): void
-  + Scene(int, int):
-}
-class SceneLights {
-  - dirLight: DirLight
-  - pointLights: List<PointLight>
-  - ambientLight: AmbientLight
-  - spotLights: List<SpotLight>
-   pointLights: List<PointLight>
-   ambientLight: AmbientLight
-   dirLight: DirLight
-   spotLights: List<SpotLight>
-  + SceneLights():
-}
-class SceneRender {
-  - createUniforms(): void
-  + cleanup(): void
-  - updateLights(Scene): void
-  - updatePointLight(PointLight, String, Matrix4f): void
-  + render(Scene): void
-  - updateSpotLight(SpotLight, String, Matrix4f): void
-  + SceneRender():
-}
-entity ShaderModuleData << record >> {
-  + shaderFile(): String
-  + shaderType(): int
-  + ShaderModuleData(String, int):
-}
-class ShaderProgram {
-  - programID: int
-   programID: int
-  + unbind(): void
-  # createShader(String, int): int
-  + cleanup(): void
-  + bind(): void
-  + link(List<Integer>): void
-  + validate(): void
-  + ShaderProgram(List<ShaderModuleData>):
-}
-class SkyBox {
-  - skyBoxEntity: Entity
-  - skyBoxModel: Model
-   skyBoxModel: Model
-   skyBoxEntity: Entity
-  + SkyBox(String, TextureCache):
-}
-class SkyBoxRender {
-  + cleanup(): void
-  - createUniforms(): void
-  + render(Scene): void
-  + SkyBoxRender():
-}
-class SoundBuffer {
-  - bufferId: int
-   bufferId: int
-  - readVorbis(String, STBVorbisInfo): ShortBuffer
-  + cleanup(): void
-  + SoundBuffer(String):
-}
-class SoundListener {
-   position: Vector3f
-   speed: Vector3f
-  + setOrientation(Vector3f, Vector3f): void
-  + SoundListener(Vector3f):
-}
-class SoundManager {
-  - listener: SoundListener
-   attenuationModel: int
-   listener: SoundListener
-  + removeSoundSource(String): void
-  + cleanup(): void
-  + addSoundSource(String, SoundSource): void
-  + updateListenerPosition(Camera): void
-  + getSoundSource(String): SoundSource
-  + playSoundSource(String): void
-  + addSoundBuffer(SoundBuffer): void
-  + SoundManager():
-}
-class SoundSource {
-   playing: boolean
-   buffer: int
-   position: Vector3f
-   gain: float
-  + cleanup(): void
-  + pause(): void
-  + stop(): void
-  + play(): void
-  + SoundSource(boolean, boolean):
-}
-class SpotLight {
-  - coneDirection: Vector3f
-  - cutOffAngle: float
-  - pointLight: PointLight
-  - cutOff: float
-   coneDirection: Vector3f
-   cutOffAngle: float
-   cutOff: float
-   pointLight: PointLight
-  + setConeDirection(float, float, float): void
-  + SpotLight(PointLight, Vector3f, float):
-}
-class Texture {
-  - texturePath: String
-   texturePath: String
-  + bind(): void
-  + cleanup(): void
-  - generateTexture(int, int, ByteBuffer): void
-  + Texture(String):
-  + Texture(int, int, ByteBuffer):
-}
-class TextureCache {
-  + createTexture(String): Texture
-  + getTexture(String): Texture
-  + cleanup(): void
-  + TextureCache():
-}
-class UniformsMap {
-  + setUniform(String, Vector4f): void
-  + setUniform(String, float): void
-  - getUniformLocation(String): int
-  + setUniform(String, Vector2f): void
-  + setUniform(String, Vector3f): void
-  + setUniform(String, int): void
-  + createUniform(String): void
-  + setUniform(String, Matrix4f): void
-  + UniformsMap(int):
-}
-class Utils {
-  + readFile(String): String
-  - Utils():
-}
-class block {
-  + block():
+  class GUIRender {
+    + InitImGui(): void
+    + RenderGUI(): void
+    + ProcessEvent(): void
+  }
+
+  class GUIMesh {
+    + vao: GLuint
+    + UploadToGPU(): void
+    + Destroy(): void
+  }
+
+  IGUIInstance <|.. GUIRender
+  GUIMesh <- GUIRender
 }
 
-Attenuation       +-[#820000,plain]-  PointLight
-PointLight       "1" *-[#595959,plain]-> "attenuation\n1" Attenuation
-PointLight        -[#595959,dashed]->  Attenuation      : "«create»"
-ShaderModuleData  +-[#820000,plain]-  ShaderProgram
+package "Engine Core" {
+  class Engine {
+    + window: GLFWwindow*
+    + Run(): void
+    + AddLogic(app: IAppLogic): void
+  }
+
+  interface IAppLogic {
+    + Init(): void
+    + Update(dt: float): void
+    + OnInput(event: InputEvent): void
+    + Cleanup(): void
+  }
+
+  class GameResources {
+    + shaderPaths: map<string,string>
+    + modelPaths: map<string,string>
+    + GetResource(key: string): string
+  }
+
+  Engine o-- GameResources
+  Engine *-- IAppLogic
+}
+
+package "Scene Management" {
+  class Camera {
+    + position: vec3
+    + UpdateViewMatrix(): mat4
+    + CheckCollision(): bool
+  }
+
+  class Entity {
+    + transform: mat4
+    + UpdateModelMatrix(): void
+    + Rotate(angle: float, axis: vec3): void
+  }
+
+  class DirLight {
+    + direction: vec3
+    + color: vec3
+    + intensity: float
+  }
+
+  class AmbientLight {
+    + color: vec3
+    + intensity: float
+  }
+
+  Entity <-- Camera
+  DirLight --* Entity
+  AmbientLight --* Entity
+}
+
+Engine --> GUIRender : «uses»
+Engine --> Camera : «updates»
+GameResources ..> Entity : «provides resources to»
+DirLight ..|> IGUIInstance : «configurable via»
+
+package com.craftmine.engine.camera {
+    class MCCursor {
+        - cursorRenderer: CursorRenderer
+        + MCCursor(MCWindows w)
+        + render()
+    }
+}
+
+package com.craftmine.gameBlock {
+    abstract class MCBlock {
+        + SIDE: double
+        # modelID: String
+        # x, y, z: int
+        + MCBlock(int x, int y, int z)
+        + getModelID(): String
+    }
+
+    class MCGrassBlock {
+        - modelID: String = "grass"
+        + MCGrassBlock(int x, int y, int z)
+    }
+
+    class MCLogBlock1 {
+        - modelID: String = "log1"
+        + MCLogBlock1(int x, int y, int z)
+    }
+
+    class MCLogBlock2 {
+        - modelID: String = "log2"
+        + MCLogBlock2(int x, int y, int z)
+    }
+
+    MCGrassBlock --|> MCBlock
+    MCLogBlock1 --|> MCBlock
+    MCLogBlock2 --|> MCBlock
+}
+
+package com.craftmine.engine.light {
+    interface IGUIInstance {
+        + drawGUI()
+        + handleGUIInput(Scene scene, MCWindows window): boolean
+    }
+
+    class LightControls {
+        - ambientColor: float[]
+        - ambientFactor: float[]
+        - dirLight*: float[]
+        - pointLight*: float[]
+        - spotLight*: float[]
+        + LightControls(Scene scene)
+        + drawGUI()
+        + handleGUIInput(Scene scene, MCWindows window): boolean
+    }
+
+    LightControls ..|> IGUIInstance
+}
+
+package com.craftmine.engine.MapGen {
+    class MapGrid {
+        - blockMap: MCBlock[][][]
+        + lx, ly, lz: int
+        + MapGrid(int lx, int ly, int lz)
+        + setBlock(int x, int y, int z, MCBlock block): MCBlock
+        + getBlock(int x, int y, int z): MCBlock
+        + ifBlockInBounds(int x, int y, int z): boolean
+        + getBlockMap(): MCBlock[][][]
+        + destoryBlock(int x, int y, int z)
+        + addBlock(int x, int y, int z, MCBlock blockToPlace)
+    }
+
+    class MCMapGen {
+        - LX, LY, LZ: int
+        - grid: MapGrid
+        - rand: Random
+        + MCMapGen(int lx, int ly, int lz)
+        + getGrid(): MapGrid
+        + genMap()
+        - cave(int width, int depth, int height, int minh, int maxh, int totc): boolean[][][]
+        - smoothNoise(double[][] b, int o): double[][]
+        - perlinNoise(double[][] b, int o, double p): double[][]
+        - interpolate(double x0, double x1, double alpha): double
+        - randGrid(int row, int col): double[][]
+        + loadBlock(char c, int x, int y, int z): MCBlock
+    }
+
+    MapGrid "1" *-- "0..*" MCBlock
+    MCMapGen --> MapGrid
+}
+
+package com.craftmine.engine {
+    class Material {
+        + DEFAULT_COLOR: Vector4f
+        - diffuseColor: Vector4f
+        - meshList: List<Mesh>
+        - texturePath: String
+        - ambientColor: Vector4f
+        - reflectance: float
+        - specularColor: Vector4f
+        + Material()
+        + cleanup()
+        + get/set methods...
+    }
+
+    class MCPerson {
+        - mapGrid: MapGrid
+        - position: Vector3f
+        + PLAYER_HEIGHT: double
+        + PLAYER_WIDTH: double
+        + MCPerson(MapGrid mapGrid)
+        + get/setPosition()
+        + collide(double x, double y, double z): boolean
+    }
+
+    MCPerson --> MapGrid
+}
+
+MCCursor --> MCWindows
+LightControls --> Scene
+LightControls --> SceneLights
+LightControls --> AmbientLight
+LightControls --> PointLight
+LightControls --> SpotLight
+LightControls --> DirLight
+LightControls --> MouseInput
+LightControls --> ImGui
+MCMapGen --> Minecraft
+MCMapGen --> GameResources
+
+package com.craftmine.gameBlock {
+    abstract class MCBlock {
+        - int x
+        - int y
+        - int z
+        + MCBlock(int x, int y, int z)
+        + abstract String getModelID()
+    }
+
+    class MCGrassBlock {
+        - String modelID = "grass"
+        + MCGrassBlock(int x, int y, int z)
+        + String getModelID()
+    }
+
+    class MCStoneBlock {
+        - static String modelID = "stone"
+        + MCStoneBlock(int x, int y, int z)
+        + String getModelID()
+    }
+
+    class MCSandBlock {
+        - String modelID = "sand"
+        + MCSandBlock(int x, int y, int z)
+        + String getModelID()
+    }
+
+    class MCLogBlock1 {
+        - String modelID = "log1"
+        + MCLogBlock1(int x, int y, int z)
+        + String getModelID()
+    }
+
+    class MCLogBlock2 {
+        - String modelID = "log2"
+        + MCLogBlock2(int x, int y, int z)
+        + String getModelID()
+    }
+
+    class MCPlanksBlock1 {
+        - String modelID = "planks1"
+        + MCPlanksBlock1(int x, int y, int z)
+        + String getModelID()
+    }
+
+    class MCPlanksBlock2 {
+        - String modelID = "planks2"
+        + MCPlanksBlock2(int x, int y, int z)
+        + String getModelID()
+    }
+
+    class MCPlanksBlock3 {
+        - String modelID = "planks3"
+        + MCPlanksBlock3(int x, int y, int z)
+        + String getModelID()
+    }
+
+    MCBlock <|-- MCGrassBlock
+    MCBlock <|-- MCStoneBlock
+    MCBlock <|-- MCSandBlock
+    MCBlock <|-- MCLogBlock1
+    MCBlock <|-- MCLogBlock2
+    MCBlock <|-- MCPlanksBlock1
+    MCBlock <|-- MCPlanksBlock2
+    MCBlock <|-- MCPlanksBlock3
+}
+
+package com.craftmine.game {
+    class Minecraft {
+        - SoundSource playerSoundSource
+        - SoundManager soundMgr
+        - MouseInput mouseInput
+        - MCMapGen mcMapGen
+        - MapGrid mapGrid
+        - MCPerson mcPerson
+        - Entity[][][] entityMap
+        - boolean isLeftButtonPressContinue
+        - boolean isRightButtonPressContinue
+        - int placedBlock
+        - Entity lastSelectedEntity
+        - static final long DESTROY_DELAY_MS
+        + static void main(String[] args)
+        + void init(MCWindows window, Scene scene, Render render)
+        + void update(MCWindows windows, Scene scene, long diffTimeMillis)
+        + void input(MCWindows windows, Scene scene, long diffTimeMillis, boolean inputConsumed)
+        + void cleanup()
+        + void drawGUI()
+        + boolean handleGUIInput(Scene scene, MCWindows window)
+        - void initSounds(Camera camera)
+        - Vector3i getPlacementLocation(MCWindows windows, Scene scene, Vector2f Pos)
+        - Entity selectEntity(MCWindows windows, Scene scene, Vector2f Pos)
+        - void loadModels(Scene scene)
+        + static MCBlock loadBlock(char c, int x, int y, int z)
+    }
+}
+
+package com.craftmine.engine.mouseinput {
+    class MouseInput {
+        - Vector2f currentPos
+        - Vector2f previousPos
+        - Vector2f displVec
+        - long leftButtonPressedTime
+        - long leftButtonReleasedTime
+        - long durationTime
+        - int action
+        - boolean inWindows
+        - boolean leftButtonPressed
+        - boolean rightButtonPressed
+        - boolean isESCPressed
+        + MouseInput(long windowsHandle)
+        + void input()
+        + void setCursorPosition(long windowsHandle, float x, float y)
+        + void setDurationTime(long durationTime)
+        + boolean isLeftButtonPressed()
+        + boolean isRightButtonPressed()
+        + Vector2f getCurrentPos()
+        + Vector2f getDisplVec()
+        + boolean isInWindows()
+        + void setInWindows(boolean inWindows)
+        + boolean isESCPressed()
+        + void setESCPressed(boolean ESCPressed)
+        + long getLeftButtonPressedTime()
+        + void setLeftButtonPressedTime()
+        + long getDurationTime()
+        + void updateDurationTime()
+    }
+}
+
+package com.craftmine.engine.light {
+    class PointLight {
+        - Attenuation attenuation
+        - Vector3f color
+        - float intensity
+        - Vector3f position
+        + PointLight(Vector3f color, Vector3f position, float intensity)
+        + Attenuation getAttenuation()
+        + Vector3f getColor()
+        + float getIntensity()
+        + Vector3f getPosition()
+        + void setAttenuation(Attenuation attenuation)
+        + void setColor(Vector3f color)
+        + void setColor(float r, float g, float b)
+        + void setIntensity(float intensity)
+        + void setPosition(float x, float y, float z)
+    }
+}
+
+package com.craftmine.engine {
+
+    class Projection {
+        - static final float FOV
+        - static final float Z_NEAR
+        - static final float Z_FAR
+        - Matrix4f invProjMatrix
+        - Matrix4f projMatrix
+        + Projection(int width, int height)
+        + void updateProjMatrix(int width, int height)
+        + Matrix4f getInvProjMatrix()
+        + Matrix4f getProjMatrix()
+    }
+
+    class ModelLoader {
+        + static Model loadModel(String modelID, String modelPath, TextureCache textureCache)
+        + static Model loadModel(String modelID, String modelPath, TextureCache textureCache, int flags)
+        - static int[] processIndices(AIMesh aiMesh)
+        - static Material processMaterial(AIMaterial aiMaterial, String modelDir, TextureCache textureCache)
+        - static Mesh processMesh(AIMesh aiMesh)
+        - static float[] processNormals(AIMesh aiMesh)
+        - static float[] processTextCoords(AIMesh aiMesh)
+        - static float[] processVertices(AIMesh aiMesh)
+    }
+
+    class Model {
+        - String ID
+        - List<Material> materialsList
+        - List<Entity> entitieList
+        + Model(String ID, List<Material> materialsList)
+        + void cleanup()
+        + String getID()
+        + List<Material> getMaterialList()
+        + List<Entity> getEntitieList()
+    }
+
+    class Render {
+        - GUIRender guiRender
+        - SceneRender sceneRender
+        - SkyBoxRender skyBoxRender
+        + Render(MCWindows windows)
+        + void cleanup()
+        + void render(MCWindows windows, Scene scene)
+        + void resize(int width, int height)
+    }
+    class Mesh {
+        - int numVertices
+        - int vaoID
+        - List<Integer> vboIDList
+        - Vector3f aabbMax
+        - Vector3f aabbMin
+        + Mesh(float[] positions, float[] normals, float[] textCoords, int[] indices)
+        + Mesh(float[] positions, float[] normals, float[] textCoords, int[] indices, Vector3f aabbMin, Vector3f aabbMax)
+        + void cleanup()
+        + int getNumVertices()
+        + int getVaoID()
+        + Vector3f getAabbMax()
+        + Vector3f getAabbMin()
+    }
+}
+
+package com.craftmine.game {
+    class MCWindows {
+        - long windowHandle
+        - int height
+        - int width
+        - Callable<Void> resizeFunc
+        - MouseInput mouseInput
+        + MCWindows(String title, GameResources.MCWindowsOptions opts, Callable<Void> resizeFunc)
+        + void keyCallBack(int key, int action)
+        + void cleanup()
+        + void pollEvents()
+        + void resize(int width, int height)
+        + void update()
+        + boolean windowsShouldClose()
+        + MouseInput getMouseInput()
+        + int getHeight()
+        + int getWidth()
+        + long getWindowHandle()
+        + boolean isKeyPressed(int keyCode)
+    }
+}
+
+package com.craftmine.engine.scene {
+    class Scene {
+        - Map<String, Model> modelMap
+        - MCBlock[][][] blockMap
+        - Projection projection
+        - TextureCache textureCache
+        - Camera camera
+        - IGUIInstance guiInstance
+        - SceneLights sceneLights
+        - SkyBox skyBox
+        - Entity[][][] entityMap
+        - Entity selectedEntity
+        + Scene(int width, int height)
+        + Entity[][][] addBlockMap(MCBlock[][][] blockMap)
+        + Entity addBlock(int x, int y, int z, MCBlock blockToPlace)
+        + void addModel(Model model)
+        + void removeEntity(String modelID, Entity entity)
+        + void addEntity(String modelID, Entity entity)
+        + void cleanup()
+        + void resize(int width, int height)
+        + SkyBox getSkyBox()
+        + void setSkyBox(SkyBox skyBox)
+        + void setGUIInstance(IGUIInstance guiInstance)
+        + Map<String, Model> getModelMap()
+        + IGUIInstance getGUIInstance()
+        + Projection getProjection()
+        + TextureCache getTextureCache()
+        + Camera getCamera()
+        + SceneLights getSceneLights()
+        + void setSceneLights(SceneLights sceneLights)
+        + void setSelectedEntity(Entity selectedEntity)
+        + Entity getSelectedEntity()
+    }
+}
+
+Minecraft --> MCBlock
+Minecraft --> MouseInput
+Minecraft --> MCWindows
+Minecraft --> Scene
+Minecraft --> SoundManager
+Minecraft --> SoundSource
+Minecraft --> MCMapGen
+Minecraft --> MapGrid
+Minecraft --> MCPerson
+Minecraft --> Entity
+
+MouseInput --> MCWindows
+
+MCWindows --> MouseInput
+
+ModelLoader --> Model
+ModelLoader --> TextureCache
+ModelLoader --> Material
+ModelLoader --> Mesh
+
+Model --> Material
+Model --> Entity
+
+Render --> MCWindows
+Render --> Scene
+Render --> GUIRender
+Render --> SceneRender
+Render --> SkyBoxRender
+
+Scene --> Model
+Scene --> MCBlock
+Scene --> Projection
+Scene --> TextureCache
+Scene --> Camera
+Scene --> IGUIInstance
+Scene --> SceneLights
+Scene --> SkyBox
+Scene --> Entity
+
+
+
+
+
+
+
+' 定义包和类
+package "com.craftmine.engine" {
+    class ShaderProgram {
+        + programID: int
+        + ShaderProgram(List<ShaderModuleData>)
+        + bind()
+        + unbind()
+        + cleanup()
+        + createShader(String, int): int
+        + getProgramID(): int
+        + link(List<Integer>)
+        + validate()
+        + record ShaderModuleData(String shaderFile, int shaderType)
+    }
+
+    class Texture {
+        + textureID: int
+        + texturePath: String
+        + Texture(int, int, ByteBuffer)
+        + Texture(String)
+        + bind()
+        + cleanup()
+        + generateTexture(int, int, ByteBuffer)
+        + getTexturePath(): String
+    }
+
+    class TextureCache {
+        + DEFAULT_TEXTURE: String
+        + textureMap: Map<String, Texture>
+        + TextureCache()
+        + cleanup()
+        + createTexture(String): Texture
+        + getTexture(String): Texture
+    }
+
+    class UniformsMap {
+        + programID: int
+        + uniforms: Map<String, Integer>
+        + UniformsMap(int)
+        + createUniform(String)
+        + getUniformLocation(String): int
+        + setUniform(String, Matrix4f)
+        + setUniform(String, Vector4f)
+        + setUniform(String, Vector2f)
+        + setUniform(String, float)
+        + setUniform(String, Vector3f)
+        + setUniform(String, int)
+    }
+
+    class Utils {
+        + readFile(String): String
+    }
+}
+
+package "com.craftmine.engine.scene" {
+    class SceneRender {
+        + MAX_POINT_LIGHTS: int
+        + MAX_SPOT_LIGHTS: int
+        + shaderProgram: ShaderProgram
+        + uniformsMap: UniformsMap
+        + SCENE_SHADER_VERT: String
+        + SCENE_SHADER_FRAG: String
+        + SceneRender()
+        + render(Scene)
+        + cleanup()
+        - createUniforms()
+        - updateLights(Scene)
+        - updatePointLight(PointLight, String, Matrix4f)
+        - updateSpotLight(SpotLight, String, Matrix4f)
+    }
+}
+
+package "com.craftmine.engine.skybox" {
+    class SkyBox {
+        + skyBoxEntity: Entity
+        + skyBoxModel: Model
+        + SkyBox(String, TextureCache)
+        + getSkyBoxEntity(): Entity
+        + getSkyBoxModel(): Model
+    }
+
+    class SkyBoxRender {
+        + shaderProgram: ShaderProgram
+        + uniformsMap: UniformsMap
+        + viewMatrix: Matrix4f
+        + SKYBOX_SHADER_VERT: String
+        + SKYBOX_SHADER_FRAG: String
+        + SkyBoxRender()
+        + cleanup()
+        + render(Scene)
+        - createUniforms()
+    }
+}
+
+package "com.craftmine.engine.light" {
+    class SceneLights {
+        + ambientLight: AmbientLight
+        + dirLight: DirLight
+        + pointLights: List<PointLight>
+        + spotLights: List<SpotLight>
+        + SceneLights()
+        + getAmbientLight(): AmbientLight
+        + getDirLight(): DirLight
+        + getPointLights(): List<PointLight>
+        + getSpotLights(): List<SpotLight>
+        + setSpotLights(List<SpotLight>)
+    }
+
+    class SpotLight {
+        + coneDirection: Vector3f
+        + cutOffAngle: float
+        + cutOff: float
+        + pointLight: PointLight
+        + SpotLight(PointLight, Vector3f, float)
+        + getConeDirection(): Vector3f
+        + getCutOff(): float
+        + getCutOffAngle(): float
+        + getPointLight(): PointLight
+        + setConeDirection(float, float, float)
+        + setConeDirection(Vector3f)
+        + setPointLight(PointLight)
+        + setCutOffAngle(float)
+    }
+}
+
+SceneRender "1" *-- "1" ShaderProgram
+SceneRender "1" *-- "1" UniformsMap
+SkyBoxRender "1" *-- "1" ShaderProgram
+SkyBoxRender "1" *-- "1" UniformsMap
+SkyBox "1" *-- "1" Entity
+SkyBox "1" *-- "1" Model
+TextureCache "1" *-- "*" Texture
+SceneLights "1" *-- "1" AmbientLight
+SceneLights "1" *-- "1" DirLight
+SceneLights "1" *-- "*" PointLight
+SceneLights "1" *-- "*" SpotLight
+SpotLight "1" *-- "1" PointLight
+ShaderProgram ..> Utils : uses
 @enduml

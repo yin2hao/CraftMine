@@ -58,9 +58,9 @@ public class GameResources {
     public static final long DESTROY_DELAY_MS = 500;
 
     //地图大小
-    public static final int MAP_SIZE_X = 50;
+    public static final int MAP_SIZE_X = 75;
     public static final int MAP_SIZE_Y = 75;
-    public static final int MAP_SIZE_Z = 50;
+    public static final int MAP_SIZE_Z = 75;
 
     //为防止卡顿，删除y=DELETE_SIZE层以下的方块
     public static final int DELETE_SIZE = 20;
