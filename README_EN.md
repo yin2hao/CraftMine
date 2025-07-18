@@ -2,6 +2,8 @@
 
 Maintenance of the spaghetti mountain will continue until **2025.8.30**
 
+<a href="./README.md">中文</a>
+
 ## Expected Result
 
 ![Expected Result](src/main/resources/game_yin.png)

@@ -2,6 +2,8 @@
 
 计划将在2025.8.30之前持续对屎山进行维护
 
+<a href="./README_EN.md">English</a>
+
 ## 预期实现效果
 ![预期实现效果](src/main/resources/game_yin.png)
 ![预期实现效果](src/main/resources/game_gu.png)
